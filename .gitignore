@@ -1,0 +1,13 @@
+# Output directories
+cmake-build-debug
+obj
+
+# CMake files
+CMakeFiles
+cmake_install.cmake
+CMakeCache.txt
+
+.idea
+altair.cbp
+*.com
+*.s
