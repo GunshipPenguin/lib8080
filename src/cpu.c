@@ -138,7 +138,7 @@ void mov(int opcode) {
 }
 
 void mvi(int opcode) {
-  int reg = opcode & 0x38;
+  int reg = (opcode & 0x38) >> 3;
   set_reg(reg, read8(cpu->PC+1));
 }
 
