@@ -166,6 +166,16 @@ void dcx(int opcode) {
   set_reg_pair(reg, get_reg_pair(reg)-1);
 }
 
+void add(int opcode) {
+  int reg = (opcode & 0x07);
+  cpu->A += get_reg(reg);
+}
+
+void sub(int opcode) {
+  int reg = (opcode & 0x07);
+  cpu->A -= get_reg(reg);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -297,6 +307,28 @@ void step_cpu() {
 
     case 0x76: // HLT
       hlt();
+      break;
+
+    case 0x80: // ADD B
+    case 0x81: // ADD C
+    case 0x82: // ADD D
+    case 0x83: // ADD E
+    case 0x84: // ADD H
+    case 0x85: // ADD L
+    case 0x86: // ADD M
+    case 0x87: // ADD A
+      add(opcode);
+      break;
+
+    case 0x90: // SUB B
+    case 0x91: // SUB C
+    case 0x92: // SUB D
+    case 0x93: // SUB E
+    case 0x94: // SUB H
+    case 0x95: // SUB L
+    case 0x96: // SUB M
+    case 0x97: // SUB A
+      sub(opcode);
       break;
 
     case 0xC3: // JMP
