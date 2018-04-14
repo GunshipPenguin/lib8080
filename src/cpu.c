@@ -171,9 +171,13 @@ void step_cpu() {
 
   switch (opcode) {
     case 0x00: // NOP
+    case 0x08: // NOP
     case 0x10: // NOP
+    case 0x18: // NOP
     case 0x20: // NOP
+    case 0x28: // NOP
     case 0x30: // NOP
+    case 0x38: // NOP
       nop();
       break;
 

@@ -16,7 +16,8 @@ SET(TEST_FILES test/attounit.h
                test/mov_test.c
                test/mvi_test.c
                test/dcr_test.c
-               test/inr_test.c)
+               test/inr_test.c
+               test/nop_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
