@@ -2,6 +2,10 @@
 cmake-build-debug
 obj
 
+# Binaries
+altair
+altairtest
+
 # CMake files
 CMakeFiles
 cmake_install.cmake
