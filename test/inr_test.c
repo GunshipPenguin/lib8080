@@ -37,6 +37,7 @@ TEST_CASE(inr_c) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->C, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inr_d) {
@@ -45,6 +46,7 @@ TEST_CASE(inr_d) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->D, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
@@ -54,6 +56,7 @@ TEST_CASE(inr_e) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->E, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inr_h) {
@@ -62,6 +65,7 @@ TEST_CASE(inr_h) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->H, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
@@ -71,6 +75,7 @@ TEST_CASE(inr_l) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->L, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inr_m) {
@@ -80,6 +85,7 @@ TEST_CASE(inr_m) {
 
   step_cpu();
   ASSERT_EQUAL(read8(CONCAT(cpu->H, cpu->L)), 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
@@ -89,4 +95,5 @@ TEST_CASE(inr_a) {
 
   step_cpu();
   ASSERT_EQUAL(cpu->A, 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
