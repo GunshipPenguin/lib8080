@@ -2,7 +2,7 @@
 #include "cpu.h"
 #include "memory.h"
 
-TEST_SUITE(opcode_inr);
+TEST_SUITE(instruction_inr);
 BEFORE_EACH() {
   if (cpu == NULL) {
     create_cpu();
