@@ -92,3 +92,13 @@ TEST_CASE(sub_m) {
   ASSERT_EQUAL(cpu->A, 0);
   ASSERT_EQUAL(cpu->PC, 1);
 }
+
+TEST_CASE(sub_a) {
+  write8(0, 0x97);
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0);
+  ASSERT_EQUAL(cpu->PC, 1);
+}
