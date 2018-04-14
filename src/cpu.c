@@ -39,12 +39,39 @@ void reset_cpu() {
   cpu->H = 0;
   cpu->L = 0;
   cpu->PC = 0;
-  cpu->flags = 0;
+  cpu->flags = 2;
   cpu->SP = 0;
 }
 
+int get_flag_mask(enum Flag flag) {
+  switch (flag) {
+    case FLAG_S: return 0x80;
+    case FLAG_Z: return 0x40;
+    case FLAG_A: return 0x10;
+    case FLAG_P: return 0x04;
+    case FLAG_C: return 0x01;
+    default:
+      fprintf(stderr, "Invalid flag %d", flag);
+      exit(1);
+  }
+}
+void set_flag(enum Flag flag, int val) {
+  int mask = get_flag_mask(flag);
+
+  if (val) {
+    cpu->flags = (cpu->flags | mask) & 0xFF;
+  } else {
+    cpu->flags = (cpu->flags & ~mask) & 0xFF;
+  }
+}
+
+int get_flag(enum Flag flag) {
+  int mask = get_flag_mask(flag);
+  return (cpu->flags & mask) != 0;
+}
+
 void set_reg(int reg, int val) {
-  switch(reg) {
+  switch (reg) {
     case 7: cpu->A = val;
       break;
     case 0: cpu->B = val;
@@ -64,7 +91,7 @@ void set_reg(int reg, int val) {
 }
 
 int get_reg(int reg) {
-  switch(reg) {
+  switch (reg) {
     case 7: return cpu->A;
     case 0: return cpu->B;
     case 1: return cpu->C;
@@ -186,6 +213,36 @@ void ora(int opcode) {
   cpu->A |= get_reg(reg);
 }
 
+void rlc() {
+  set_flag(FLAG_C, cpu->A & 0x80);
+  cpu->A <<= 1;
+  cpu->A |= get_flag(FLAG_C);
+}
+
+void rrc() {
+  set_flag(FLAG_C, cpu->A & 0x01);
+  cpu->A >>= 1;
+  cpu->A |= (get_flag(FLAG_C) << 8);
+}
+
+void ral() {
+  int old_carry = get_flag(FLAG_C);
+
+  set_flag(FLAG_C, cpu->A & 0x80);
+  cpu->A <<= 1;
+
+  cpu->A |= old_carry & 0x01;
+}
+
+void rar() {
+  int old_carry = get_flag(FLAG_C);
+
+  set_flag(FLAG_C, cpu->A & 0x01);
+  cpu->A >>= 1;
+
+  cpu->A |= ((old_carry << 8) & 0x01);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -200,6 +257,18 @@ void step_cpu() {
     case 0x38: // NOP
       nop();
       break;
+
+    case 0x07: // RLC
+      rlc();
+
+    case 0x0F: // RRC
+      rrc();
+
+    case 0x17: // RAL
+      ral();
+
+    case 0x1F: // RAR
+      rar();
 
     case 0x03: // INX B
     case 0x13: // INX D

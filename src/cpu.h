@@ -4,12 +4,6 @@
 // Register pair convenience macros
 #define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
 
-#define FLAG_S (cpu->flags & 0x80)
-#define FLAG_Z (cpu->flags & 0x40)
-#define FLAG_A (cpu->flags & 0x10)
-#define FLAG_P (cpu->flags & 0x02)
-#define FLAG_C (cpu->flags & 0x01)
-
 struct cpu {
   int A, B, C, D, E;
   int H, L;
@@ -18,11 +12,15 @@ struct cpu {
   int PC;
 };
 
+enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
+
 struct cpu *cpu;
 
 void create_cpu();
 void step_cpu();
 
 void reset_cpu();
+void set_flag(enum Flag, int);
+int get_flag(enum Flag);
 
 #endif
