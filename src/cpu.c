@@ -176,6 +176,16 @@ void sub(int opcode) {
   cpu->A -= get_reg(reg);
 }
 
+void ana(int opcode) {
+  int reg = (opcode & 0x07);
+  cpu->A &= get_reg(reg);
+}
+
+void ora(int opcode) {
+  int reg = (opcode & 0x07);
+  cpu->A |= get_reg(reg);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -329,6 +339,28 @@ void step_cpu() {
     case 0x96: // SUB M
     case 0x97: // SUB A
       sub(opcode);
+      break;
+
+    case 0xA0: // ANA B
+    case 0xA1: // ANA C
+    case 0xA2: // ANA D
+    case 0xA3: // ANA E
+    case 0xA4: // ANA H
+    case 0xA5: // ANA L
+    case 0xA6: // ANA M
+    case 0xA7: // ANA A
+      ana(opcode);
+      break;
+
+    case 0xB0: // ORA B
+    case 0xB1: // ORA C
+    case 0xB2: // ORA D
+    case 0xB3: // ORA E
+    case 0xB4: // ORA H
+    case 0xB5: // ORA L
+    case 0xB6: // ORA M
+    case 0xB7: // ORA A
+      ora(opcode);
       break;
 
     case 0xC3: // JMP
