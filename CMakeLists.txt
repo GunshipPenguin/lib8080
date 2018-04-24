@@ -23,7 +23,9 @@ SET(TEST_FILES test/attounit.h
                test/ora_test.c
                test/ana_test.c
                test/rlc_test.c
-               test/rrc_test.c)
+               test/rrc_test.c
+               test/ral_test.c
+               test/rar_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
