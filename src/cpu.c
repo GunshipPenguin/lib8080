@@ -251,15 +251,24 @@ void ora(int opcode) {
 }
 
 void rlc() {
-  set_flag(FLAG_C, cpu->A & 0x80);
+  int hi_bit = (cpu->A & 0x80) != 0;
+
   cpu->A <<= 1;
-  cpu->A |= get_flag(FLAG_C);
+  cpu->A |= hi_bit;
+
+  cpu->A &= 0xFF;
+
+  set_flag(FLAG_C, hi_bit);
 }
 
 void rrc() {
-  set_flag(FLAG_C, cpu->A & 0x01);
+  int lo_bit = cpu->A & 0x01;
+
   cpu->A >>= 1;
-  cpu->A |= (get_flag(FLAG_C) << 8);
+  cpu->A |= (lo_bit << 7);
+  cpu->A &= 0xFF;
+
+  set_flag(FLAG_C, lo_bit);
 }
 
 void ral() {
@@ -297,15 +306,19 @@ void step_cpu() {
 
     case 0x07: // RLC
       rlc();
+      break;
 
     case 0x0F: // RRC
       rrc();
+      break;
 
     case 0x17: // RAL
       ral();
+      break;
 
     case 0x1F: // RAR
       rar();
+      break;
 
     case 0x03: // INX B
     case 0x13: // INX D
