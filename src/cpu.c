@@ -276,6 +276,7 @@ void ral() {
 
   set_flag(FLAG_C, cpu->A & 0x80);
   cpu->A <<= 1;
+  cpu->A &= 0xFF;
 
   cpu->A |= old_carry & 0x01;
 }
@@ -285,8 +286,9 @@ void rar() {
 
   set_flag(FLAG_C, cpu->A & 0x01);
   cpu->A >>= 1;
+  cpu->A &= 0xFF;
 
-  cpu->A |= ((old_carry << 8) & 0x01);
+  cpu->A |= ((old_carry << 7) & 0x80);
 }
 
 void step_cpu() {
