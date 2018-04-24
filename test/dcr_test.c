@@ -22,6 +22,7 @@ BEFORE_EACH() {
 }
 AFTER_EACH() {}
 
+// Individual opcode tests
 TEST_CASE(dcr_b) {
   write8(0, 0x05);
   cpu->B = 1;
@@ -97,4 +98,53 @@ TEST_CASE(dcr_a) {
   step_cpu();
   ASSERT_EQUAL(cpu->A, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+}
+
+// Edge case tests
+TEST_CASE(dcr_wraps_0_to_0xff) {
+  write8(0, 0x3D); // DCR A
+  cpu->A = 0;
+
+  step_cpu();
+  ASSERT_EQUAL(cpu->A, 0xFF);
+}
+
+// Flag bit tests
+TEST_CASE(dcr_sets_z_flag) {
+  write8(0, 0x3D); // DCR A
+  cpu->A = 0x01;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+}
+
+TEST_CASE(dcr_sets_p_flag) {
+  write8(0, 0x3D); // DCR A
+  cpu->A = 0x03;
+  set_flag(FLAG_P, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(dcr_sets_s_flag) {
+  write8(0, 0x3D); // DCR A
+  cpu->A = 0x00;
+  set_flag(FLAG_S, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(dcr_sets_a_flag) {
+  write8(0, 0x3D); // DCR A
+  cpu->A = 0xF0;
+  set_flag(FLAG_A, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_A), 1);
 }

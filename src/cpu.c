@@ -71,6 +71,8 @@ int get_flag(enum Flag flag) {
 }
 
 void set_reg(int reg, int val) {
+  val &= 0xFF;
+
   switch (reg) {
     case 7: cpu->A = val;
       break;
@@ -144,6 +146,15 @@ void set_reg_pair(int reg_pair, int val) {
   fprintf(stderr, "Invalid register pair %d\n", reg_pair);
 }
 
+// Sets the sign, zero and parity bits based on the given value
+void setSZP(int val) {
+  val &= 0xFF;
+
+  set_flag(FLAG_S, val & 0x80);
+  set_flag(FLAG_Z, val == 0);
+  set_flag(FLAG_P, __builtin_parity(val));
+}
+
 // Instructions follow
 void hlt() {
 
@@ -175,12 +186,18 @@ void sta() {
 
 void inr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
+
+  set_flag(FLAG_A, (get_reg(reg) & 0x0F) == 0x0F);
   set_reg(reg, get_reg(reg)+1);
+  setSZP(get_reg(reg));
 }
 
 void dcr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
+
+  set_flag(FLAG_A, (get_reg(reg) & 0x0F) == 0);
   set_reg(reg, get_reg(reg)-1);
+  setSZP(get_reg(reg));
 }
 
 void inx(int opcode) {
@@ -195,22 +212,42 @@ void dcx(int opcode) {
 
 void add(int opcode) {
   int reg = (opcode & 0x07);
+
+  // Detect carry out of lower 4 bits
+  set_flag(FLAG_A, ((cpu->A & 0xF) + (get_reg(reg) & 0x0F)) & 0x10);
+
   cpu->A += get_reg(reg);
+
+  set_flag(FLAG_C, cpu->A & 0x100);
+  cpu->A &= 0xFF;
+  setSZP(cpu->A);
 }
 
 void sub(int opcode) {
   int reg = (opcode & 0x07);
+  set_flag(FLAG_C, get_reg(reg) > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
+
   cpu->A -= get_reg(reg);
+  cpu->A &= 0xFF;
+
+  setSZP(cpu->A);
 }
 
 void ana(int opcode) {
   int reg = (opcode & 0x07);
   cpu->A &= get_reg(reg);
+
+  set_flag(FLAG_C, 0);
+  setSZP(cpu->A);
 }
 
 void ora(int opcode) {
   int reg = (opcode & 0x07);
   cpu->A |= get_reg(reg);
+
+  set_flag(FLAG_C, 0);
+  setSZP(cpu->A);
 }
 
 void rlc() {
@@ -441,6 +478,5 @@ void step_cpu() {
       exit(1);
   }
 
-//  printf("%x %x %x\n", cpu->A, cpu->B, cpu->PC);
   cpu->PC += ins_sizes[opcode];
 }
