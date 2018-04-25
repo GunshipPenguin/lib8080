@@ -27,7 +27,8 @@ SET(TEST_FILES
         test/cpu/rrc_test.c
         test/cpu/ral_test.c
         test/cpu/rar_test.c
-        test/cpu/inx_test.c)
+        test/cpu/inx_test.c
+        test/cpu/dcx_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
