@@ -13,19 +13,19 @@ SET(SRC_FILES src/cpu.c
 
 SET(TEST_FILES test/attounit.h
                test/test.c
-               test/mov_test.c
-               test/mvi_test.c
-               test/dcr_test.c
-               test/inr_test.c
-               test/nop_test.c
-               test/add_test.c
-               test/sub_test.c
-               test/ora_test.c
-               test/ana_test.c
-               test/rlc_test.c
-               test/rrc_test.c
-               test/ral_test.c
-               test/rar_test.c)
+        test/cpu/mov_test.c
+        test/cpu/mvi_test.c
+        test/cpu/dcr_test.c
+        test/cpu/inr_test.c
+        test/cpu/nop_test.c
+        test/cpu/add_test.c
+        test/cpu/sub_test.c
+        test/cpu/ora_test.c
+        test/cpu/ana_test.c
+        test/cpu/rlc_test.c
+        test/cpu/rrc_test.c
+        test/cpu/ral_test.c
+        test/cpu/rar_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
