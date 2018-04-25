@@ -185,6 +185,16 @@ void sta() {
   write8(read16(cpu->PC+1), cpu->A);
 }
 
+void stax(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+  write8(get_reg_pair(reg_pair), cpu->A);
+}
+
+void ldax(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+  cpu->A = read8(get_reg_pair(reg_pair));
+}
+
 void inr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
 
@@ -305,6 +315,16 @@ void step_cpu() {
     case 0x30: // NOP (alternate)
     case 0x38: // NOP (alternate)
       nop();
+      break;
+
+    case 0x02: // STAX B
+    case 0x12: // STAX D
+      stax(opcode);
+      break;
+
+    case 0x0A: // LDAX B
+    case 0x1A: // LDAX D
+      ldax(opcode);
       break;
 
     case 0x07: // RLC
