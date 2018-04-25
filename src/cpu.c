@@ -122,8 +122,8 @@ int get_reg_pair(int reg_pair) {
 
 
 void set_reg_pair(int reg_pair, int val) {
-  int hi = val & 0xFF;
-  int lo = (val >> 8) & 0xFF;
+  int hi = (val >> 8) & 0xFF;
+  int lo = val & 0xFF;
 
   switch (reg_pair) {
     case 0:
@@ -141,9 +141,10 @@ void set_reg_pair(int reg_pair, int val) {
     case 3:
       cpu->SP = val;
       break;
+    default:
+      fprintf(stderr, "Invalid register pair %d\n", reg_pair);
+      break;
   }
-
-  fprintf(stderr, "Invalid register pair %d\n", reg_pair);
 }
 
 // Sets the sign, zero and parity bits based on the given value
@@ -327,12 +328,14 @@ void step_cpu() {
     case 0x23: // INX H
     case 0x33: // INX SP
       inx(opcode);
+      break;
 
     case 0x0B: // DCX B
     case 0x1B: // DCX D
     case 0x2B: // DCX H
     case 0x3B: // DCX SP
       dcx(opcode);
+      break;
 
     case 0x04: // INR B
     case 0x0C: // INR C
