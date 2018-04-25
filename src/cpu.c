@@ -375,6 +375,11 @@ void xchg() {
   cpu->E = l_temp;
 }
 
+// SPHL - Load SP from H and L
+void sphl() {
+  cpu->SP = CONCAT(cpu->H, cpu->L);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -618,6 +623,10 @@ void step_cpu() {
 
     case 0xEB: // XCHG
       xchg();
+      break;
+
+    case 0xF9: // SPHL
+      sphl();
       break;
 
     default:
