@@ -29,6 +29,7 @@ TEST_CASE(stax_b) {
   step_cpu();
 
   ASSERT_EQUAL(read8(5), 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
@@ -39,4 +40,5 @@ TEST_CASE(stax_d) {
   step_cpu();
 
   ASSERT_EQUAL(read8(5), 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
 }

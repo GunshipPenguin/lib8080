@@ -24,10 +24,11 @@ AFTER_EACH() {}
 
 TEST_CASE(sta) {
   write8(0, 0x32); // STA
-  write8(1, 5); // d8
+  write16(1, 5); // a16
   cpu->A = 0x01;
 
   step_cpu();
 
   ASSERT_EQUAL(read8(5), 0x01);
+  ASSERT_EQUAL(cpu->PC, 3);
 }

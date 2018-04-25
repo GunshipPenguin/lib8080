@@ -30,6 +30,7 @@ TEST_CASE(ldax_b) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
@@ -41,4 +42,5 @@ TEST_CASE(ldax_d) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
