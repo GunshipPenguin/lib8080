@@ -89,6 +89,10 @@ void set_reg(int reg, int val) {
     case 5: cpu->L = val;
       break;
     case 6: write8(CONCAT(cpu->H, cpu->L), val);
+      break;
+    default:
+      fprintf(stderr, "Invalid register %d\n", reg);
+      exit(1);
   }
 }
 
@@ -102,10 +106,10 @@ int get_reg(int reg) {
     case 4: return cpu->H;
     case 5: return cpu->L;
     case 6: return read8(CONCAT(cpu->H, cpu->L));
+    default:
+      fprintf(stderr, "Invalid register %d\n", reg);
+      exit(1);
   }
-
-  fprintf(stderr, "Invalid register %d\n", reg);
-  exit(1);
 }
 
 int get_reg_pair(int reg_pair) {
@@ -114,10 +118,11 @@ int get_reg_pair(int reg_pair) {
     case 1: return CONCAT(cpu->D, cpu->E);
     case 2: return CONCAT(cpu->H, cpu->L);
     case 3: return cpu->SP;
+    default:
+      fprintf(stderr, "Invalid register pair %d\n", reg_pair);
+      exit(1);
   }
 
-  fprintf(stderr, "Invalid register pair %d\n", reg_pair);
-  exit(1);
 }
 
 
@@ -143,7 +148,7 @@ void set_reg_pair(int reg_pair, int val) {
       break;
     default:
       fprintf(stderr, "Invalid register pair %d\n", reg_pair);
-      break;
+      exit(1);
   }
 }
 
@@ -616,7 +621,7 @@ void step_cpu() {
       break;
 
     default:
-      fprintf(stderr, "Opcode not implemented 0x%x", opcode);
+      fprintf(stderr, "Opcode not implemented 0x%x\n", opcode);
       exit(1);
   }
 
