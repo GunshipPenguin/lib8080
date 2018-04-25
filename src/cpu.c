@@ -333,6 +333,21 @@ void rar() {
   cpu->A |= ((old_carry << 7) & 0x80);
 }
 
+// CMC - Complement Carry Bit
+void cmc() {
+  set_flag(FLAG_C, !get_flag(FLAG_C));
+}
+
+// CMA - Complement Accumulator
+void cma() {
+  cpu->A = (~cpu->A) & 0xFF;
+}
+
+// STC - Set Carry Bit
+void stc() {
+  set_flag(FLAG_C, 1);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -348,11 +363,23 @@ void step_cpu() {
       nop();
       break;
 
+    case 0x2F: // CMA
+      cma();
+      break;
+
+    case 0x3F: // CMC
+      cmc();
+      break;
+
     case 0x01: // LXI B, d16
     case 0x11: // LXI D, d16
     case 0x21: // LXI H, d16
     case 0x31: // LXI SP, d16
       lxi(opcode);
+      break;
+
+    case 0x37: // STC
+      stc();
       break;
 
     case 0x02: // STAX B
