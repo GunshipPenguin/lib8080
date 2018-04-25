@@ -139,7 +139,7 @@ void set_reg_pair(int reg_pair, int val) {
       cpu->L = lo;
       break;
     case 3:
-      cpu->SP = val;
+      cpu->SP = CONCAT(hi, lo);
       break;
     default:
       fprintf(stderr, "Invalid register pair %d\n", reg_pair);
@@ -348,6 +348,14 @@ void stc() {
   set_flag(FLAG_C, 1);
 }
 
+// DAD - Double Add
+void dad(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+
+  int new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair)) & 0xFFFF;
+  set_reg_pair(reg_pair, new_val);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -376,6 +384,13 @@ void step_cpu() {
     case 0x21: // LXI H, d16
     case 0x31: // LXI SP, d16
       lxi(opcode);
+      break;
+
+    case 0x09: // DAD B
+    case 0x19: // DAD D
+    case 0x29: // DAD H
+    case 0x39: // DAD SP
+      dad(opcode);
       break;
 
     case 0x37: // STC
