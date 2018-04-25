@@ -189,6 +189,11 @@ void lda() {
   cpu->A = read8(read16(cpu->PC+1));
 }
 
+void lxi(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+  set_reg_pair(reg_pair, read16(cpu->PC+1));
+}
+
 void stax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
   write8(get_reg_pair(reg_pair), cpu->A);
@@ -319,6 +324,13 @@ void step_cpu() {
     case 0x30: // NOP (alternate)
     case 0x38: // NOP (alternate)
       nop();
+      break;
+
+    case 0x01: // LXI B, d16
+    case 0x11: // LXI D, d16
+    case 0x21: // LXI H, d16
+    case 0x31: // LXI SP, d16
+      lxi(opcode);
       break;
 
     case 0x02: // STAX B
