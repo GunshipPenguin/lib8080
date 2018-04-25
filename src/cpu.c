@@ -359,6 +359,17 @@ void dad(int opcode) {
   set_reg_pair(reg_pair, new_val);
 }
 
+// XCHG - Exchange Registers
+void xchg() {
+  int h_temp = cpu->H;
+  int l_temp = cpu->L;
+
+  cpu->H = cpu->D;
+  cpu->L = cpu->E;
+  cpu->D = h_temp;
+  cpu->E = l_temp;
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -598,6 +609,10 @@ void step_cpu() {
     case 0xC3: // JMP
     case 0xCB: // JMP (alternate)
       jmp();
+      break;
+
+    case 0xEB: // XCHG
+      xchg();
       break;
 
     default:
