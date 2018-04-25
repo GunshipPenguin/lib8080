@@ -31,6 +31,7 @@ TEST_CASE(rrc_low_bit_one) {
 
   ASSERT_EQUAL(cpu->A, 0xFF);
   ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rrc_low_bit_zero) {
@@ -42,4 +43,5 @@ TEST_CASE(rrc_low_bit_zero) {
 
   ASSERT_EQUAL(cpu->A, 0x7F);
   ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_EQUAL(cpu->PC, 1);
 }

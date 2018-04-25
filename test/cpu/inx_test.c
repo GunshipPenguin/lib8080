@@ -30,6 +30,7 @@ TEST_CASE(inx_b) {
 
   ASSERT_EQUAL(cpu->B, 0x01);
   ASSERT_EQUAL(cpu->C, 0x00);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inx_d) {
@@ -40,6 +41,7 @@ TEST_CASE(inx_d) {
 
   ASSERT_EQUAL(cpu->D, 0x01);
   ASSERT_EQUAL(cpu->E, 0x00);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inx_h) {
@@ -50,6 +52,7 @@ TEST_CASE(inx_h) {
 
   ASSERT_EQUAL(cpu->H, 0x01);
   ASSERT_EQUAL(cpu->L, 0x00);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(inx_sp) {
@@ -59,4 +62,5 @@ TEST_CASE(inx_sp) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->SP, 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
 }

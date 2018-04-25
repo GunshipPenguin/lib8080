@@ -31,6 +31,7 @@ TEST_CASE(rar_low_bit_one_carry_zero) {
 
   ASSERT_EQUAL(cpu->A, 0x7F);
   ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rar_low_bit_zero_carry_zero) {
@@ -42,6 +43,7 @@ TEST_CASE(rar_low_bit_zero_carry_zero) {
 
   ASSERT_EQUAL(cpu->A, 0x7F);
   ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rar_low_bit_one_carry_one) {
@@ -53,4 +55,5 @@ TEST_CASE(rar_low_bit_one_carry_one) {
 
   ASSERT_EQUAL(cpu->A, 0xFF);
   ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_EQUAL(cpu->PC, 1);
 }
