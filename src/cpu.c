@@ -185,6 +185,10 @@ void sta() {
   write8(read16(cpu->PC+1), cpu->A);
 }
 
+void lda() {
+  cpu->A = read8(read16(cpu->PC+1));
+}
+
 void stax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
   write8(get_reg_pair(reg_pair), cpu->A);
@@ -390,8 +394,12 @@ void step_cpu() {
       mvi(opcode);
       break;
 
-    case 0x32: // STA d8
+    case 0x32: // STA a16
       sta();
+      break;
+
+    case 0x3A: // LDA a16
+      lda();
       break;
 
     case 0x40: // MOV B, B
