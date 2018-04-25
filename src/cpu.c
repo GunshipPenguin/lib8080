@@ -372,6 +372,7 @@ void step_cpu() {
 
     case 0x32: // STA d8
       sta();
+      break;
 
     case 0x40: // MOV B, B
     case 0x41: // MOV B, C
