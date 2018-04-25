@@ -22,6 +22,7 @@ BEFORE_EACH() {
 }
 AFTER_EACH() {}
 
+// Individual opcode tests
 TEST_CASE(dad_b) {
   write8(0, 0x09); // DAD B
   cpu->B = 0x00; cpu->C = 0x05; // BC contains 5
@@ -65,5 +66,30 @@ TEST_CASE(dad_sp) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->SP, 0x0002);
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+// Bit flag tests
+TEST_CASE(dad_sets_c_flag) {
+  write8(0, 0x19); // DAD D
+  cpu->D = 0x00; cpu->E = 0x05; // DE contains 5
+  cpu->H = 0xFF; cpu->L = 0xFD; // HL contains -3
+  set_flag(FLAG_C, 0);
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_C));
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(dad_resets_c_flag) {
+  write8(0, 0x19); // DAD D
+  cpu->D = 0x00; cpu->E = 0x05; // DE contains 5
+  cpu->H = 0x00; cpu->L = 0x01; // HL contains 1
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_TRUE(!get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }

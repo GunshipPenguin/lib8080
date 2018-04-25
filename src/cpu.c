@@ -352,7 +352,10 @@ void stc() {
 void dad(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
 
-  int new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair)) & 0xFFFF;
+  int new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair));
+  set_flag(FLAG_C, new_val & 0x10000);
+  new_val &= 0xFFFF;
+
   set_reg_pair(reg_pair, new_val);
 }
 
