@@ -11,8 +11,9 @@ SET(SRC_FILES src/cpu.c
               src/memory.c
               src/memory.h)
 
-SET(TEST_FILES test/attounit.h
-               test/test.c
+SET(TEST_FILES
+        test/attounit.h
+        test/test.c
         test/cpu/mov_test.c
         test/cpu/mvi_test.c
         test/cpu/dcr_test.c
@@ -25,7 +26,8 @@ SET(TEST_FILES test/attounit.h
         test/cpu/rlc_test.c
         test/cpu/rrc_test.c
         test/cpu/ral_test.c
-        test/cpu/rar_test.c)
+        test/cpu/rar_test.c
+        test/cpu/inx_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
