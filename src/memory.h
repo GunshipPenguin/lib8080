@@ -13,5 +13,6 @@ int read8(int);
 void write8(int, int);
 
 int read16(int);
+void write16(int, int);
 
 #endif

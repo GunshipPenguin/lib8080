@@ -38,3 +38,11 @@ int read16(int addr) {
 void write8(int addr, int data) {
   memory[addr] = (char) data;
 }
+
+void write16(int addr, int data) {
+  char hi = (data >> 8) & 0xFF;
+  char lo = data & 0xFF;
+
+  memory[addr] = lo;
+  memory[addr+1] = hi;
+}
