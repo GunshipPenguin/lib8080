@@ -157,18 +157,22 @@ void setSZP(int val) {
 }
 
 // Instructions follow
+// HLT - Halt
 void hlt() {
 
 }
 
+// NOP - No Operation
 void nop() {
 
 }
 
+// JMP - Jump
 void jmp() {
   cpu->PC = read16(cpu->PC+1);
 }
 
+// MOV - Move
 void mov(int opcode) {
   int dst = (opcode & 0x38) >> 3;
   int src = opcode & 0x07;
@@ -176,34 +180,41 @@ void mov(int opcode) {
   set_reg(dst, get_reg(src));
 }
 
+// MVI - Move Immediate
 void mvi(int opcode) {
   int reg = (opcode & 0x38) >> 3;
   set_reg(reg, read8(cpu->PC+1));
 }
 
+// STA - Store Accumulator Direct
 void sta() {
   write8(read16(cpu->PC+1), cpu->A);
 }
 
+// LDA - Load Accumulator Direct
 void lda() {
   cpu->A = read8(read16(cpu->PC+1));
 }
 
+// LXI - Load Register Pair Immediate
 void lxi(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
   set_reg_pair(reg_pair, read16(cpu->PC+1));
 }
 
+// STAX - Store Accumulator
 void stax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
   write8(get_reg_pair(reg_pair), cpu->A);
 }
 
+// LDAX - Load Accumulator
 void ldax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
   cpu->A = read8(get_reg_pair(reg_pair));
 }
 
+// INR - Increment Register or Memory
 void inr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
 
@@ -212,6 +223,7 @@ void inr(int opcode) {
   setSZP(get_reg(reg));
 }
 
+// DCR - Deincrement Register or Memory
 void dcr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
 
@@ -220,16 +232,19 @@ void dcr(int opcode) {
   setSZP(get_reg(reg));
 }
 
+// INX - Increment Register Pair
 void inx(int opcode) {
   int reg = (opcode & 0x30) >> 4;
   set_reg_pair(reg, get_reg_pair(reg)+1);
 }
 
+// DCX - Decrement Register Pair
 void dcx(int opcode) {
   int reg = (opcode & 0x30) >> 4;
   set_reg_pair(reg, get_reg_pair(reg)-1);
 }
 
+// ADD - Add Register or Memory to Accumulator
 void add(int opcode) {
   int reg = (opcode & 0x07);
 
@@ -243,6 +258,7 @@ void add(int opcode) {
   setSZP(cpu->A);
 }
 
+// SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = (opcode & 0x07);
   set_flag(FLAG_C, get_reg(reg) > cpu->A);
@@ -254,6 +270,7 @@ void sub(int opcode) {
   setSZP(cpu->A);
 }
 
+// ANA - Logical and Memory or Register with Accumulator
 void ana(int opcode) {
   int reg = (opcode & 0x07);
   cpu->A &= get_reg(reg);
@@ -262,6 +279,7 @@ void ana(int opcode) {
   setSZP(cpu->A);
 }
 
+// ORA - Logical or Memory or Register with Accumulator
 void ora(int opcode) {
   int reg = (opcode & 0x07);
   cpu->A |= get_reg(reg);
@@ -270,6 +288,7 @@ void ora(int opcode) {
   setSZP(cpu->A);
 }
 
+// RLC - Rotate Accumulator Left
 void rlc() {
   int hi_bit = (cpu->A & 0x80) != 0;
 
@@ -281,6 +300,7 @@ void rlc() {
   set_flag(FLAG_C, hi_bit);
 }
 
+// RRC - Rotate Accumulator Right
 void rrc() {
   int lo_bit = cpu->A & 0x01;
 
@@ -291,6 +311,7 @@ void rrc() {
   set_flag(FLAG_C, lo_bit);
 }
 
+// RAL - Rotate Accumulator Left Through Carry
 void ral() {
   int old_carry = get_flag(FLAG_C);
 
@@ -301,6 +322,7 @@ void ral() {
   cpu->A |= old_carry & 0x01;
 }
 
+// RAR - Rotate Accumulator Right Through Carry
 void rar() {
   int old_carry = get_flag(FLAG_C);
 
