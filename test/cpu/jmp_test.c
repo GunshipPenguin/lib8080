@@ -30,3 +30,12 @@ TEST_CASE(jmp) {
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
+
+TEST_CASE(jmp_alternate_0xcb) {
+  write8(0, 0xCB); // JMP
+  write16(1, 0xABCD); // a16
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->PC, 0xABCD);
+}
