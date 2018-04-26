@@ -29,7 +29,7 @@ TEST_CASE(push_b) {
 
   step_cpu();
 
-  ASSERT_EQUAL(pop_stack16(), 0xABCD);
+  ASSERT_EQUAL(pop_stackw(), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -39,7 +39,7 @@ TEST_CASE(push_d) {
 
   step_cpu();
 
-  ASSERT_EQUAL(pop_stack16(), 0xABCD);
+  ASSERT_EQUAL(pop_stackw(), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -49,7 +49,7 @@ TEST_CASE(push_h) {
 
   step_cpu();
 
-  ASSERT_EQUAL(pop_stack16(), 0xABCD);
+  ASSERT_EQUAL(pop_stackw(), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -64,6 +64,6 @@ TEST_CASE(push_psw) {
 
   step_cpu();
 
-  ASSERT_EQUAL(pop_stack16(), 0xABD7);
+  ASSERT_EQUAL(pop_stackw(), 0xABD7);
   ASSERT_EQUAL(cpu->PC, 1);
 }

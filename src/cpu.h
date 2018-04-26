@@ -23,10 +23,10 @@ void reset_cpu();
 void set_flag(enum Flag, int);
 int get_flag(enum Flag);
 
-void push_stack8(int);
-void push_stack16(int);
+void push_stackb(int);
+void push_stackw(int);
 
-int pop_stack8();
-int pop_stack16();
+int pop_stackb();
+int pop_stackw();
 
 #endif

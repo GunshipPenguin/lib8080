@@ -139,22 +139,22 @@ void setSZP(int val) {
   set_flag(FLAG_P, __builtin_parity(val));
 }
 
-void push_stack8(int val) {
+void push_stackb(int val) {
   write_byte(--cpu->SP, val & 0xFF);
 }
 
-void push_stack16(int val) {
-  push_stack8((val & 0xFF00) >> 8);
-  push_stack8(val & 0xFF);
+void push_stackw(int val) {
+  push_stackb((val & 0xFF00) >> 8);
+  push_stackb(val & 0xFF);
 }
 
-int pop_stack8() {
+int pop_stackb() {
   return read_byte(cpu->SP++);
 }
 
-int pop_stack16() {
-  int lo = pop_stack8();
-  int hi = pop_stack8();
+int pop_stackw() {
+  int lo = pop_stackb();
+  int hi = pop_stackb();
 
   return CONCAT(hi, lo);
 }
@@ -428,7 +428,7 @@ void push(int opcode) {
 
   // Register pair 3 refers to the concatenation of A and flags with push/pop
   int data = reg_pair == 3 ? CONCAT(cpu->A, cpu->flags) : get_reg_pair(reg_pair);
-  push_stack16(data);
+  push_stackw(data);
 }
 
 // POP - Pop Data From Stack
@@ -436,10 +436,10 @@ void pop(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
-    cpu->A = pop_stack8();
-    cpu->flags = pop_stack8();
+    cpu->A = pop_stackb();
+    cpu->flags = pop_stackb();
   } else {
-    set_reg_pair(reg_pair, pop_stack16());
+    set_reg_pair(reg_pair, pop_stackw());
   }
 }
 

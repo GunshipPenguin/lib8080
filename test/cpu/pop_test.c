@@ -26,7 +26,7 @@ AFTER_EACH() {}
 TEST_CASE(pop_b) {
   write_byte(0, 0xC1); // POP B
   cpu->B = 0x00; cpu->C = 0x00;
-  push_stack16(0xABCD);
+  push_stackw(0xABCD);
 
   step_cpu();
 
@@ -39,7 +39,7 @@ TEST_CASE(pop_b) {
 TEST_CASE(pop_d) {
   write_byte(0, 0xD1); // POP D
   cpu->D = 0x00; cpu->E = 0x00;
-  push_stack16(0xABCD);
+  push_stackw(0xABCD);
 
   step_cpu();
 
@@ -51,7 +51,7 @@ TEST_CASE(pop_d) {
 TEST_CASE(pop_h) {
   write_byte(0, 0xE1); // POP H
   cpu->H = 0x00; cpu->L = 0x00;
-  push_stack16(0xABCD);
+  push_stackw(0xABCD);
 
   step_cpu();
 
@@ -63,7 +63,7 @@ TEST_CASE(pop_h) {
 TEST_CASE(pop_psw) {
   write_byte(0, 0xF1); // POP PSW
   cpu->A = 0x00; cpu->flags = 2;
-  push_stack16(0xD7AB);
+  push_stackw(0xD7AB);
 
   step_cpu();
 
