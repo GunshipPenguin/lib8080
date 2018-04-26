@@ -38,45 +38,50 @@ extern int num_assertions;
 extern int num_failed_assertions;
 extern int curr_test_num;
 
-#define GENERAL_BIN_ASSERT(a, b, expr, desc, a_fmt, b_fmt); do { \
+#define GENERAL_BIN_ASSERT(a, b, op, desc, a_fmt, b_fmt); do { \
   num_assertions ++; \
-  if (!(expr)) { \
+  /* Deal with a and b not being pure by evaluating them only once */ \
+  typeof(a) a_eval = a; \
+  typeof(b) b_eval = b; \
+  if (!(a_eval op b_eval)) { \
     num_failed_assertions ++; \
     printf(RED "✗ Assertion failed" RESET " in %s\n", __FILE__); \
     printf("\tSuite: %s, Case: %s\n", tests[curr_test_num].suite_name, tests[curr_test_num].test_name); \
-    printf("\t" #expr "\n"); \
-    printf("\tExpected " #a_fmt " " #desc " " #b_fmt "\n", a, b); \
+    printf("\t" #a #op #b "\n"); \
+    printf("\tExpected " #a_fmt " " #desc " " #b_fmt "\n", a_eval, b_eval); \
   } \
 } while(0)
 
-#define GENERAL_UNARY_ASSERT(val, expr, desc, val_fmt); do { \
+#define GENERAL_UNARY_ASSERT(val, op, desc, val_fmt); do { \
   num_assertions ++; \
-  if (!(expr)) { \
+  /* Deal with val not being pure by evaluating it only once */ \
+  typeof(val) val_eval = val; \
+  if (!(op val_eval)) { \
     num_failed_assertions ++; \
     printf(RED "✗ Assertion failed" RESET " in %s\n", __FILE__); \
     printf("\tSuite: %s, Case: %s\n", tests[curr_test_num].suite_name, tests[curr_test_num].test_name); \
-    printf("\t" #expr "\n"); \
-    printf("\tExpected " #val_fmt " " #desc "\n", val); \
+    printf("\t" #op #val "\n"); \
+    printf("\tExpected " #val_fmt " " #desc "\n", val_eval); \
   } \
 } while(0)
 
-#define ASSERT_TRUE(val) GENERAL_UNARY_ASSERT(val, val, to be true, %d)
-#define ASSERT_FALSE(val) GENERAL_UNARY_ASSERT(val, !val, to be false, %d)
+#define ASSERT_TRUE(val) GENERAL_UNARY_ASSERT(val, , to be true, %d)
+#define ASSERT_FALSE(val) GENERAL_UNARY_ASSERT(val, !, to be false, %d)
 
-#define ASSERT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, a == b, to be null, %d)
-#define ASSERT_NOT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, a != b, to not be null, %d)
+#define ASSERT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, ==, to be null, %d)
+#define ASSERT_NOT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, !=, to not be null, %d)
 
-#define ASSERT_EQUAL(a, b) GENERAL_BIN_ASSERT(a, b, a == b, to equal, %d, %d)
-#define ASSERT_EQUAL_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, a == b, to equal, fmt, fmt)
+#define ASSERT_EQUAL(a, b) GENERAL_BIN_ASSERT(a, b, ==, to equal, %d, %d)
+#define ASSERT_EQUAL_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, ==, to equal, fmt, fmt)
 
-#define ASSERT_NOT_EQUAL(a, b) GENERAL_BIN_ASSERT(a, b, a != b, to not equal, %d, %d)
-#define ASSERT_NOT_EQUAL_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, a != b, to not equal, fmt, fmt)
+#define ASSERT_NOT_EQUAL(a, b) GENERAL_BIN_ASSERT(a, b, !=, to not equal, %d, %d)
+#define ASSERT_NOT_EQUAL_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, !=, to not equal, fmt, fmt)
 
-#define ASSERT_GREATER(a, b) GENERAL_BIN_ASSERT(a, b, a > b, to be greater than, %d, %d)
-#define ASSERT_GREATER_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, a > b, to be greater than, fmt, fmt)
+#define ASSERT_GREATER(a, b) GENERAL_BIN_ASSERT(a, b, >, to be greater than, %d, %d)
+#define ASSERT_GREATER_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, >, to be greater than, fmt, fmt)
 
-#define ASSERT_LESS(a, b) GENERAL_BIN_ASSERT(a, b, a < b, to be less than, %d, %d)
-#define ASSERT_LESS_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, a < b, to be less than, fmt, fmt)
+#define ASSERT_LESS(a, b) GENERAL_BIN_ASSERT(a, b, <, to be less than, %d, %d)
+#define ASSERT_LESS_FMT(a, b, fmt) GENERAL_BIN_ASSERT(a, b, <, to be less than, fmt, fmt)
 
 #define TEST_SUITE(suitename) \
   /* Static global information about this suite */ \
