@@ -226,7 +226,7 @@ void inr(int opcode) {
   setSZP(get_reg(reg));
 }
 
-// DCR - Deincrement Register or Memory
+// DCR - Decrement Register or Memory
 void dcr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
 
