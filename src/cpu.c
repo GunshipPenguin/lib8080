@@ -544,11 +544,11 @@ void step_cpu() {
       nop();
       break;
 
-    case 0x22:
+    case 0x22: // SHLD a16
       shld();
       break;
 
-    case 0x2A:
+    case 0x2A: // LDHD a16
       ldhd();
       break;
 
