@@ -17,14 +17,14 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(jmp) {
-  write8(0, 0xC3); // JMP
-  write16(1, 0xABCD); // a16
+  write_byte(0, 0xC3); // JMP
+  write_word(1, 0xABCD); // a16
 
   step_cpu();
 
@@ -32,8 +32,8 @@ TEST_CASE(jmp) {
 }
 
 TEST_CASE(jmp_alternate_0xcb) {
-  write8(0, 0xCB); // JMP
-  write16(1, 0xABCD); // a16
+  write_byte(0, 0xCB); // JMP
+  write_word(1, 0xABCD); // a16
 
   step_cpu();
 

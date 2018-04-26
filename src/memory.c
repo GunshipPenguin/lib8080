@@ -24,22 +24,22 @@ void load_memory(char *filename) {
   fclose(file);
 }
 
-int read8(int addr) {
+int read_byte(int addr) {
   return memory[addr] & 0xFF;
 }
 
-int read16(int addr) {
+int read_word(int addr) {
   int hi = memory[addr+1] & 0xFF;
   int lo = memory[addr] & 0xFF;
 
   return (hi << 8) | lo;
 }
 
-void write8(int addr, int data) {
+void write_byte(int addr, int data) {
   memory[addr] = (char) data;
 }
 
-void write16(int addr, int data) {
+void write_word(int addr, int data) {
   char hi = (data >> 8) & 0xFF;
   char lo = data & 0xFF;
 

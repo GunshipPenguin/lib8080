@@ -17,13 +17,13 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(rar_low_bit_one_carry_zero) {
-  write8(0, 0x1F); // RAR
+  write_byte(0, 0x1F); // RAR
   cpu->A = 0xFF;
   set_flag(FLAG_C, 0);
 
@@ -35,7 +35,7 @@ TEST_CASE(rar_low_bit_one_carry_zero) {
 }
 
 TEST_CASE(rar_low_bit_zero_carry_zero) {
-  write8(0, 0x1F); // RAR
+  write_byte(0, 0x1F); // RAR
   cpu->A = 0xFE;
   set_flag(FLAG_C, 0);
 
@@ -47,7 +47,7 @@ TEST_CASE(rar_low_bit_zero_carry_zero) {
 }
 
 TEST_CASE(rar_low_bit_one_carry_one) {
-  write8(0, 0x1F); // RAR
+  write_byte(0, 0x1F); // RAR
   cpu->A = 0xFF;
   set_flag(FLAG_C, 1);
 

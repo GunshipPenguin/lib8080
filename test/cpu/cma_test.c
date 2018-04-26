@@ -17,13 +17,13 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(cma) {
-  write8(0, 0x2F); // CMA
+  write_byte(0, 0x2F); // CMA
   cpu->A = 0xF0;
 
   step_cpu();

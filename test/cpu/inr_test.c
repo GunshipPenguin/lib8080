@@ -15,7 +15,7 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 
   cpu->PC = 0;
@@ -24,7 +24,7 @@ AFTER_EACH() {}
 
 // Individual opcode tests
 TEST_CASE(inr_b) {
-  write8(0, 0x04);
+  write_byte(0, 0x04);
   cpu->B = 0;
 
   step_cpu();
@@ -33,7 +33,7 @@ TEST_CASE(inr_b) {
 
 
 TEST_CASE(inr_c) {
-  write8(0, 0x0C);
+  write_byte(0, 0x0C);
   cpu->C = 0;
 
   step_cpu();
@@ -42,7 +42,7 @@ TEST_CASE(inr_c) {
 }
 
 TEST_CASE(inr_d) {
-  write8(0, 0x14);
+  write_byte(0, 0x14);
   cpu->B = 0;
 
   step_cpu();
@@ -52,7 +52,7 @@ TEST_CASE(inr_d) {
 
 
 TEST_CASE(inr_e) {
-  write8(0, 0x1C);
+  write_byte(0, 0x1C);
   cpu->C = 0;
 
   step_cpu();
@@ -61,7 +61,7 @@ TEST_CASE(inr_e) {
 }
 
 TEST_CASE(inr_h) {
-  write8(0, 0x24);
+  write_byte(0, 0x24);
   cpu->H = 0;
 
   step_cpu();
@@ -71,7 +71,7 @@ TEST_CASE(inr_h) {
 
 
 TEST_CASE(inr_l) {
-  write8(0, 0x2C);
+  write_byte(0, 0x2C);
   cpu->L = 0;
 
   step_cpu();
@@ -80,18 +80,18 @@ TEST_CASE(inr_l) {
 }
 
 TEST_CASE(inr_m) {
-  write8(0, 0x34);
-  write8(0x08, 0);
+  write_byte(0, 0x34);
+  write_byte(0x08, 0);
   cpu->H = 0; cpu->L = 0x08;
 
   step_cpu();
-  ASSERT_EQUAL(read8(CONCAT(cpu->H, cpu->L)), 1);
+  ASSERT_EQUAL(read_byte(CONCAT(cpu->H, cpu->L)), 1);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 
 TEST_CASE(inr_a) {
-  write8(0, 0x3C);
+  write_byte(0, 0x3C);
   cpu->A = 0;
 
   step_cpu();
@@ -101,7 +101,7 @@ TEST_CASE(inr_a) {
 
 // Flag bit tests
 TEST_CASE(inr_sets_z_flag) {
-  write8(0, 0x3C); // INR A
+  write_byte(0, 0x3C); // INR A
   cpu->A = 0xFF;
 
   step_cpu();
@@ -110,7 +110,7 @@ TEST_CASE(inr_sets_z_flag) {
 }
 
 TEST_CASE(inr_sets_p_flag) {
-  write8(0, 0x3C); // INR A
+  write_byte(0, 0x3C); // INR A
   cpu->A = 0x00;
   set_flag(FLAG_P, 0);
 
@@ -120,7 +120,7 @@ TEST_CASE(inr_sets_p_flag) {
 }
 
 TEST_CASE(inr_sets_s_flag) {
-  write8(0, 0x3C); // INR A
+  write_byte(0, 0x3C); // INR A
   cpu->A = 0x7F;
   set_flag(FLAG_S, 0);
 
@@ -130,7 +130,7 @@ TEST_CASE(inr_sets_s_flag) {
 }
 
 TEST_CASE(inr_sets_a_flag) {
-  write8(0, 0x3C); // INR A
+  write_byte(0, 0x3C); // INR A
   cpu->A = 0x0F;
   set_flag(FLAG_A, 0);
 

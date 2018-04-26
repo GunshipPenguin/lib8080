@@ -15,7 +15,7 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 
   cpu->PC = 0;
@@ -24,7 +24,7 @@ BEFORE_EACH() {
 AFTER_EACH() {}
 
 TEST_CASE(push_b) {
-  write8(0, 0xC5); // PUSH B
+  write_byte(0, 0xC5); // PUSH B
   cpu->B = 0xAB; cpu->C = 0xCD;
 
   step_cpu();
@@ -34,7 +34,7 @@ TEST_CASE(push_b) {
 }
 
 TEST_CASE(push_d) {
-  write8(0, 0xD5); // PUSH D
+  write_byte(0, 0xD5); // PUSH D
   cpu->D = 0xAB; cpu->E = 0xCD;
 
   step_cpu();
@@ -44,7 +44,7 @@ TEST_CASE(push_d) {
 }
 
 TEST_CASE(push_h) {
-  write8(0, 0xE5); // PUSH H
+  write_byte(0, 0xE5); // PUSH H
   cpu->H = 0xAB; cpu->L = 0xCD;
 
   step_cpu();
@@ -54,7 +54,7 @@ TEST_CASE(push_h) {
 }
 
 TEST_CASE(push_psw) {
-  write8(0, 0xF5); // PUSH PSW
+  write_byte(0, 0xF5); // PUSH PSW
   cpu->A = 0xAB;
   set_flag(FLAG_C, 1);
   set_flag(FLAG_P, 1);

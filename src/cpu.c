@@ -68,7 +68,7 @@ void set_reg(int reg, int val) {
       break;
     case 5: cpu->L = val;
       break;
-    case 6: write8(CONCAT(cpu->H, cpu->L), val);
+    case 6: write_byte(CONCAT(cpu->H, cpu->L), val);
       break;
     default:
       fprintf(stderr, "Invalid register %d\n", reg);
@@ -85,7 +85,7 @@ int get_reg(int reg) {
     case 3: return cpu->E;
     case 4: return cpu->H;
     case 5: return cpu->L;
-    case 6: return read8(CONCAT(cpu->H, cpu->L));
+    case 6: return read_byte(CONCAT(cpu->H, cpu->L));
     default:
       fprintf(stderr, "Invalid register %d\n", reg);
       exit(1);
@@ -140,7 +140,7 @@ void setSZP(int val) {
 }
 
 void push_stack8(int val) {
-  write8(--cpu->SP, val & 0xFF);
+  write_byte(--cpu->SP, val & 0xFF);
 }
 
 void push_stack16(int val) {
@@ -149,7 +149,7 @@ void push_stack16(int val) {
 }
 
 int pop_stack8() {
-  return read8(cpu->SP++);
+  return read_byte(cpu->SP++);
 }
 
 int pop_stack16() {
@@ -160,11 +160,11 @@ int pop_stack16() {
 }
 
 int next_byte() {
-  return read8(cpu->PC++);
+  return read_byte(cpu->PC++);
 }
 
 int next_word() {
-  int word  = read16(cpu->PC);
+  int word  = read_word(cpu->PC);
   cpu->PC += 2;
   return word;
 }
@@ -201,12 +201,12 @@ void mvi(int opcode) {
 
 // STA - Store Accumulator Direct
 void sta() {
-  write8(next_word(), cpu->A);
+  write_byte(next_word(), cpu->A);
 }
 
 // LDA - Load Accumulator Direct
 void lda() {
-  cpu->A = read8(next_word());
+  cpu->A = read_byte(next_word());
 }
 
 // LXI - Load Register Pair Immediate
@@ -218,13 +218,13 @@ void lxi(int opcode) {
 // STAX - Store Accumulator
 void stax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
-  write8(get_reg_pair(reg_pair), cpu->A);
+  write_byte(get_reg_pair(reg_pair), cpu->A);
 }
 
 // LDAX - Load Accumulator
 void ldax(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
-  cpu->A = read8(get_reg_pair(reg_pair));
+  cpu->A = read_byte(get_reg_pair(reg_pair));
 }
 
 // INR - Increment Register or Memory
@@ -411,15 +411,15 @@ void sphl() {
 // SHLD - Store H and L direct
 void shld() {
   int addr = next_word();
-  write8(addr, cpu->L);
-  write8(addr+1, cpu->H);
+  write_byte(addr, cpu->L);
+  write_byte(addr + 1, cpu->H);
 }
 
 // LDHD - Load H and L direct
 void ldhd() {
   int addr = next_word();
-  cpu->L = read8(addr);
-  cpu->H = read8(addr+1);
+  cpu->L = read_byte(addr);
+  cpu->H = read_byte(addr + 1);
 }
 
 // PUSH - Push Data Onto Stack

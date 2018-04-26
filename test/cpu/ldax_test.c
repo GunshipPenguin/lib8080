@@ -17,14 +17,14 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(ldax_b) {
-  write8(0, 0x0A); // LDAX B
-  write8(5, 0x01);
+  write_byte(0, 0x0A); // LDAX B
+  write_byte(5, 0x01);
   cpu->A = 0x00; cpu->B = 0x00; cpu->C = 0x05;
 
   step_cpu();
@@ -35,8 +35,8 @@ TEST_CASE(ldax_b) {
 
 
 TEST_CASE(ldax_d) {
-  write8(0, 0x1A); // LDAX D
-  write8(5, 0x01);
+  write_byte(0, 0x1A); // LDAX D
+  write_byte(5, 0x01);
   cpu->A = 0x00; cpu->D = 0x00; cpu->E = 0x05;
 
   step_cpu();

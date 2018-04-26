@@ -17,15 +17,15 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(ldhd) {
-  write8(0, 0x2A); // LDHD
-  write16(1, 0x05);
-  write16(0x05, 0xABCD);
+  write_byte(0, 0x2A); // LDHD
+  write_word(1, 0x05);
+  write_word(0x05, 0xABCD);
   cpu->H = 0x00; cpu->L = 0x00;
 
   step_cpu();

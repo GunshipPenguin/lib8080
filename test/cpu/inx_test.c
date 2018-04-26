@@ -17,13 +17,13 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(inx_b) {
-  write8(0, 0x03); // INX B
+  write_byte(0, 0x03); // INX B
   cpu->B = 0x00; cpu->C = 0xFF;
 
   step_cpu();
@@ -34,7 +34,7 @@ TEST_CASE(inx_b) {
 }
 
 TEST_CASE(inx_d) {
-  write8(0, 0x13); // INX D
+  write_byte(0, 0x13); // INX D
   cpu->D = 0x00; cpu->E = 0xFF;
 
   step_cpu();
@@ -45,7 +45,7 @@ TEST_CASE(inx_d) {
 }
 
 TEST_CASE(inx_h) {
-  write8(0, 0x23); // INX H
+  write_byte(0, 0x23); // INX H
   cpu->H = 0x00; cpu->L = 0xFF;
 
   step_cpu();
@@ -56,7 +56,7 @@ TEST_CASE(inx_h) {
 }
 
 TEST_CASE(inx_sp) {
-  write8(0, 0x33); // INX SP
+  write_byte(0, 0x33); // INX SP
   cpu->SP = 0x00;
 
   step_cpu();

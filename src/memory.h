@@ -9,10 +9,10 @@ int memsize;
 void create_memory(int);
 void load_memory(char *);
 
-int read8(int);
-void write8(int, int);
+int read_byte(int);
+void write_byte(int, int);
 
-int read16(int);
-void write16(int, int);
+int read_word(int);
+void write_word(int, int);
 
 #endif

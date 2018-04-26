@@ -17,14 +17,14 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(lxi_b_d16) {
-  write8(0, 0x01); // LXI B
-  write16(1, 0xABCD); // d16
+  write_byte(0, 0x01); // LXI B
+  write_word(1, 0xABCD); // d16
   cpu->B = 0x00; cpu->C = 0x00;
 
   step_cpu();
@@ -35,8 +35,8 @@ TEST_CASE(lxi_b_d16) {
 }
 
 TEST_CASE(lxi_d_d16) {
-  write8(0, 0x11); // LXI D
-  write16(1, 0xABCD); // d16
+  write_byte(0, 0x11); // LXI D
+  write_word(1, 0xABCD); // d16
   cpu->D = 0x00; cpu->E = 0x00;
 
   step_cpu();
@@ -47,8 +47,8 @@ TEST_CASE(lxi_d_d16) {
 }
 
 TEST_CASE(lxi_h_d16) {
-  write8(0, 0x21); // LXI H
-  write16(1, 0xABCD); // d16
+  write_byte(0, 0x21); // LXI H
+  write_word(1, 0xABCD); // d16
   cpu->H = 0x00; cpu->L = 0x00;
 
   step_cpu();
@@ -59,8 +59,8 @@ TEST_CASE(lxi_h_d16) {
 }
 
 TEST_CASE(lxi_sp_d16) {
-  write8(0, 0x31); // LXI B
-  write16(1, 0xABCD); // d16
+  write_byte(0, 0x31); // LXI B
+  write_word(1, 0xABCD); // d16
   cpu->SP = 0x0000;
 
   step_cpu();

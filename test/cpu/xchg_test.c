@@ -17,13 +17,13 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(xchg) {
-  write8(0, 0xEB); // XCHG
+  write_byte(0, 0xEB); // XCHG
   cpu->H = 1; cpu->L = 2;
   cpu->D = 3; cpu->E = 4;
 

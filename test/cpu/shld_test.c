@@ -17,19 +17,19 @@ BEFORE_EACH() {
 
   // Zero out memory
   for (int i=0;i<16;i++) {
-    write8(i, 0);
+    write_byte(i, 0);
   }
 }
 AFTER_EACH() {}
 
 TEST_CASE(shld) {
-  write8(0, 0x22); // SHLD
-  write16(1, 0x05);
+  write_byte(0, 0x22); // SHLD
+  write_word(1, 0x05);
   cpu->H = 0x02; cpu->L = 0x01;
 
   step_cpu();
 
-  ASSERT_EQUAL(read8(0x05), 0x01);
-  ASSERT_EQUAL(read8(0x06), 0x02);
+  ASSERT_EQUAL(read_byte(0x05), 0x01);
+  ASSERT_EQUAL(read_byte(0x06), 0x02);
   ASSERT_EQUAL(cpu->PC, 3);
 }
