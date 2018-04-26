@@ -443,6 +443,92 @@ void pop(int opcode) {
   }
 }
 
+// Call - Call
+void call() {
+  push_stackw(cpu->PC+2);
+  cpu->PC = next_word();
+}
+
+// CC - Call if Carry
+void cc() {
+  if (get_flag(FLAG_C)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CNC - Call if no Carry
+void cnc() {
+  if (!get_flag(FLAG_C)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CZ - Call if Zero
+void cz() {
+  if (get_flag(FLAG_Z)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CNZ - Call if not Zero
+void cnz() {
+  if (!get_flag(FLAG_Z)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CM - Call if Minus
+void cm() {
+  if (get_flag(FLAG_S)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CP - Call if Plus
+void cp() {
+  if (!get_flag(FLAG_S)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CPE - Call if Parity Even
+void cpe() {
+  if (get_flag(FLAG_P)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// CPO - Call if Parity Odd
+void cpo() {
+  if (!get_flag(FLAG_P)) {
+    push_stackw(cpu->PC+2);
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
 void step_cpu() {
   int opcode = next_byte();
 
@@ -723,9 +809,48 @@ void step_cpu() {
       push(opcode);
       break;
 
-    case 0xC3: // JMP
-    case 0xCB: // JMP (alternate)
+    case 0xC3: // JMP a16
+    case 0xCB: // JMP a16 (alternate)
       jmp();
+      break;
+
+    case 0xCD: // CALL a16
+    case 0xDD: // CALL a16 (alternate)
+    case 0xED: // CALL a16 (alternate)
+    case 0xFD: // CALL a16 (alternate)
+      call();
+      break;
+
+    case 0xC4: // CNZ a16
+      cnz();
+      break;
+
+    case 0xCC: // CZ a16
+      cz();
+      break;
+
+    case 0xD4: // CNC a16
+      cnc();
+      break;
+
+    case 0xDC: // CC a16
+      cc();
+      break;
+
+    case 0xE4: // CPO a16
+      cpo();
+      break;
+
+    case 0xEC: // CPE a16
+      cpe();
+      break;
+
+    case 0xF4: // CP a16
+      cp();
+      break;
+
+    case 0xFC: // CM a16
+      cm();
       break;
 
     case 0xEB: // XCHG
