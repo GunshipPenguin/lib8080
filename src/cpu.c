@@ -159,6 +159,26 @@ void setSZP(int val) {
   set_flag(FLAG_P, __builtin_parity(val));
 }
 
+void push_stack8(int val) {
+  write8(--cpu->SP, val & 0xFF);
+}
+
+void push_stack16(int val) {
+  push_stack8((val & 0xFF00) >> 8);
+  push_stack8(val & 0xFF);
+}
+
+int pop_stack8() {
+  return read8(cpu->SP++);
+}
+
+int pop_stack16() {
+  int lo = pop_stack8();
+  int hi = pop_stack8();
+
+  return CONCAT(hi, lo);
+}
+
 // Instructions follow
 // HLT - Halt
 void hlt() {
@@ -410,6 +430,27 @@ void ldhd() {
   int addr = read16(cpu->PC+1);
   cpu->L = read8(addr);
   cpu->H = read8(addr+1);
+}
+
+// PUSH - Push Data Onto Stack
+void push(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+
+  // Register pair 3 refers to the concatenation of A and flags with push/pop
+  int data = reg_pair == 3 ? CONCAT(cpu->A, cpu->flags) : get_reg_pair(reg_pair);
+  push_stack16(data);
+}
+
+// POP - Pop Data From Stack
+void pop(int opcode) {
+  int reg_pair = (opcode & 0x30) >> 4;
+
+  if (reg_pair == 3) { // PSW special case for push/pop
+    cpu->A = pop_stack8();
+    cpu->flags = pop_stack8();
+  } else {
+    set_reg_pair(reg_pair, pop_stack16());
+  }
 }
 
 void step_cpu() {
@@ -676,6 +717,20 @@ void step_cpu() {
     case 0xBE: // CMP M
     case 0xBF: // CMP A
       cmp(opcode);
+      break;
+
+    case 0xC1: // POP B
+    case 0xD1: // POP D
+    case 0xE1: // POP H
+    case 0xF1: // POP PSW
+      pop(opcode);
+      break;
+
+    case 0xC5: // PUSH B
+    case 0xD5: // PUSH D
+    case 0xE5: // PUSH H
+    case 0xF5: // PUSH PSW
+      push(opcode);
       break;
 
     case 0xC3: // JMP
