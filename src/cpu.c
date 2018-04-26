@@ -122,9 +122,7 @@ int get_reg_pair(int reg_pair) {
       fprintf(stderr, "Invalid register pair %d\n", reg_pair);
       exit(1);
   }
-
 }
-
 
 void set_reg_pair(int reg_pair, int val) {
   int hi = (val >> 8) & 0xFF;
@@ -380,6 +378,13 @@ void sphl() {
   cpu->SP = CONCAT(cpu->H, cpu->L);
 }
 
+// SHLD - Store H and L direct
+void shld() {
+  int addr = read16(cpu->PC+1);
+  write8(addr, cpu->L);
+  write8(addr+1, cpu->H);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -393,6 +398,10 @@ void step_cpu() {
     case 0x30: // NOP (alternate)
     case 0x38: // NOP (alternate)
       nop();
+      break;
+
+    case 0x22:
+      shld();
       break;
 
     case 0x2F: // CMA
