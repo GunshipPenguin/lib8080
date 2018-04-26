@@ -282,7 +282,7 @@ void ana(int opcode) {
   setSZP(cpu->A);
 }
 
-// XRA - Logical Exclusive-Or Register or Memory with Accumulator
+// XRA - Logical Exclusive-Or Register or Memory With Accumulator
 void xra(int opcode) {
   int reg = opcode & 0x07;
   cpu->A ^= get_reg(reg);
@@ -290,6 +290,16 @@ void xra(int opcode) {
   set_flag(FLAG_C, 0);
   set_flag(FLAG_A, 0);
   setSZP(cpu->A);
+}
+
+// CMP - Compare Memory or Register With Accumulator
+void cmp(int opcode) {
+  int reg = opcode & 0x07;
+  int res = cpu->A - get_reg(reg);
+
+  set_flag(FLAG_C, get_reg(reg) > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
+  setSZP(res);
 }
 
 // ORA - Logical or Memory or Register with Accumulator
@@ -655,6 +665,17 @@ void step_cpu() {
     case 0xB6: // ORA M
     case 0xB7: // ORA A
       ora(opcode);
+      break;
+
+    case 0xB8: // CMP B
+    case 0xB9: // CMP C
+    case 0xBA: // CMP D
+    case 0xBB: // CMP E
+    case 0xBC: // CMP H
+    case 0xBD: // CMP L
+    case 0xBE: // CMP M
+    case 0xBF: // CMP A
+      cmp(opcode);
       break;
 
     case 0xC3: // JMP
