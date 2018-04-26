@@ -249,7 +249,7 @@ void dcx(int opcode) {
 
 // ADD - Add Register or Memory to Accumulator
 void add(int opcode) {
-  int reg = (opcode & 0x07);
+  int reg = opcode & 0x07;
 
   // Detect carry out of lower 4 bits
   set_flag(FLAG_A, ((cpu->A & 0xF) + (get_reg(reg) & 0x0F)) & 0x10);
@@ -263,7 +263,7 @@ void add(int opcode) {
 
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
-  int reg = (opcode & 0x07);
+  int reg = opcode & 0x07;
   set_flag(FLAG_C, get_reg(reg) > cpu->A);
   set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
 
@@ -275,10 +275,20 @@ void sub(int opcode) {
 
 // ANA - Logical and Memory or Register with Accumulator
 void ana(int opcode) {
-  int reg = (opcode & 0x07);
+  int reg = opcode & 0x07;
   cpu->A &= get_reg(reg);
 
   set_flag(FLAG_C, 0);
+  setSZP(cpu->A);
+}
+
+// XRA - Logical Exclusive-Or Register or Memory with Accumulator
+void xra(int opcode) {
+  int reg = opcode & 0x07;
+  cpu->A ^= get_reg(reg);
+
+  set_flag(FLAG_C, 0);
+  set_flag(FLAG_A, 0);
   setSZP(cpu->A);
 }
 
@@ -623,6 +633,17 @@ void step_cpu() {
     case 0xA6: // ANA M
     case 0xA7: // ANA A
       ana(opcode);
+      break;
+
+    case 0xA8: // XRA B
+    case 0xA9: // XRA C
+    case 0xAA: // XRA D
+    case 0xAB: // XRA E
+    case 0xAC: // XRA H
+    case 0xAD: // XRA L
+    case 0xAE: // XRA M
+    case 0xAF: // XRA A
+      xra(opcode);
       break;
 
     case 0xB0: // ORA B
