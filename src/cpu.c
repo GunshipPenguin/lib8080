@@ -385,6 +385,13 @@ void shld() {
   write8(addr+1, cpu->H);
 }
 
+// LDHD - Load H and L direct
+void ldhd() {
+  int addr = read16(cpu->PC+1);
+  cpu->L = read8(addr);
+  cpu->H = read8(addr+1);
+}
+
 void step_cpu() {
   int opcode = read8(cpu->PC);
 
@@ -402,6 +409,10 @@ void step_cpu() {
 
     case 0x22:
       shld();
+      break;
+
+    case 0x2A:
+      ldhd();
       break;
 
     case 0x2F: // CMA
