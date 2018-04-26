@@ -1,3 +1,10 @@
+/*
+ * AttoUnit - A tiny header only unit testing framework for C
+ * https://github.com/GunshipPenguin/attounit
+ * ------------------------------------------------------------
+ * Copyright (c) 2018 Rhys Rustad-Elliott
+ * Distributed under the MIT license, see accompanying file LICENSE
+ */
 #include <stdio.h>
 #include <string.h>
 
@@ -54,6 +61,7 @@ extern int curr_test_num;
 } while(0)
 
 #define ASSERT_TRUE(val) GENERAL_UNARY_ASSERT(val, val, to be true, %d)
+#define ASSERT_FALSE(val) GENERAL_UNARY_ASSERT(val, !val, to be false, %d)
 
 #define ASSERT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, a == b, to be null, %d)
 #define ASSERT_NOT_NULL(val) GENERAL_BIN_ASSERT(val, NULL, a != b, to not be null, %d)

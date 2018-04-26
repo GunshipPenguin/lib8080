@@ -112,8 +112,8 @@ TEST_CASE(xra_clears_flag_c_and_a) {
 
   step_cpu();
 
-  ASSERT_TRUE(!get_flag(FLAG_C));
-  ASSERT_TRUE(!get_flag(FLAG_A));
+  ASSERT_FALSE(get_flag(FLAG_C));
+  ASSERT_FALSE(get_flag(FLAG_A));
 }
 
 TEST_CASE(xra_sets_flag_z) {

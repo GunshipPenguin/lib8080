@@ -90,6 +90,6 @@ TEST_CASE(dad_resets_c_flag) {
 
   step_cpu();
 
-  ASSERT_TRUE(!get_flag(FLAG_C));
+  ASSERT_FALSE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
