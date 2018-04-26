@@ -136,7 +136,7 @@ void setSZP(int val) {
 
   set_flag(FLAG_S, val & 0x80);
   set_flag(FLAG_Z, val == 0);
-  set_flag(FLAG_P, __builtin_parity(val));
+  set_flag(FLAG_P, !__builtin_parity(val));
 }
 
 void push_stackb(int val) {

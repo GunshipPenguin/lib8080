@@ -125,7 +125,7 @@ TEST_CASE(cmp_sets_s_flag) {
 
 TEST_CASE(cmp_sets_p_flag) {
   write_byte(0, 0xB8); // CMP B
-  cpu->B = 0x01; cpu->A = 0x03;
+  cpu->B = 0x01; cpu->A = 0x04;
 
   step_cpu();
 

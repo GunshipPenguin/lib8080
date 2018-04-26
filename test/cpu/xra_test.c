@@ -138,7 +138,7 @@ TEST_CASE(xra_sets_flag_s) {
 
 TEST_CASE(xra_sets_flag_p) {
   write_byte(0, 0xA8); // XRA B
-  cpu->A = 0x03; cpu->B = 0x02;
+  cpu->A = 0x04; cpu->B = 0x07;
   set_flag(FLAG_P, 0);
 
   step_cpu();

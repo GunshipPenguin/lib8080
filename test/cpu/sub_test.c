@@ -117,7 +117,7 @@ TEST_CASE(sub_sets_z_flag) {
 
 TEST_CASE(sub_sets_p_flag) {
   write_byte(0, 0x90); // SUB B
-  cpu->A = 0x03; cpu->B = 0x01;
+  cpu->A = 0x04; cpu->B = 0x01;
   set_flag(FLAG_P, 0);
 
   step_cpu();

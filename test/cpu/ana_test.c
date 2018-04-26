@@ -137,7 +137,7 @@ TEST_CASE(ana_sets_s_flag) {
 
 TEST_CASE(ana_sets_p_flag) {
   write_byte(0, 0xA0); // ANA B
-  cpu->A = 0x01; cpu->B = 0x01;
+  cpu->A = 0x07; cpu->B = 0x03;
   set_flag(FLAG_P, 0);
 
   step_cpu();

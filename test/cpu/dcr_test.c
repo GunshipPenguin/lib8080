@@ -122,11 +122,11 @@ TEST_CASE(dcr_sets_z_flag) {
 TEST_CASE(dcr_sets_p_flag) {
   write_byte(0, 0x3D); // DCR A
   cpu->A = 0x03;
-  set_flag(FLAG_P, 0);
+  set_flag(FLAG_P, 1);
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_EQUAL(get_flag(FLAG_P), 0);
 }
 
 TEST_CASE(dcr_sets_s_flag) {

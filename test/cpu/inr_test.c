@@ -111,7 +111,7 @@ TEST_CASE(inr_sets_z_flag) {
 
 TEST_CASE(inr_sets_p_flag) {
   write_byte(0, 0x3C); // INR A
-  cpu->A = 0x00;
+  cpu->A = 0x02;
   set_flag(FLAG_P, 0);
 
   step_cpu();
