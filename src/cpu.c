@@ -5,26 +5,6 @@
 
 struct cpu *cpu = NULL;
 
-const int ins_sizes[] = {
-//0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
-  1, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 0
-  1, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, // 1
-  1, 3, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 2, 1, // 2
-  1, 3, 3, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 2, 1, // 3
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 4
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 5
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 6
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 7
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 8
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 9
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // A
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // B
-  1, 1, 3, 0, 3, 1, 2, 1, 1, 1, 3, 0, 3, 3, 2, 1, // C
-  1, 1, 3, 2, 3, 1, 2, 1, 1, 1, 3, 2, 3, 3, 2, 1, // D
-  1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 3, 2, 1, // E
-  1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 3, 2, 1  // F
-};
-
 void create_cpu() {
   cpu = malloc(sizeof(struct cpu));
   cpu->PC = 0;
@@ -179,6 +159,16 @@ int pop_stack16() {
   return CONCAT(hi, lo);
 }
 
+int next_byte() {
+  return read8(cpu->PC++);
+}
+
+int next_word() {
+  int word  = read16(cpu->PC);
+  cpu->PC += 2;
+  return word;
+}
+
 // Instructions follow
 // HLT - Halt
 void hlt() {
@@ -192,7 +182,7 @@ void nop() {
 
 // JMP - Jump
 void jmp() {
-  cpu->PC = read16(cpu->PC+1);
+  cpu->PC = next_word();
 }
 
 // MOV - Move
@@ -206,23 +196,23 @@ void mov(int opcode) {
 // MVI - Move Immediate
 void mvi(int opcode) {
   int reg = (opcode & 0x38) >> 3;
-  set_reg(reg, read8(cpu->PC+1));
+  set_reg(reg, next_byte());
 }
 
 // STA - Store Accumulator Direct
 void sta() {
-  write8(read16(cpu->PC+1), cpu->A);
+  write8(next_word(), cpu->A);
 }
 
 // LDA - Load Accumulator Direct
 void lda() {
-  cpu->A = read8(read16(cpu->PC+1));
+  cpu->A = read8(next_word());
 }
 
 // LXI - Load Register Pair Immediate
 void lxi(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
-  set_reg_pair(reg_pair, read16(cpu->PC+1));
+  set_reg_pair(reg_pair, next_word());
 }
 
 // STAX - Store Accumulator
@@ -420,14 +410,14 @@ void sphl() {
 
 // SHLD - Store H and L direct
 void shld() {
-  int addr = read16(cpu->PC+1);
+  int addr = next_word();
   write8(addr, cpu->L);
   write8(addr+1, cpu->H);
 }
 
 // LDHD - Load H and L direct
 void ldhd() {
-  int addr = read16(cpu->PC+1);
+  int addr = next_word();
   cpu->L = read8(addr);
   cpu->H = read8(addr+1);
 }
@@ -454,7 +444,7 @@ void pop(int opcode) {
 }
 
 void step_cpu() {
-  int opcode = read8(cpu->PC);
+  int opcode = next_byte();
 
   switch (opcode) {
     case 0x00: // NOP
@@ -750,6 +740,4 @@ void step_cpu() {
       fprintf(stderr, "Opcode not implemented 0x%x\n", opcode);
       exit(1);
   }
-
-  cpu->PC += ins_sizes[opcode];
 }
