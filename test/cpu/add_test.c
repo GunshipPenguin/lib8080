@@ -136,7 +136,7 @@ TEST_CASE(add_sets_s_flag) {
 }
 
 TEST_CASE(add_sets_a_flag) {
-  write_byte(0, 0x80); // ADD A
+  write_byte(0, 0x80); // ADD B
   cpu->A = 0x0F; cpu->B = 0x01;
   set_flag(FLAG_A, 0);
 

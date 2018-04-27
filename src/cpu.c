@@ -266,6 +266,22 @@ void add(int opcode) {
   setSZP(cpu->A);
 }
 
+// ADC - Add Register or Memory to Accumulator With Carry
+void adc(int opcode) {
+  int reg = opcode & 0x07;
+
+  int carry = get_flag(FLAG_C) ? 1 : 0;
+
+  // Detect carry out of lower 4 bits
+  set_flag(FLAG_A, ((cpu->A & 0xF) + (get_reg(reg) & 0x0F) + carry) & 0x10);
+
+  cpu->A += get_reg(reg) + carry;
+
+  set_flag(FLAG_C, cpu->A & 0x100);
+  cpu->A &= 0xFF;
+  setSZP(cpu->A);
+}
+
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = opcode & 0x07;
@@ -883,6 +899,17 @@ void step_cpu() {
     case 0x86: // ADD M
     case 0x87: // ADD A
       add(opcode);
+      break;
+
+    case 0x88: // ADC B
+    case 0x89: // ADC C
+    case 0x8A: // ADC D
+    case 0x8B: // ADC E
+    case 0x8C: // ADC H
+    case 0x8D: // ADC L
+    case 0x8E: // ADC M
+    case 0x8F: // ADC A
+      adc(opcode);
       break;
 
     case 0x90: // SUB B
