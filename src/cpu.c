@@ -438,6 +438,18 @@ void pop(int opcode) {
   }
 }
 
+// XTHL - Exchange Stack
+void xthl() {
+  int temp_h = cpu->H;
+  int temp_l = cpu->L;
+
+  cpu->L = read_byte(cpu->SP);
+  cpu->H = read_byte(cpu->SP+1);
+
+  write_byte(cpu->SP, temp_l);
+  write_byte(cpu->SP+1, temp_h);
+}
+
 // Call - Call
 void call() {
   push_stackw(cpu->PC+2);
@@ -1053,6 +1065,10 @@ void step_cpu() {
 
     case 0xFC: // CM a16
       cm();
+      break;
+
+    case 0xE3: // XTHL
+      xthl();
       break;
 
     case 0xEB: // XCHG
