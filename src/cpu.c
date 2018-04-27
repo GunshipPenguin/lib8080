@@ -180,11 +180,6 @@ void nop() {
 
 }
 
-// JMP - Jump
-void jmp() {
-  cpu->PC = next_word();
-}
-
 // MOV - Move
 void mov(int opcode) {
   int dst = (opcode & 0x38) >> 3;
@@ -590,6 +585,83 @@ void rm() {
   }
 }
 
+// JMP - Jump
+void jmp() {
+  cpu->PC = next_word();
+}
+
+// JNZ - Jump if not Zero
+void jnz() {
+  if (!get_flag(FLAG_Z)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JZ - Jump if Zero
+void jz() {
+  if (get_flag(FLAG_Z)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JNC - Jump if no Carry
+void jnc() {
+  if (!get_flag(FLAG_C)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JC - Jump if Carry
+void jc() {
+  if (get_flag(FLAG_C)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JPO - Jump if Parity Odd
+void jpo() {
+  if (!get_flag(FLAG_P)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JPE - Jump if Parity Even
+void jpe() {
+  if (get_flag(FLAG_P)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JP - Jump if Plus
+void jp() {
+  if (!get_flag(FLAG_S)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
+// JM - Jump if Minus
+void jm() {
+  if (get_flag(FLAG_S)) {
+    cpu->PC = next_word();
+  } else {
+    cpu->PC += 2;
+  }
+}
+
 void step_cpu() {
   int opcode = next_byte();
 
@@ -875,11 +947,36 @@ void step_cpu() {
       jmp();
       break;
 
-    case 0xCD: // CALL a16
-    case 0xDD: // CALL a16 (alternate)
-    case 0xED: // CALL a16 (alternate)
-    case 0xFD: // CALL a16 (alternate)
-      call();
+    case 0xC2: // JNZ a16
+      jnz();
+      break;
+
+    case 0xCA: // JZ a16
+      jz();
+      break;
+
+    case 0xD2: // JNC a16
+      jnc();
+      break;
+
+    case 0xDA: // JC a16
+      jc();
+      break;
+
+    case 0xE2: // JPO a16
+      jpo();
+      break;
+
+    case 0xEA: // JPE a16
+      jpe();
+      break;
+
+    case 0xF2: // JP a16
+      jp();
+      break;
+
+    case 0xFA: // JM a16
+      jm();
       break;
 
     case 0xC0: // RNZ
@@ -917,6 +1014,13 @@ void step_cpu() {
 
     case 0xF8: // RM
       rm();
+      break;
+
+    case 0xCD: // CALL a16
+    case 0xDD: // CALL a16 (alternate)
+    case 0xED: // CALL a16 (alternate)
+    case 0xFD: // CALL a16 (alternate)
+      call();
       break;
 
     case 0xC4: // CNZ a16

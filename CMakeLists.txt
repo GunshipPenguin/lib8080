@@ -29,7 +29,7 @@ SET(TEST_FILES
         test/cpu/rar_test.c
         test/cpu/inx_test.c
         test/cpu/dcx_test.c
-        test/cpu/jmp_test.c
+        test/cpu/jumps_test.c
         test/cpu/sta_test.c
         test/cpu/stax_test.c
         test/cpu/ldax_test.c
