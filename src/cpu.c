@@ -529,6 +529,67 @@ void cpo() {
   }
 }
 
+// RET - Return
+void ret() {
+  cpu->PC = pop_stackw();
+}
+
+// RNZ - Return if not Zero
+void rnz() {
+  if (!get_flag(FLAG_Z)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RZ - Return if Zero
+void rz() {
+  if (get_flag(FLAG_Z)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RNC - Return if no Carry
+void rnc() {
+  if (!get_flag(FLAG_C)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RC - Return if Carry
+void rc() {
+  if (get_flag(FLAG_C)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RPO - Return if Parity Odd
+void rpo() {
+  if (!get_flag(FLAG_P)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RPE - Return if Parity Even
+void rpe() {
+  if (get_flag(FLAG_P)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RP - Return if Positive
+void rp() {
+  if (!get_flag(FLAG_S)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
+// RM - Return if Minus
+void rm() {
+  if (get_flag(FLAG_S)) {
+    cpu->PC = pop_stackw();
+  }
+}
+
 void step_cpu() {
   int opcode = next_byte();
 
@@ -819,6 +880,43 @@ void step_cpu() {
     case 0xED: // CALL a16 (alternate)
     case 0xFD: // CALL a16 (alternate)
       call();
+      break;
+
+    case 0xC0: // RNZ
+      rnz();
+      break;
+
+    case 0xC8: // RZ
+      rz();
+      break;
+
+    case 0xC9: // RET
+    case 0xD9: // RET (alternate)
+      ret();
+      break;
+
+    case 0xD0: // RNC
+      rnc();
+      break;
+
+    case 0xD8: // RC
+      rc();
+      break;
+
+    case 0xE0: // RPO
+      rpo();
+      break;
+
+    case 0xE8: // RPE
+      rpe();
+      break;
+
+    case 0xF0: // RP
+      rp();
+      break;
+
+    case 0xF8: // RM
+      rm();
       break;
 
     case 0xC4: // CNZ a16
