@@ -50,7 +50,9 @@ SET(TEST_FILES
         test/cpu/calls_test.c
         test/cpu/returns_test.c
         test/cpu/xthl_test.c
-        test/cpu/adc_test.c)
+        test/cpu/adc_test.c
+        test/cpu/cpu_test_helpers.h
+        test/cpu/cpu_test_helpers.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})

@@ -1,26 +1,12 @@
 #include "attounit.h"
 #include "cpu.h"
 #include "memory.h"
+#include "cpu_test_helpers.h"
 
 TEST_SUITE(instruction_ret);
 BEFORE_EACH() {
-  if (cpu == NULL) {
-    create_cpu();
-  }
+  setup_cpu_test_env();
 
-  reset_cpu();
-  cpu->PC = 0;
-
-  if (memory == NULL) {
-    create_memory(16);
-  }
-
-  // Zero out memory
-  for (int i=0;i<16;i++) {
-    write_byte(i, 0);
-  }
-
-  cpu->SP = 10;
   push_stackw(0xABCD);
 }
 AFTER_EACH() {}
