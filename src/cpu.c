@@ -285,6 +285,7 @@ void adc(int opcode) {
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = opcode & 0x07;
+
   set_flag(FLAG_C, get_reg(reg) > cpu->A);
   set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
 
@@ -313,6 +314,56 @@ void xra(int opcode) {
   setSZP(cpu->A);
 }
 
+// ADI - Add Immediate to Accumulator
+void adi() {
+  int val = next_byte();
+
+  // Detect carry out of lower 4 bits
+  set_flag(FLAG_A, ((cpu->A & 0xF) + (val & 0x0F)) & 0x10);
+
+  cpu->A += val;
+
+  set_flag(FLAG_C, cpu->A & 0x100);
+  cpu->A &= 0xFF;
+  setSZP(cpu->A);
+
+}
+
+// SUI - Subtract Immediate From Accumulator
+void sui() {
+  int val = next_byte();
+
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+
+  cpu->A -= val;
+  cpu->A &= 0xFF;
+
+  setSZP(cpu->A);
+}
+
+// ANI - Logical and Immediate With Accumulator
+void ani() {
+  int val = next_byte();
+
+  cpu->A &= val;
+
+  set_flag(FLAG_C, 0);
+  setSZP(cpu->A);
+}
+
+// ORI - Logical or Immediate With Accumulator
+void ori() {
+  int val = next_byte();
+
+  cpu->A |= val;
+
+  set_flag(FLAG_C, 0);
+  setSZP(cpu->A);
+}
+
+// ADI - Logical
+
 // CMP - Compare Memory or Register With Accumulator
 void cmp(int opcode) {
   int reg = opcode & 0x07;
@@ -325,7 +376,7 @@ void cmp(int opcode) {
 
 // ORA - Logical or Memory or Register with Accumulator
 void ora(int opcode) {
-  int reg = (opcode & 0x07);
+  int reg = opcode & 0x07;
   cpu->A |= get_reg(reg);
 
   set_flag(FLAG_C, 0);
@@ -932,6 +983,22 @@ void step_cpu() {
     case 0xA6: // ANA M
     case 0xA7: // ANA A
       ana(opcode);
+      break;
+
+    case 0xC6: // ADI d8
+      adi();
+      break;
+
+    case 0xD6: // SUI d8
+      sui();
+      break;
+
+    case 0xE6: // ANI d8
+      ani();
+      break;
+
+    case 0xF6: // ORI d8
+      ori();
       break;
 
     case 0xA8: // XRA B
