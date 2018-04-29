@@ -299,6 +299,21 @@ void adc(int opcode) {
   setSZP(cpu->A);
 }
 
+// SBB - Subtract Register or Memory from Accumulator with Borrow
+void sbb(int opcode) {
+  int reg = opcode & 0x07;
+
+  int val = get_reg(reg) + (get_flag(FLAG_C) ? 1 : 0);
+
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+
+  cpu->A -= val;
+  cpu->A &= 0xFF;
+
+  setSZP(cpu->A);
+}
+
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = opcode & 0x07;
@@ -869,6 +884,17 @@ void step_cpu() {
     case 0x96: // SUB M
     case 0x97: // SUB A
       sub(opcode);
+      break;
+
+    case 0x98: // SBB B
+    case 0x99: // SBB C
+    case 0x9A: // SBB D
+    case 0x9B: // SBB E
+    case 0x9C: // SBB H
+    case 0x9D: // SBB L
+    case 0x9E: // SBB M
+    case 0x9F: // SBB A
+      sbb(opcode);
       break;
 
     case 0xA0: // ANA B
