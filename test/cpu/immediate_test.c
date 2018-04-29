@@ -191,7 +191,7 @@ TEST_CASE(adi_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(adi_sets_a_flag) {
@@ -201,7 +201,7 @@ TEST_CASE(adi_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }
 
 TEST_CASE(aci) {
@@ -235,8 +235,8 @@ TEST_CASE(aci_sets_z_flag) {
   set_flag(FLAG_Z, 0);
 
   step_cpu();
-
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(aci_sets_p_flag) {
@@ -247,7 +247,7 @@ TEST_CASE(aci_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(aci_sets_s_flag) {
@@ -258,7 +258,7 @@ TEST_CASE(aci_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(aci_sets_a_flag) {
@@ -269,7 +269,7 @@ TEST_CASE(aci_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }
 
 TEST_CASE(sui) {
@@ -300,7 +300,7 @@ TEST_CASE(sui_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }
 
 TEST_CASE(sui_sets_z_flag) {
@@ -310,7 +310,7 @@ TEST_CASE(sui_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(sui_sets_p_flag) {
@@ -320,7 +320,7 @@ TEST_CASE(sui_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(sui_sets_s_flag) {
@@ -330,7 +330,7 @@ TEST_CASE(sui_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(sbi) {
@@ -423,7 +423,7 @@ TEST_CASE(ani_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(ani_sets_s_flag) {
@@ -434,7 +434,7 @@ TEST_CASE(ani_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(ori) {
@@ -465,7 +465,7 @@ TEST_CASE(ori_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(ori_sets_s_flag) {
@@ -476,7 +476,7 @@ TEST_CASE(ori_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(ori_sets_p_flag) {
@@ -487,7 +487,7 @@ TEST_CASE(ori_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(xri) {
@@ -550,7 +550,7 @@ TEST_CASE(cpi) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
@@ -561,7 +561,7 @@ TEST_CASE(cpi_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(cpi_sets_s_flag) {
@@ -571,7 +571,7 @@ TEST_CASE(cpi_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(cpi_sets_p_flag) {
@@ -581,7 +581,7 @@ TEST_CASE(cpi_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(cpi_sets_c_flag) {
@@ -591,7 +591,7 @@ TEST_CASE(cpi_sets_c_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
 }
 
 TEST_CASE(cpi_sets_a_flag) {
@@ -601,5 +601,5 @@ TEST_CASE(cpi_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }

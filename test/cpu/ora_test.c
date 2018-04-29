@@ -99,7 +99,7 @@ TEST_CASE(ora_resets_c_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_FALSE(get_flag(FLAG_C));
 }
 
 TEST_CASE(ora_sets_z_flag) {
@@ -109,7 +109,7 @@ TEST_CASE(ora_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(ora_sets_s_flag) {
@@ -119,7 +119,7 @@ TEST_CASE(ora_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(ora_sets_p_flag) {
@@ -129,5 +129,5 @@ TEST_CASE(ora_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }

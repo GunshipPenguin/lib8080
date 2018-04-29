@@ -93,7 +93,7 @@ TEST_CASE(inr_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(inr_sets_p_flag) {
@@ -103,7 +103,7 @@ TEST_CASE(inr_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(inr_sets_s_flag) {
@@ -113,7 +113,7 @@ TEST_CASE(inr_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(inr_sets_a_flag) {
@@ -123,5 +123,5 @@ TEST_CASE(inr_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }

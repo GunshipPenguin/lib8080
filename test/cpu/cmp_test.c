@@ -16,7 +16,7 @@ TEST_CASE(cmp_b) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -26,7 +26,7 @@ TEST_CASE(cmp_c) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -36,7 +36,7 @@ TEST_CASE(cmp_d) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -46,7 +46,7 @@ TEST_CASE(cmp_e) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -56,7 +56,7 @@ TEST_CASE(cmp_h) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -66,7 +66,7 @@ TEST_CASE(cmp_l) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -77,7 +77,7 @@ TEST_CASE(cmp_m) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -87,7 +87,7 @@ TEST_CASE(cmp_a) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -98,7 +98,7 @@ TEST_CASE(cmp_sets_z_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
 TEST_CASE(cmp_sets_s_flag) {
@@ -107,7 +107,7 @@ TEST_CASE(cmp_sets_s_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+  ASSERT_TRUE(get_flag(FLAG_S));
 }
 
 TEST_CASE(cmp_sets_p_flag) {
@@ -116,7 +116,7 @@ TEST_CASE(cmp_sets_p_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+  ASSERT_TRUE(get_flag(FLAG_P));
 }
 
 TEST_CASE(cmp_sets_c_flag) {
@@ -125,7 +125,7 @@ TEST_CASE(cmp_sets_c_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
 }
 
 TEST_CASE(cmp_sets_a_flag) {
@@ -134,5 +134,5 @@ TEST_CASE(cmp_sets_a_flag) {
 
   step_cpu();
 
-  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+  ASSERT_TRUE(get_flag(FLAG_A));
 }

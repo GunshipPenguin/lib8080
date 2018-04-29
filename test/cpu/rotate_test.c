@@ -17,7 +17,7 @@ TEST_CASE(rrc_low_bit_one) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFF);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -29,7 +29,7 @@ TEST_CASE(rrc_low_bit_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0x7F);
-  ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_FALSE(get_flag(FLAG_P));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -42,7 +42,7 @@ TEST_CASE(rar_low_bit_one_carry_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0x7F);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -54,7 +54,7 @@ TEST_CASE(rar_low_bit_zero_carry_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0x7F);
-  ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_FALSE(get_flag(FLAG_P));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -66,7 +66,7 @@ TEST_CASE(rar_low_bit_one_carry_one) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFF);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -79,7 +79,7 @@ TEST_CASE(rlc_high_bit_one) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFF);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -91,7 +91,7 @@ TEST_CASE(rlc_high_bit_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFE);
-  ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_FALSE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -104,7 +104,7 @@ TEST_CASE(ral_high_bit_one_carry_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFE);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -116,7 +116,7 @@ TEST_CASE(ral_high_bit_zero_carry_zero) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFE);
-  ASSERT_EQUAL(get_flag(FLAG_C), 0);
+  ASSERT_FALSE(get_flag(FLAG_P));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -128,6 +128,6 @@ TEST_CASE(ral_high_bit_one_carry_one) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->A, 0xFF);
-  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+  ASSERT_TRUE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
