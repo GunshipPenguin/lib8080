@@ -634,6 +634,10 @@ void general_jump(int opcode) {
   }
 }
 
+void pchl() {
+  cpu->PC = CONCAT(cpu->H, cpu->L);
+}
+
 void step_cpu() {
   int opcode = next_byte();
 
@@ -968,6 +972,10 @@ void step_cpu() {
     case 0xF2: // JP a16
     case 0xFA: // JM a16
       general_jump(opcode);
+      break;
+
+    case 0xE9: // PCHL
+      pchl();
       break;
 
     case 0xC9: // RET
