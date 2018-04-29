@@ -3,7 +3,7 @@
 #include "memory.h"
 #include "cpu_test_helpers.h"
 
-TEST_SUITE(instruction_mov);
+TEST_SUITE(data_transfer_instructions);
 BEFORE_EACH() {
   setup_cpu_test_env();
 }
@@ -569,5 +569,49 @@ TEST_CASE(mov_a_a) {
   write_byte(0, 0x7F);
   step_cpu();
 
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(stax_b) {
+  write_byte(0, 0x02); // STAX B
+  cpu->A = 0x01; cpu->B = 0x00; cpu->C = 0x05;
+
+  step_cpu();
+
+  ASSERT_EQUAL(read_byte(5), 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+
+TEST_CASE(stax_d) {
+  write_byte(0, 0x12); // STAX D
+  cpu->A = 0x01; cpu->D = 0x00; cpu->E = 0x05;
+
+  step_cpu();
+
+  ASSERT_EQUAL(read_byte(5), 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(ldax_b) {
+  write_byte(0, 0x0A); // LDAX B
+  write_byte(5, 0x01);
+  cpu->A = 0x00; cpu->B = 0x00; cpu->C = 0x05;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+
+TEST_CASE(ldax_d) {
+  write_byte(0, 0x1A); // LDAX D
+  write_byte(5, 0x01);
+  cpu->A = 0x00; cpu->D = 0x00; cpu->E = 0x05;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0x01);
   ASSERT_EQUAL(cpu->PC, 1);
 }

@@ -14,7 +14,6 @@ SET(SRC_FILES src/cpu.c
 SET(TEST_FILES
         test/attounit.h
         test/test.c
-        test/cpu/mov_test.c
         test/cpu/mvi_test.c
         test/cpu/dcr_test.c
         test/cpu/inr_test.c
@@ -23,36 +22,21 @@ SET(TEST_FILES
         test/cpu/sub_test.c
         test/cpu/ora_test.c
         test/cpu/ana_test.c
-        test/cpu/rlc_test.c
-        test/cpu/rrc_test.c
-        test/cpu/ral_test.c
-        test/cpu/rar_test.c
-        test/cpu/inx_test.c
-        test/cpu/dcx_test.c
         test/cpu/jumps_test.c
-        test/cpu/sta_test.c
-        test/cpu/stax_test.c
-        test/cpu/ldax_test.c
-        test/cpu/lda_test.c
         test/cpu/lxi_test.c
-        test/cpu/stc_test.c
-        test/cpu/cmc_test.c
-        test/cpu/cma_test.c
-        test/cpu/dad_test.c
-        test/cpu/xchg_test.c
-        test/cpu/sphl_test.c
-        test/cpu/shld_test.c
-        test/cpu/ldhd_test.c
         test/cpu/xra_test.c
         test/cpu/cmp_test.c
-        test/cpu/push_test.c
-        test/cpu/pop_test.c
         test/cpu/calls_test.c
         test/cpu/returns_test.c
-        test/cpu/xthl_test.c
         test/cpu/adc_test.c
         test/cpu/cpu_test_helpers.h
-        test/cpu/cpu_test_helpers.c)
+        test/cpu/cpu_test_helpers.c
+        test/cpu/register_pair_test.c
+        test/cpu/rotate_test.c
+        test/cpu/direct_test.c
+        test/cpu/data_transfer.c
+        test/cpu/carry_bit.c
+        test/cpu/cma_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})

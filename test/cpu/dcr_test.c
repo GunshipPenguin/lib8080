@@ -1,7 +1,7 @@
 #include "attounit.h"
 #include "cpu.h"
 #include "memory.h"
-#include "cpu_test_helpers.h"
+#include "cpu/cpu_test_helpers.h"
 
 TEST_SUITE(instruction_dcr);
 BEFORE_EACH() {
