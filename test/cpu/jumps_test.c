@@ -181,3 +181,12 @@ TEST_CASE(jm_s_flag_unset) {
 
   ASSERT_EQUAL(cpu->PC, 3);
 }
+
+TEST_CASE(pchl) {
+  write_byte(0, 0xE9); // PCHL
+  cpu->H = 0xAB; cpu->L = 0xCD;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->PC, 0xABCD);
+}
