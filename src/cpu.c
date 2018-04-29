@@ -51,6 +51,22 @@ int get_flag(enum Flag flag) {
   return (cpu->flags & mask) != 0;
 }
 
+int check_condition(int condition) {
+  switch (condition) {
+    case 0: return !get_flag(FLAG_Z); // No zero
+    case 1: return get_flag(FLAG_Z); // Zero
+    case 2: return !get_flag(FLAG_C); // No carry
+    case 3: return get_flag(FLAG_C); // Carry
+    case 4: return !get_flag(FLAG_P); // Parity odd
+    case 5: return get_flag(FLAG_P); // Parity even
+    case 6: return !get_flag(FLAG_S); // Positive
+    case 7: return get_flag(FLAG_S); // Negative
+    default:
+      fprintf(stderr, "Invalid condition code %d", condition);
+      exit(1);
+  }
+}
+
 void set_reg(int reg, int val) {
   val &= 0xFF;
 
@@ -565,85 +581,17 @@ void xthl() {
   write_byte(cpu->SP+1, temp_h);
 }
 
-// Call - Call
-void call() {
-  push_stackw(cpu->PC+2);
-  cpu->PC = next_word();
-}
-
-// CC - Call if Carry
-void cc() {
-  if (get_flag(FLAG_C)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CNC - Call if no Carry
-void cnc() {
-  if (!get_flag(FLAG_C)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CZ - Call if Zero
-void cz() {
-  if (get_flag(FLAG_Z)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CNZ - Call if not Zero
-void cnz() {
-  if (!get_flag(FLAG_Z)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CM - Call if Minus
-void cm() {
-  if (get_flag(FLAG_S)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CP - Call if Plus
-void cp() {
-  if (!get_flag(FLAG_S)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CPE - Call if Parity Even
-void cpe() {
-  if (get_flag(FLAG_P)) {
-    push_stackw(cpu->PC+2);
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// CPO - Call if Parity Odd
-void cpo() {
-  if (!get_flag(FLAG_P)) {
+// CALL - Call
+// CZ   - Call if Zero
+// CNC  - Call if no Carry
+// CC   - Call if Carry
+// CPO  - Call if Parity Odd
+// CPE  - Call if Parity Even
+// CP   - Call if Plus
+// CM   - Call if Minus
+void general_call(int opcode) {
+  // Unconditional call has LSB set, conditional calls do not
+  if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     push_stackw(cpu->PC+2);
     cpu->PC = next_word();
   } else {
@@ -652,137 +600,34 @@ void cpo() {
 }
 
 // RET - Return
-void ret() {
-  cpu->PC = pop_stackw();
-}
-
 // RNZ - Return if not Zero
-void rnz() {
-  if (!get_flag(FLAG_Z)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
-// RZ - Return if Zero
-void rz() {
-  if (get_flag(FLAG_Z)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
+// RZ  - Return if Zero
 // RNC - Return if no Carry
-void rnc() {
-  if (!get_flag(FLAG_C)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
-// RC - Return if Carry
-void rc() {
-  if (get_flag(FLAG_C)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
+// RC  - Return if Carry
 // RPO - Return if Parity Odd
-void rpo() {
-  if (!get_flag(FLAG_P)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
 // RPE - Return if Parity Even
-void rpe() {
-  if (get_flag(FLAG_P)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
-// RP - Return if Positive
-void rp() {
-  if (!get_flag(FLAG_S)) {
-    cpu->PC = pop_stackw();
-  }
-}
-
-// RM - Return if Minus
-void rm() {
-  if (get_flag(FLAG_S)) {
+// RP  - Return if Parity Odd
+// RP  - Return if Plus
+// RM  - Return if Minus
+void general_return(int opcode) {
+  // Unconditional return has LSB set, conditional returns do not
+  if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     cpu->PC = pop_stackw();
   }
 }
 
 // JMP - Jump
-void jmp() {
-  cpu->PC = next_word();
-}
-
 // JNZ - Jump if not Zero
-void jnz() {
-  if (!get_flag(FLAG_Z)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// JZ - Jump if Zero
-void jz() {
-  if (get_flag(FLAG_Z)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
+// JZ  - Jump if Zero
 // JNC - Jump if no Carry
-void jnc() {
-  if (!get_flag(FLAG_C)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// JC - Jump if Carry
-void jc() {
-  if (get_flag(FLAG_C)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
+// JC  - Jump if Carry
 // JPO - Jump if Parity Odd
-void jpo() {
-  if (!get_flag(FLAG_P)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
 // JPE - Jump if Parity Even
-void jpe() {
-  if (get_flag(FLAG_P)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// JP - Jump if Plus
-void jp() {
-  if (!get_flag(FLAG_S)) {
-    cpu->PC = next_word();
-  } else {
-    cpu->PC += 2;
-  }
-}
-
-// JM - Jump if Minus
-void jm() {
-  if (get_flag(FLAG_S)) {
+// JP  - Jump if Parity Odd
+// JP  - Jump if Plus
+// JM  - Jump if Minus
+void general_jump(int opcode) {
+  if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     cpu->PC = next_word();
   } else {
     cpu->PC += 2;
@@ -1114,116 +959,44 @@ void step_cpu() {
 
     case 0xC3: // JMP a16
     case 0xCB: // JMP a16 (alternate)
-      jmp();
-      break;
-
     case 0xC2: // JNZ a16
-      jnz();
-      break;
-
     case 0xCA: // JZ a16
-      jz();
-      break;
-
     case 0xD2: // JNC a16
-      jnc();
-      break;
-
     case 0xDA: // JC a16
-      jc();
-      break;
-
     case 0xE2: // JPO a16
-      jpo();
-      break;
-
     case 0xEA: // JPE a16
-      jpe();
-      break;
-
     case 0xF2: // JP a16
-      jp();
-      break;
-
     case 0xFA: // JM a16
-      jm();
-      break;
-
-    case 0xC0: // RNZ
-      rnz();
-      break;
-
-    case 0xC8: // RZ
-      rz();
+      general_jump(opcode);
       break;
 
     case 0xC9: // RET
     case 0xD9: // RET (alternate)
-      ret();
-      break;
-
+    case 0xC0: // RNZ
+    case 0xC8: // RZ
     case 0xD0: // RNC
-      rnc();
-      break;
-
     case 0xD8: // RC
-      rc();
-      break;
-
     case 0xE0: // RPO
-      rpo();
-      break;
-
     case 0xE8: // RPE
-      rpe();
-      break;
-
     case 0xF0: // RP
-      rp();
-      break;
-
     case 0xF8: // RM
-      rm();
+      general_return(opcode);
       break;
 
     case 0xCD: // CALL a16
     case 0xDD: // CALL a16 (alternate)
     case 0xED: // CALL a16 (alternate)
     case 0xFD: // CALL a16 (alternate)
-      call();
-      break;
-
     case 0xC4: // CNZ a16
-      cnz();
-      break;
-
     case 0xCC: // CZ a16
-      cz();
-      break;
-
     case 0xD4: // CNC a16
-      cnc();
-      break;
-
     case 0xDC: // CC a16
-      cc();
-      break;
-
     case 0xE4: // CPO a16
-      cpo();
-      break;
-
     case 0xEC: // CPE a16
-      cpe();
-      break;
-
     case 0xF4: // CP a16
-      cp();
-      break;
-
     case 0xFC: // CM a16
-      cm();
-      break;
+     general_call(opcode);
+     break;
 
     case 0xE3: // XTHL
       xthl();
