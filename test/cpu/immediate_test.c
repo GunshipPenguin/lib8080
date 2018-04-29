@@ -143,3 +143,463 @@ TEST_CASE(lxi_sp_d16) {
   ASSERT_EQUAL(cpu->SP, 0xABCD);
   ASSERT_EQUAL(cpu->PC, 3);
 }
+
+TEST_CASE(adi) {
+  write_byte(0, 0xC6); // ADI
+  write_byte(1, 1); // d8
+  cpu->A = 0;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 1);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(adi_sets_c_flag) {
+  write_byte(0, 0xC6); // ADI
+  write_byte(1, 1); // d8
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_C));
+}
+
+TEST_CASE(adi_sets_z_flag) {
+  write_byte(0, 0xC6); // ADI
+  write_byte(1, 0); // d8
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_Z));
+}
+
+TEST_CASE(adi_sets_p_flag) {
+  write_byte(0, 0xC6); // ADI
+  write_byte(1, 1); // d8
+  cpu->A = 2;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_P));
+}
+
+TEST_CASE(adi_sets_s_flag) {
+  write_byte(0, 0xC6); // ADI B
+  write_byte(1, 1); // d8
+  cpu->A = 0x7F;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(adi_sets_a_flag) {
+  write_byte(0, 0xC6); // ADI
+  write_byte(1, 1);
+  cpu->A = 0x0F;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+}
+
+TEST_CASE(aci) {
+  write_byte(0, 0xCE); // ACI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xFF;
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0xFF);
+  ASSERT_TRUE(get_flag(FLAG_C));
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(aci_unsets_c_flag) {
+  write_byte(0, 0xCE); // ACI B
+  write_byte(1, 1); // d8
+  cpu->A = 2;
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
+TEST_CASE(aci_sets_z_flag) {
+  write_byte(0, 0xCE); // ACI
+  write_byte(1, 0); // d8
+  cpu->A = 0x00;
+  set_flag(FLAG_Z, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+}
+
+TEST_CASE(aci_sets_p_flag) {
+  write_byte(0, 0xCE); // ACI
+  write_byte(1, 1); // d8
+  cpu->A = 0x02;
+  set_flag(FLAG_P, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(aci_sets_s_flag) {
+  write_byte(0, 0xCE); // ACI
+  write_byte(1, 1); // d8
+  cpu->A = 0x7F;
+  set_flag(FLAG_S, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(aci_sets_a_flag) {
+  write_byte(0, 0xCE); // ACI
+  write_byte(1, 1); // d8
+  cpu->A = 0x0F;
+  set_flag(FLAG_A, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+}
+
+TEST_CASE(sui) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 1); // d8
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(sui_sets_c_flag) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 2); // d8
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_C));
+}
+
+TEST_CASE(sui_sets_a_flag) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 1); // d8
+  cpu->A = 0x10;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+}
+
+TEST_CASE(sui_sets_z_flag) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 1); // d8
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+}
+
+TEST_CASE(sui_sets_p_flag) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 1); // d8
+  cpu->A = 0x04;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(sui_sets_s_flag) {
+  write_byte(0, 0xD6); // SUI
+  write_byte(1, 1);
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(sbi) {
+  write_byte(0, 0xDE); // SBI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xFF;
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0xFF);
+  ASSERT_TRUE(get_flag(FLAG_C));
+}
+
+TEST_CASE(sbi_sets_z_flag) {
+  write_byte(0, 0xDE); // SBI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_Z));
+}
+
+TEST_CASE(sbi_sets_p_flag) {
+  write_byte(0, 0xDE); // SBI
+  write_byte(1, 1); // d8
+  cpu->A = 4;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_P));
+}
+
+TEST_CASE(sbi_sets_s_flag) {
+  write_byte(0, 0xDE); // SBI
+  write_byte(1, 1);
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_S));
+}
+
+TEST_CASE(sbi_sets_a_flag) {
+  write_byte(0, 0xDE); // SBI
+  write_byte(1, 1); // d8
+  cpu->A = 0x10;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_A));
+}
+
+TEST_CASE(ani) {
+  write_byte(0, 0xE6); // ANI
+  write_byte(1, 6); // d8
+  cpu->A = 10;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 2);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(ani_resets_c_flag) {
+  write_byte(0, 0xE6); // ANI
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
+TEST_CASE(ani_sets_z_flag) {
+  write_byte(0, 0xE6); // ANI
+  write_byte(1, 0); // d8
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_Z));
+}
+
+TEST_CASE(ani_sets_p_flag) {
+  write_byte(0, 0xE6); // ANI
+  write_byte(1, 3); // d8
+  cpu->A = 7;
+  set_flag(FLAG_P, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(ani_sets_s_flag) {
+  write_byte(0, 0xE6); // ANI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xFF;
+  set_flag(FLAG_S, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(ori) {
+  write_byte(0, 0xF6); // ORI
+  write_byte(1, 6); // d8
+  cpu->A = 10;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 14);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(ori_resets_c_flag) {
+  write_byte(0, 0xF6); // ORI
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
+TEST_CASE(ori_sets_z_flag) {
+  write_byte(0, 0xF6); // ORI
+  write_byte(1, 0); // d8
+  cpu->A = 0x00;
+  set_flag(FLAG_Z, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+}
+
+TEST_CASE(ori_sets_s_flag) {
+  write_byte(0, 0xF6); // ORI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0x00;
+  set_flag(FLAG_S, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(ori_sets_p_flag) {
+  write_byte(0, 0xF6); // ORI
+  write_byte(1, 3); // d8
+  cpu->A = 0x00;
+  set_flag(FLAG_P, 0);
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(xri) {
+  write_byte(0, 0xEE); // XRI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xF0;
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->A, 0x0F);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(xri_resets_flag_c) {
+  write_byte(0, 0xEE); // XRI
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
+TEST_CASE(xri_sets_flag_z) {
+  write_byte(0, 0xEE); // XRI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0xFF;
+  set_flag(FLAG_Z, 0);
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_Z));
+}
+
+TEST_CASE(xri_sets_flag_s) {
+  write_byte(0, 0xEE); // XRI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0x7F;
+  set_flag(FLAG_S, 0);
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_S));
+}
+
+TEST_CASE(xri_sets_flag_p) {
+  write_byte(0, 0xEE); // XRI
+  write_byte(1, 7); // d8
+  cpu->A = 0x04;
+  set_flag(FLAG_P, 0);
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_P));
+}
+
+TEST_CASE(cpi) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 1); // d8
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+  ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(cpi_sets_z_flag) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 1);
+  cpu->A = 1;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_Z), 1);
+}
+
+TEST_CASE(cpi_sets_s_flag) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 1); // d8
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_S), 1);
+}
+
+TEST_CASE(cpi_sets_p_flag) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 1); // d8
+  cpu->A = 0x04;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_P), 1);
+}
+
+TEST_CASE(cpi_sets_c_flag) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 0xFF); // d8
+  cpu->A = 0x01;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_C), 1);
+}
+
+TEST_CASE(cpi_sets_a_flag) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 1);
+  cpu->A = 0xF0;
+
+  step_cpu();
+
+  ASSERT_EQUAL(get_flag(FLAG_A), 1);
+}

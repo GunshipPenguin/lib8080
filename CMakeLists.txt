@@ -14,7 +14,6 @@ SET(SRC_FILES src/cpu.c
 SET(TEST_FILES
         test/attounit.h
         test/test.c
-        test/cpu/mvi_test.c
         test/cpu/dcr_test.c
         test/cpu/inr_test.c
         test/cpu/nop_test.c
@@ -23,7 +22,6 @@ SET(TEST_FILES
         test/cpu/ora_test.c
         test/cpu/ana_test.c
         test/cpu/jumps_test.c
-        test/cpu/lxi_test.c
         test/cpu/xra_test.c
         test/cpu/cmp_test.c
         test/cpu/calls_test.c
@@ -36,7 +34,8 @@ SET(TEST_FILES
         test/cpu/direct_test.c
         test/cpu/data_transfer.c
         test/cpu/carry_bit.c
-        test/cpu/cma_test.c)
+        test/cpu/cma_test.c
+        test/cpu/immediate_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})

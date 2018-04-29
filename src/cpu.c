@@ -35,6 +35,7 @@ int get_flag_mask(enum Flag flag) {
       exit(1);
   }
 }
+
 void set_flag(enum Flag flag, int val) {
   int mask = get_flag_mask(flag);
 
@@ -362,12 +363,59 @@ void ori() {
   setSZP(cpu->A);
 }
 
-// ADI - Logical
+// ACI - Add Immediate to Accumulator With Carry
+void aci() {
+  int val = next_byte();
+
+  int carry = get_flag(FLAG_C) ? 1 : 0;
+
+  // Detect carry out of lower 4 bits
+  set_flag(FLAG_A, ((cpu->A & 0xF) + (val & 0x0F) + carry) & 0x10);
+
+  cpu->A += val + carry;
+
+  set_flag(FLAG_C, cpu->A & 0x100);
+  cpu->A &= 0xFF;
+  setSZP(cpu->A);
+}
+
+// SBI - Subtract Immediate from Accumulator With Borrow
+void sbi() {
+  int val = next_byte() + (get_flag(FLAG_C) ? 1 : 0);
+
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+
+  cpu->A -= val;
+  cpu->A &= 0xFF;
+
+  setSZP(cpu->A);
+}
+
+// XRI - Logical Exclusive-Or Immediate With Accumulator
+void xri() {
+  int val = next_byte();
+  cpu->A ^= val;
+
+  set_flag(FLAG_C, 0);
+  set_flag(FLAG_A, 0);
+  setSZP(cpu->A);
+}
+
+// CPI - Compare Immediate With Accumulator
+void cpi() {
+  int val = next_byte();
+  int res = (cpu->A - val) & 0xFF;
+
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+  setSZP(res);
+}
 
 // CMP - Compare Memory or Register With Accumulator
 void cmp(int opcode) {
   int reg = opcode & 0x07;
-  int res = cpu->A - get_reg(reg);
+  int res = (cpu->A - get_reg(reg)) & 0xFF;
 
   set_flag(FLAG_C, get_reg(reg) > cpu->A);
   set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
@@ -999,6 +1047,22 @@ void step_cpu() {
 
     case 0xF6: // ORI d8
       ori();
+      break;
+
+    case 0xCE: // ACI d8
+      aci();
+      break;
+
+    case 0xDE: // SBI d8
+      sbi();
+      break;
+
+    case 0xEE: // XRI d8
+      xri();
+      break;
+
+    case 0xFE: // CPI d8
+      cpi();
       break;
 
     case 0xA8: // XRA B
