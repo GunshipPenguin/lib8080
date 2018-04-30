@@ -37,7 +37,8 @@ SET(TEST_FILES
         test/cpu/cma_test.c
         test/cpu/immediate_test.c
         test/cpu/sbb_test.c
-        test/cpu/interrupt_instruction_test.c)
+        test/cpu/interrupt_instruction_test.c
+        test/cpu/interrupt_test.c)
 
 add_executable(altair src/main.c ${SRC_FILES})
 add_executable(altairtest ${SRC_FILES} ${TEST_FILES})

@@ -5,6 +5,10 @@
 
 struct cpu *cpu = NULL;
 
+static int pending_interrupt = 0;
+static int interrupt_opcode;
+
+// External API
 void create_cpu() {
   cpu = malloc(sizeof(struct cpu));
   cpu->PC = 0;
@@ -22,8 +26,18 @@ void reset_cpu() {
   cpu->INTE = 0;
   cpu->flags = 2;
   cpu->SP = 0;
+
+  pending_interrupt = 0;
 }
 
+void request_interrupt(int opcode) {
+  if (cpu->INTE) {
+    pending_interrupt = 1;
+    interrupt_opcode = opcode;
+  }
+}
+
+// Internal logic
 int get_flag_mask(enum Flag flag) {
   switch (flag) {
     case FLAG_S: return 0x80;
@@ -185,6 +199,15 @@ int next_word() {
   int word  = read_word(cpu->PC);
   cpu->PC += 2;
   return word;
+}
+
+int next_instruction_opcode() {
+  if (pending_interrupt) {
+    cpu->INTE = 0;
+    return interrupt_opcode;
+  } else {
+    return next_byte();
+  }
 }
 
 // Instructions follow
@@ -672,7 +695,7 @@ void rst(int opcode) {
 }
 
 void step_cpu() {
-  int opcode = next_byte();
+  int opcode = next_instruction_opcode();
 
   switch (opcode) {
     case 0x00: // NOP
