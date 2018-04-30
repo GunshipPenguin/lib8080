@@ -8,7 +8,7 @@
  * functionality.
  *
  * Specifically, this function sets up a machine with
- * - 32 Bytes of memory, all initialized to 0x00
+ * - 128 bytes of memory, all initialized to 0x00
  * - Stack pointer initialized to 0x10
  * - FLAGS register initialized to 0x02
  * - All other registers (including the program counter) initialized to 0x00
@@ -22,11 +22,11 @@ void setup_cpu_test_env() {
   reset_cpu();
 
   if (memory == NULL) {
-    create_memory(32);
+    create_memory(128);
   }
 
   // Zero out memory
-  for (int i=0;i<32;i++) {
+  for (int i=0;i<128;i++) {
     write_byte(i, 0);
   }
 

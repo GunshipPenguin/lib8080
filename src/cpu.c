@@ -19,6 +19,7 @@ void reset_cpu() {
   cpu->H = 0;
   cpu->L = 0;
   cpu->PC = 0;
+  cpu->INTE = 0;
   cpu->flags = 2;
   cpu->SP = 0;
 }
@@ -649,8 +650,25 @@ void general_jump(int opcode) {
   }
 }
 
+// PCHL - Load Program Counter
 void pchl() {
   cpu->PC = CONCAT(cpu->H, cpu->L);
+}
+
+// EI - Enable Interrupts
+void ei() {
+  cpu->INTE = 1;
+}
+
+// DI - Disable Interrupts
+void di() {
+  cpu->INTE = 0;
+}
+
+// RST - Restart
+void rst(int opcode) {
+  push_stackw(cpu->PC);
+  cpu->PC = opcode & 0x38;
 }
 
 void step_cpu() {
@@ -1015,6 +1033,25 @@ void step_cpu() {
     case 0xF0: // RP
     case 0xF8: // RM
       general_return(opcode);
+      break;
+
+    case 0xC7: // RST 0
+    case 0xCF: // RST 1
+    case 0xD7: // RST 2
+    case 0xDF: // RST 3
+    case 0xE7: // RST 4
+    case 0xEF: // RST 5
+    case 0xF7: // RST 6
+    case 0xFF: // RST 7
+      rst(opcode);
+      break;
+
+    case 0xF3: // DI
+      di();
+      break;
+
+    case 0xFB: // EI
+      ei();
       break;
 
     case 0xCD: // CALL a16
