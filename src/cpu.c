@@ -26,11 +26,13 @@ void reset_cpu() {
   cpu->INTE = 0;
   cpu->flags = 2;
   cpu->SP = 0;
+  cpu->halted = 0;
 
   pending_interrupt = 0;
 }
 
 void request_interrupt(int opcode) {
+  cpu->halted = 0;
   if (cpu->INTE) {
     pending_interrupt = 1;
     interrupt_opcode = opcode;
@@ -213,7 +215,7 @@ int next_instruction_opcode() {
 // Instructions follow
 // HLT - Halt
 void hlt() {
-
+  cpu->halted = 1;
 }
 
 // NOP - No Operation
@@ -695,6 +697,10 @@ void rst(int opcode) {
 }
 
 void step_cpu() {
+  if (cpu->halted) {
+    return;
+  }
+
   int opcode = next_instruction_opcode();
 
   switch (opcode) {

@@ -105,3 +105,24 @@ TEST_CASE(rst_7) {
   ASSERT_EQUAL(pop_stackw(), 61);
   ASSERT_EQUAL(cpu->PC, 56);
 }
+
+TEST_CASE(hlt) {
+  cpu->halted = 0;
+  cpu->INTE = 1;
+  write_byte(0, 0x76); // HLT
+  step_cpu();
+
+  ASSERT_TRUE(cpu->halted);
+
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->PC, 1);
+
+  request_interrupt(RST_7);
+
+  step_cpu();
+
+  ASSERT_FALSE(cpu->halted);
+  ASSERT_EQUAL(cpu->PC, 56);
+  ASSERT_EQUAL(pop_stackw(), 1);
+}

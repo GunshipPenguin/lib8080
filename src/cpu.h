@@ -20,6 +20,7 @@ struct cpu {
   int SP;
   int PC;
   int INTE;
+  int halted;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
