@@ -47,7 +47,7 @@ extern int curr_test_num;
     num_failed_assertions ++; \
     printf(RED "✗ Assertion failed" RESET " in %s\n", __FILE__); \
     printf("\tSuite: %s, Case: %s\n", tests[curr_test_num].suite_name, tests[curr_test_num].test_name); \
-    printf("\t" #a #op #b "\n"); \
+    printf("\t" #a " " #op " " #b "\n"); \
     printf("\tExpected " #a_fmt " " #desc " " #b_fmt "\n", a_eval, b_eval); \
   } \
 } while(0)
@@ -131,3 +131,4 @@ extern int curr_test_num;
       return 1; \
     } \
   }
+
