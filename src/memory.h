@@ -7,7 +7,7 @@ char* memory;
 int memsize;
 
 void create_memory(int);
-void load_memory(char *);
+void load_memory(char *, size_t offset);
 
 int read_byte(int);
 void write_byte(int, int);

@@ -7,16 +7,16 @@ void create_memory(int size) {
   memory = malloc(size);
 }
 
-void load_memory(char *filename) {
+void load_memory(char *filename, size_t offset) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
     perror("fopen");
     exit(1);
   }
 
-  int addr = 0;
-  while (addr < memsize) {
-    size_t res = fread(memory+(addr++), sizeof(char), 1, file);
+  size_t addr = offset;
+  for (int i=0;i<memsize;i++) {
+    size_t res = fread(memory+(offset+i), sizeof(char), 1, file);
 
     if (res == 0) break;
   };
