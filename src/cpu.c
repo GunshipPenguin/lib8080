@@ -295,6 +295,23 @@ void dcx(int opcode) {
   set_reg_pair(reg, get_reg_pair(reg)-1);
 }
 
+// DAA - Decimal Adjust Accumulator
+void daa() {
+  if (((cpu->A & 0x0F) > 9) || get_flag(FLAG_A)) {
+    set_flag(FLAG_A, ((cpu->A & 0xF) + 6) & 0x10);
+    cpu->A += 6;
+    cpu->A &= 0xFF;
+  }
+
+  if ((((cpu->A >> 4) & 0x0F) > 9) || get_flag(FLAG_C)) {
+    cpu->A += (6 << 4);
+    set_flag(FLAG_C, cpu->A & 0x100);
+    cpu->A &= 0xFF;
+  }
+
+  setSZP(cpu->A);
+}
+
 // ADD - Add Register or Memory to Accumulator
 void add(int opcode) {
   int reg = opcode & 0x07;
@@ -809,6 +826,10 @@ void step_cpu() {
     case 0x35: // DCR M
     case 0x3D: // DCR A
       dcr(opcode);
+      break;
+
+    case 0x27: // DAA
+      daa();
       break;
 
     case 0x06: // MVI B, d8
