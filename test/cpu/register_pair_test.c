@@ -109,25 +109,25 @@ TEST_CASE(pop_psw) {
 
 TEST_CASE(dad_b) {
   write_byte(0, 0x09); // DAD B
-  cpu->B = 0x00; cpu->C = 0x05; // BC contains 5
-  cpu->H = 0xFF; cpu->L = 0xFD; // HL contains -3
+  cpu->B = 0xFF; cpu->C = 0xFD; // BC contains -3
+  cpu->H = 0x00; cpu->L = 0x05; // HL contains 5
 
   step_cpu();
 
-  ASSERT_EQUAL(cpu->B, 0x00);
-  ASSERT_EQUAL(cpu->C, 0x02);
+  ASSERT_EQUAL(cpu->H, 0x00);
+  ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(dad_d) {
   write_byte(0, 0x19); // DAD D
-  cpu->D = 0x00; cpu->E = 0x05; // DE contains 5
-  cpu->H = 0xFF; cpu->L = 0xFD; // HL contains -3
+  cpu->D = 0xFF; cpu->E = 0xFD; // DE contains -3
+  cpu->H = 0x00; cpu->L = 0x05; // HL contains 5
 
   step_cpu();
 
-  ASSERT_EQUAL(cpu->D, 0x00);
-  ASSERT_EQUAL(cpu->E, 0x02);
+  ASSERT_EQUAL(cpu->H, 0x00);
+  ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -144,12 +144,13 @@ TEST_CASE(dad_h) {
 
 TEST_CASE(dad_sp) {
   write_byte(0, 0x39); // DAD SP
-  cpu->SP = 0x05; // SP contains 5
-  cpu->H = 0xFF; cpu->L = 0xFD; // HL contains -3
+  cpu->SP = 0xFFFD; // SP contains -3
+  cpu->H = 0x00; cpu->L = 0x05; // HL contains 5
 
   step_cpu();
 
-  ASSERT_EQUAL(cpu->SP, 0x0002);
+  ASSERT_EQUAL(cpu->H, 0x00);
+  ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -177,7 +178,6 @@ TEST_CASE(dad_resets_c_flag) {
   ASSERT_FALSE(get_flag(FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
-
 
 TEST_CASE(inx_b) {
   write_byte(0, 0x03); // INX B

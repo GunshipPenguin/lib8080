@@ -571,9 +571,9 @@ void dad(int opcode) {
 
   int new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair));
   set_flag(FLAG_C, new_val & 0x10000);
-  new_val &= 0xFFFF;
 
-  set_reg_pair(reg_pair, new_val);
+  cpu->H = (new_val >> 8) & 0xFF;
+  cpu->L = new_val & 0xFF;
 }
 
 // XCHG - Exchange Registers
