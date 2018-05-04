@@ -124,12 +124,22 @@ TEST_CASE(sub_sets_s_flag) {
 
 TEST_CASE(sub_sets_a_flag) {
   write_byte(0, 0x90); // SUB B
-  cpu->A = 0x10; cpu->B = 0x01;
+  cpu->A = 0xFF; cpu->B = 0x01;
   set_flag(FLAG_A, 0);
 
   step_cpu();
 
   ASSERT_TRUE(get_flag(FLAG_A));
+}
+
+TEST_CASE(sub_resets_c_flag) {
+  write_byte(0, 0x90); // SUB B
+  cpu->A = 0x01; cpu->B = 0x01;
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
 }
 
 TEST_CASE(sub_sets_c_flag) {

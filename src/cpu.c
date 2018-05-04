@@ -345,13 +345,17 @@ void adc(int opcode) {
 // SBB - Subtract Register or Memory from Accumulator with Borrow
 void sbb(int opcode) {
   int reg = opcode & 0x07;
+  int carry = get_flag(FLAG_C) ? 1 : 0;
 
-  int val = get_reg(reg) + (get_flag(FLAG_C) ? 1 : 0);
+  int val = get_reg(reg) + carry;
+  val = ((~val) + 1) & 0xFF; // 2's complement negation
 
-  set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
 
-  cpu->A -= val;
+  cpu->A += val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -360,11 +364,14 @@ void sbb(int opcode) {
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = opcode & 0x07;
+  int val = ((~get_reg(reg)) + 1) & 0xFF; // 2's complement negation
 
-  set_flag(FLAG_C, get_reg(reg) > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
 
-  cpu->A -= get_reg(reg);
+  cpu->A += val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -406,12 +413,14 @@ void adi() {
 
 // SUI - Subtract Immediate From Accumulator
 void sui() {
-  int val = next_byte();
+  int val = ((~next_byte()) + 1) & 0xFF; // 2's complement negation
 
-  set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
 
-  cpu->A -= val;
+  cpu->A += val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -455,12 +464,17 @@ void aci() {
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi() {
-  int val = next_byte() + (get_flag(FLAG_C) ? 1 : 0);
+  int carry = get_flag(FLAG_C) ? 1 : 0;
 
-  set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
+  int val = next_byte() + carry;
+  val = ((~val) + 1) & 0xFF; // 2's complement negation
 
-  cpu->A -= val;
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+
+  cpu->A += val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -478,22 +492,27 @@ void xri() {
 
 // CPI - Compare Immediate With Accumulator
 void cpi() {
-  int val = next_byte();
-  int res = (cpu->A - val) & 0xFF;
+  int val = ((~next_byte()) + 1) & 0xFF; // 2's complement negation
 
-  set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < val);
-  setSZP(res);
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+
+  setSZP((cpu->A + val) & 0xFF);
 }
 
 // CMP - Compare Memory or Register With Accumulator
 void cmp(int opcode) {
   int reg = opcode & 0x07;
-  int res = (cpu->A - get_reg(reg)) & 0xFF;
+  int val = ((~get_reg(reg)) + 1) & 0xFF; // 2's complement negation
 
-  set_flag(FLAG_C, get_reg(reg) > cpu->A);
-  set_flag(FLAG_A, (cpu->A & 0x0F) < get_reg(reg));
-  setSZP(res);
+  // subtraction operations set the carry flag if there is _no_ carry out of
+  // the high order bit
+  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+
+  setSZP((cpu->A + val) & 0xFF);
 }
 
 // ORA - Logical or Memory or Register with Accumulator

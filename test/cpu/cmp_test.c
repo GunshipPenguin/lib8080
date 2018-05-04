@@ -121,16 +121,28 @@ TEST_CASE(cmp_sets_p_flag) {
 
 TEST_CASE(cmp_sets_c_flag) {
   write_byte(0, 0xB8); // CMP B
-  cpu->B = 0xFF; cpu->A = 0x01;
+  cpu->A = 0x00; cpu->B = 0x01;
+  set_flag(FLAG_C, 0);
 
   step_cpu();
 
   ASSERT_TRUE(get_flag(FLAG_C));
 }
 
+TEST_CASE(cmp_resets_c_flag) {
+  write_byte(0, 0xB8); // CMP B
+  cpu->A = 0x01; cpu->B = 0x01;
+  set_flag(FLAG_C, 1);
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
 TEST_CASE(cmp_sets_a_flag) {
   write_byte(0, 0xB8); // CMP B
-  cpu->B = 0x01; cpu->A = 0xF0;
+  cpu->A = 0xFF; cpu->B = 0x01;
+  set_flag(FLAG_A, 0);
 
   step_cpu();
 
