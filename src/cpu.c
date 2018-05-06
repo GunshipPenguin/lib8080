@@ -346,16 +346,14 @@ void adc(int opcode) {
 void sbb(int opcode) {
   int reg = opcode & 0x07;
   int carry = get_flag(FLAG_C) ? 1 : 0;
+  int val = get_reg(reg);
 
-  int val = get_reg(reg) + carry;
-  val = ((~val) + 1) & 0xFF; // 2's complement negation
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, (val + carry) > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < ((val + carry) & 0x0F)));
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
-
-  cpu->A += val;
+  cpu->A -= (val + carry);
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -364,14 +362,14 @@ void sbb(int opcode) {
 // SUB - Subtract Register or Memory from Accumulator
 void sub(int opcode) {
   int reg = opcode & 0x07;
-  int val = ((~get_reg(reg)) + 1) & 0xFF; // 2's complement negation
+  int val = get_reg(reg);
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
 
-  cpu->A += val;
+  cpu->A -= val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -413,14 +411,14 @@ void adi() {
 
 // SUI - Subtract Immediate From Accumulator
 void sui() {
-  int val = ((~next_byte()) + 1) & 0xFF; // 2's complement negation
+  int val = next_byte();
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
 
-  cpu->A += val;
+  cpu->A -= val;
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -464,17 +462,15 @@ void aci() {
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi() {
+  int val = next_byte();
   int carry = get_flag(FLAG_C) ? 1 : 0;
 
-  int val = next_byte() + carry;
-  val = ((~val) + 1) & 0xFF; // 2's complement negation
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, (val + carry) > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < ((val + carry) & 0x0F)));
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
-
-  cpu->A += val;
+  cpu->A -= (val + carry);
   cpu->A &= 0xFF;
 
   setSZP(cpu->A);
@@ -492,27 +488,27 @@ void xri() {
 
 // CPI - Compare Immediate With Accumulator
 void cpi() {
-  int val = ((~next_byte()) + 1) & 0xFF; // 2's complement negation
+  int val = next_byte();
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
 
-  setSZP((cpu->A + val) & 0xFF);
+  setSZP((cpu->A - val) & 0xFF);
 }
 
 // CMP - Compare Memory or Register With Accumulator
 void cmp(int opcode) {
   int reg = opcode & 0x07;
-  int val = ((~get_reg(reg)) + 1) & 0xFF; // 2's complement negation
+  int val = get_reg(reg);
 
-  // subtraction operations set the carry flag if there is _no_ carry out of
-  // the high order bit
-  set_flag(FLAG_C, !((cpu->A + val) & 0x100));
-  set_flag(FLAG_A, ((cpu->A & 0x0F) + (val & 0x0F)) & 0x10);
+  // subtraction operations set the carry flag if the unsigned value of the
+  // operand is greater than the accumulator
+  set_flag(FLAG_C, val > cpu->A);
+  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
 
-  setSZP((cpu->A + val) & 0xFF);
+  setSZP((cpu->A - val) & 0xFF);
 }
 
 // ORA - Logical or Memory or Register with Accumulator

@@ -307,7 +307,7 @@ TEST_CASE(sui_resets_c_flag) {
 TEST_CASE(sui_sets_a_flag) {
   write_byte(0, 0xD6); // SUI
   write_byte(1, 1); // d8
-  cpu->A = 0xFF;
+  cpu->A = 0xF0;
 
   step_cpu();
 
@@ -389,7 +389,7 @@ TEST_CASE(sbi_sets_s_flag) {
 TEST_CASE(sbi_sets_a_flag) {
   write_byte(0, 0xDE); // SBI
   write_byte(1, 0); // d8
-  cpu->A = 0xFF;
+  cpu->A = 0xF0;
   set_flag(FLAG_C, 1);
 
   step_cpu();
@@ -566,13 +566,45 @@ TEST_CASE(cpi) {
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
-TEST_CASE(cpi_sets_z_flag) {
+TEST_CASE(cpi_less) {
   write_byte(0, 0xFE); // CPI
-  write_byte(1, 1);
-  cpu->A = 1;
+  write_byte(1, 0x05); // d8
+  cpu->A = 0x0A;
 
   step_cpu();
 
+  ASSERT_FALSE(get_flag(FLAG_C));
+}
+
+TEST_CASE(cpi_greater) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 0x05); // d8
+  cpu->A = 0x02;
+
+  step_cpu();
+
+  ASSERT_TRUE(get_flag(FLAG_C));
+}
+
+TEST_CASE(cpi_not_equal) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 0x05); // d8
+  cpu->A = 0xFF;
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
+  ASSERT_FALSE(get_flag(FLAG_Z));
+}
+
+TEST_CASE(cpi_equal) {
+  write_byte(0, 0xFE); // CPI
+  write_byte(1, 0x0A); // d8
+  cpu->A = 0x0A;
+
+  step_cpu();
+
+  ASSERT_FALSE(get_flag(FLAG_C));
   ASSERT_TRUE(get_flag(FLAG_Z));
 }
 
@@ -621,7 +653,7 @@ TEST_CASE(cpi_resets_c_flag) {
 TEST_CASE(cpi_sets_a_flag) {
   write_byte(0, 0xFE); // CPI
   write_byte(1, 1); // d8
-  cpu->A = 0xFF;
+  cpu->A = 0xF0;
   set_flag(FLAG_A, 0);
 
   step_cpu();
