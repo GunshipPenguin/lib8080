@@ -635,8 +635,8 @@ void pop(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
-    cpu->A = pop_stackb();
     cpu->flags = pop_stackb();
+    cpu->A = pop_stackb();
   } else {
     set_reg_pair(reg_pair, pop_stackw());
   }

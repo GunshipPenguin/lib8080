@@ -94,7 +94,7 @@ TEST_CASE(pop_h) {
 TEST_CASE(pop_psw) {
   write_byte(0, 0xF1); // POP PSW
   cpu->A = 0x00; cpu->flags = 2;
-  push_stackw(0xD7AB);
+  push_stackw(0xABD7);
 
   step_cpu();
 
@@ -105,6 +105,21 @@ TEST_CASE(pop_psw) {
   ASSERT_TRUE(get_flag(FLAG_Z));
   ASSERT_TRUE(get_flag(FLAG_S));
   ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(push_pop_psw) {
+  write_byte(0, 0xF5); // PUSH PSW
+  write_byte(1, 0xF1); // POP PSW
+  cpu->A = 0xAB; cpu->flags = 0xFF;
+
+  step_cpu();
+
+  cpu->A = 0x00; cpu->flags = 0x02;
+  step_cpu();
+
+  ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->flags, 0xFF);
+  ASSERT_EQUAL(cpu->A, 0xAB);
 }
 
 TEST_CASE(dad_b) {
