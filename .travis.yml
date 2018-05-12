@@ -1,0 +1,6 @@
+language: c
+script:
+  - cmake .
+  - make
+  - ./i8080test
+  - ./integrationtest

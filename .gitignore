@@ -5,6 +5,7 @@ obj
 # Binaries
 altair
 altairtest
+binloader
 
 # CMake files
 CMakeFiles
@@ -13,6 +14,6 @@ CMakeCache.txt
 Makefile
 
 .idea
-altair.cbp
+*.cbp
 *.com
 *.s
