@@ -49,6 +49,9 @@ use:
 ./binloader test/integration/test_bins/TEST.COM
 ```
 
+The `integrationtest.sh` script automatically runs both test binaries using
+binloader.
+
 ## License
 
 [MIT](https://github.com/GunshipPenguin/i8080/blob/master/LICENSE) © Rhys Rustad-Elliott
