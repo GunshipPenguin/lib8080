@@ -14,7 +14,6 @@ void load_memory(char *filename, size_t offset) {
     exit(1);
   }
 
-  size_t addr = offset;
   for (int i=0;i<memsize;i++) {
     size_t res = fread(memory+(offset+i), sizeof(char), 1, file);
 
