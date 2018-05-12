@@ -3,4 +3,4 @@ script:
   - cmake .
   - make
   - ./i8080test
-  - ./integrationtest
+  - ./integrationtest.sh
