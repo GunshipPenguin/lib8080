@@ -110,7 +110,7 @@ TEST_CASE(pop_psw) {
 TEST_CASE(push_pop_psw) {
   write_byte(0, 0xF5); // PUSH PSW
   write_byte(1, 0xF1); // POP PSW
-  cpu->A = 0xAB; cpu->flags = 0xFF;
+  cpu->A = 0xAB; cpu->flags = 0xD7;
 
   step_cpu();
 
@@ -118,7 +118,7 @@ TEST_CASE(push_pop_psw) {
   step_cpu();
 
   ASSERT_EQUAL(cpu->PC, 2);
-  ASSERT_EQUAL(cpu->flags, 0xFF);
+  ASSERT_EQUAL(cpu->flags, 0xD7);
   ASSERT_EQUAL(cpu->A, 0xAB);
 }
 
