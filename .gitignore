@@ -3,8 +3,8 @@ cmake-build-debug
 obj
 
 # Binaries
-altair
-altairtest
+i8080
+i8080test
 binloader
 
 # CMake files
