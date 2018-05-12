@@ -640,7 +640,11 @@ void pop(int opcode) {
   int reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
-    cpu->flags = pop_stackb() | 2;
+    cpu->flags = pop_stackb();
+
+    cpu->flags |= 2; // Bit 1 of flags always set
+    cpu->flags &= 0xD7; // Bits 3 and 5 of flags always reset
+
     cpu->A = pop_stackb();
   } else {
     set_reg_pair(reg_pair, pop_stackw());
