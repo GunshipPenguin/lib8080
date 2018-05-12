@@ -41,5 +41,5 @@ SET(TEST_FILES
         test/cpu/interrupt_test.c
         test/cpu/daa_test.c)
 
-add_executable(altair src/main.c ${SRC_FILES})
-add_executable(altairtest ${SRC_FILES} ${TEST_FILES})
+add_executable(i8080 src/main.c ${SRC_FILES})
+add_executable(i8080test ${SRC_FILES} ${TEST_FILES})
