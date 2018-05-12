@@ -278,7 +278,7 @@ void inr(int opcode) {
 void dcr(int opcode) {
   int reg = (opcode & 0x38) >> 3;
 
-  set_flag(FLAG_A, (get_reg(reg) & 0x0F) == 0);
+  set_flag(FLAG_A, !(get_reg(reg) & 0x0F) == 0);
   set_reg(reg, get_reg(reg)-1);
   setSZP(get_reg(reg));
 }
@@ -351,7 +351,7 @@ void sbb(int opcode) {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, (val + carry) > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < ((val + carry) & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val + carry) & 0x0F) & 0x10));
 
   cpu->A -= (val + carry);
   cpu->A &= 0xFF;
@@ -367,7 +367,7 @@ void sub(int opcode) {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
 
   cpu->A -= val;
   cpu->A &= 0xFF;
@@ -378,6 +378,8 @@ void sub(int opcode) {
 // ANA - Logical and Memory or Register with Accumulator
 void ana(int opcode) {
   int reg = opcode & 0x07;
+  set_flag(FLAG_A, (get_reg(reg) | cpu->A) & 0x08);
+
   cpu->A &= get_reg(reg);
 
   set_flag(FLAG_C, 0);
@@ -416,7 +418,7 @@ void sui() {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
 
   cpu->A -= val;
   cpu->A &= 0xFF;
@@ -427,6 +429,7 @@ void sui() {
 // ANI - Logical and Immediate With Accumulator
 void ani() {
   int val = next_byte();
+  set_flag(FLAG_A, (val | cpu->A) & 0x08);
 
   cpu->A &= val;
 
@@ -440,6 +443,7 @@ void ori() {
 
   cpu->A |= val;
 
+  set_flag(FLAG_A, 0);
   set_flag(FLAG_C, 0);
   setSZP(cpu->A);
 }
@@ -468,7 +472,7 @@ void sbi() {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, (val + carry) > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < ((val + carry) & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val + carry) & 0x0F) & 0x10));
 
   cpu->A -= (val + carry);
   cpu->A &= 0xFF;
@@ -493,7 +497,7 @@ void cpi() {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
 
   setSZP((cpu->A - val) & 0xFF);
 }
@@ -506,7 +510,7 @@ void cmp(int opcode) {
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
   set_flag(FLAG_C, val > cpu->A);
-  set_flag(FLAG_A, ((cpu->A & 0x0F) < (val & 0x0F)));
+  set_flag(FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
 
   setSZP((cpu->A - val) & 0xFF);
 }
@@ -516,6 +520,7 @@ void ora(int opcode) {
   int reg = opcode & 0x07;
   cpu->A |= get_reg(reg);
 
+  set_flag(FLAG_A, 0);
   set_flag(FLAG_C, 0);
   setSZP(cpu->A);
 }

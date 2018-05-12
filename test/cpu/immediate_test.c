@@ -307,7 +307,7 @@ TEST_CASE(sui_resets_c_flag) {
 TEST_CASE(sui_sets_a_flag) {
   write_byte(0, 0xD6); // SUI
   write_byte(1, 1); // d8
-  cpu->A = 0xF0;
+  cpu->A = 0x01;
 
   step_cpu();
 
@@ -388,9 +388,9 @@ TEST_CASE(sbi_sets_s_flag) {
 
 TEST_CASE(sbi_sets_a_flag) {
   write_byte(0, 0xDE); // SBI
-  write_byte(1, 0); // d8
-  cpu->A = 0xF0;
-  set_flag(FLAG_C, 1);
+  write_byte(1, 1); // d8
+  cpu->A = 0x01;
+  set_flag(FLAG_A, 0);
 
   step_cpu();
 
@@ -653,7 +653,7 @@ TEST_CASE(cpi_resets_c_flag) {
 TEST_CASE(cpi_sets_a_flag) {
   write_byte(0, 0xFE); // CPI
   write_byte(1, 1); // d8
-  cpu->A = 0xF0;
+  cpu->A = 0x01;
   set_flag(FLAG_A, 0);
 
   step_cpu();

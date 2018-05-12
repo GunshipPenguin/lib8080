@@ -128,7 +128,7 @@ TEST_CASE(dcr_sets_s_flag) {
 
 TEST_CASE(dcr_sets_a_flag) {
   write_byte(0, 0x3D); // DCR A
-  cpu->A = 0xF0;
+  cpu->A = 0x1;
   set_flag(FLAG_A, 0);
 
   step_cpu();

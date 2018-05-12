@@ -113,7 +113,7 @@ TEST_CASE(sbb_unsets_c_flag) {
 
 TEST_CASE(sbb_sets_a_flag) {
   write_byte(0, 0x98); // SBB B
-  cpu->A = 0xF0; cpu->B = 0;
+  cpu->A = 0x01; cpu->B = 0;
   set_flag(FLAG_C, 1);
 
   step_cpu();

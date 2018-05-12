@@ -3,6 +3,7 @@
 
 // Register pair convenience macros
 #define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
+#define TWOS_B(val) ((~(val) + 1) & 0xFF)
 
 #define RST_0 0xC7
 #define RST_1 0xCF
