@@ -7,7 +7,7 @@ run_test () {
 
     OUTPUT=$(./binloader $TEST_DIR/test_bins/$1)
 
-    if [ "$OUTPUT" != "$(cat ${TEST_DIR}/test_bins/outputs/${1}.out)" ]
+    if [ "$OUTPUT" != "$(cat ${TEST_DIR}/test_bins/output/${1}.out)" ]
     then
         echo Outpt differs from expected output
         exit 1

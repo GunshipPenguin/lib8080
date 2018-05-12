@@ -36,7 +36,7 @@ functionality of the 8080 pretty comprehensively. They are:
 - TEST.COM by Microcosm Associates
 
 These binaries are located in `test/integration/test_bins`, and files containing
-their expected output are located in `test/integration/test_bins/outputs`.
+their expected output are located in `test/integration/test_bins/output`.
 
 They can be easily run using the binloader program (built with make target of
 the same name). Binloader emulates a very minimal CP/M system only supporting
