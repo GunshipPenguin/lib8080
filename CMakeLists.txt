@@ -12,7 +12,7 @@ SET(SRC_FILES src/cpu.c
               src/memory.h)
 
 SET(TEST_FILES
-        test/unit/attounit.h
+        test/attounit.h
         test/unit/test.c
         test/unit/cpu/dcr_test.c
         test/unit/cpu/inr_test.c
