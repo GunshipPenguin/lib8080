@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "defs.h"
+
 // Register pair convenience macros
 #define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
 #define TWOS_B(val) ((~(val) + 1) & 0xFF)
@@ -15,13 +17,13 @@
 #define RST_7 0xFF
 
 struct cpu {
-  int A, B, C, D, E;
-  int H, L;
-  int flags;
-  int SP;
-  int PC;
-  int INTE;
-  int halted;
+  uint A, B, C, D, E;
+  uint H, L;
+  uint flags;
+  uint SP;
+  uint PC;
+  uint INTE;
+  uint halted;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
@@ -35,12 +37,12 @@ void reset_cpu();
 void set_flag(enum Flag, int);
 int get_flag(enum Flag);
 
-void request_interrupt(int);
+void request_interrupt(uint);
 
-void push_stackb(int);
-void push_stackw(int);
+void push_stackb(uint);
+void push_stackw(uint);
 
-int pop_stackb();
-int pop_stackw();
+uint pop_stackb();
+uint pop_stackw();
 
 #endif

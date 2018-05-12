@@ -9,7 +9,8 @@ include_directories(test)
 SET(SRC_FILES src/cpu.c
               src/cpu.h
               src/memory.c
-              src/memory.h)
+              src/memory.h
+              src/defs.h)
 
 SET(TEST_FILES
         test/attounit.h

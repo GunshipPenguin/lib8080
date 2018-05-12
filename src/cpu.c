@@ -6,7 +6,7 @@
 struct cpu *cpu = NULL;
 
 static int pending_interrupt = 0;
-static int interrupt_opcode;
+static uint interrupt_opcode;
 
 // External API
 void create_cpu() {
@@ -31,7 +31,7 @@ void reset_cpu() {
   pending_interrupt = 0;
 }
 
-void request_interrupt(int opcode) {
+void request_interrupt(uint opcode) {
   cpu->halted = 0;
   if (cpu->INTE) {
     pending_interrupt = 1;
@@ -40,7 +40,7 @@ void request_interrupt(int opcode) {
 }
 
 // Internal logic
-int get_flag_mask(enum Flag flag) {
+uint get_flag_mask(enum Flag flag) {
   switch (flag) {
     case FLAG_S: return 0x80;
     case FLAG_Z: return 0x40;
@@ -54,7 +54,7 @@ int get_flag_mask(enum Flag flag) {
 }
 
 void set_flag(enum Flag flag, int val) {
-  int mask = get_flag_mask(flag);
+  uint mask = get_flag_mask(flag);
 
   if (val) {
     cpu->flags = (cpu->flags | mask) & 0xFF;
@@ -64,11 +64,11 @@ void set_flag(enum Flag flag, int val) {
 }
 
 int get_flag(enum Flag flag) {
-  int mask = get_flag_mask(flag);
+  uint mask = get_flag_mask(flag);
   return (cpu->flags & mask) != 0;
 }
 
-int check_condition(int condition) {
+int check_condition(uint condition) {
   switch (condition) {
     case 0: return !get_flag(FLAG_Z); // No zero
     case 1: return get_flag(FLAG_Z); // Zero
@@ -84,7 +84,7 @@ int check_condition(int condition) {
   }
 }
 
-void set_reg(int reg, int val) {
+void set_reg(uint reg, uint val) {
   val &= 0xFF;
 
   switch (reg) {
@@ -110,7 +110,7 @@ void set_reg(int reg, int val) {
   }
 }
 
-int get_reg(int reg) {
+uint get_reg(uint reg) {
   switch (reg) {
     case 7: return cpu->A;
     case 0: return cpu->B;
@@ -126,7 +126,7 @@ int get_reg(int reg) {
   }
 }
 
-int get_reg_pair(int reg_pair) {
+uint get_reg_pair(uint reg_pair) {
   switch (reg_pair) {
     case 0: return CONCAT(cpu->B, cpu->C);
     case 1: return CONCAT(cpu->D, cpu->E);
@@ -138,9 +138,9 @@ int get_reg_pair(int reg_pair) {
   }
 }
 
-void set_reg_pair(int reg_pair, int val) {
-  int hi = (val >> 8) & 0xFF;
-  int lo = val & 0xFF;
+void set_reg_pair(uint reg_pair, uint val) {
+  uint hi = (val >> 8) & 0xFF;
+  uint lo = val & 0xFF;
 
   switch (reg_pair) {
     case 0:
@@ -165,7 +165,7 @@ void set_reg_pair(int reg_pair, int val) {
 }
 
 // Sets the sign, zero and parity bits based on the given value
-void setSZP(int val) {
+void setSZP(uint val) {
   val &= 0xFF;
 
   set_flag(FLAG_S, val & 0x80);
@@ -173,37 +173,40 @@ void setSZP(int val) {
   set_flag(FLAG_P, !__builtin_parity(val));
 }
 
-void push_stackb(int val) {
-  write_byte(--cpu->SP, val & 0xFF);
+void push_stackb(uint val) {
+  cpu->SP = (cpu->SP-1) & 0XFFFF;
+  write_byte(cpu->SP, val & 0xFF);
 }
 
-void push_stackw(int val) {
+void push_stackw(uint val) {
   push_stackb((val & 0xFF00) >> 8);
   push_stackb(val & 0xFF);
 }
 
-int pop_stackb() {
-  return read_byte(cpu->SP++);
+uint pop_stackb() {
+  uint byte = read_byte(cpu->SP);
+  cpu->SP = (cpu->SP + 1) & 0xFFFF;
+  return byte;
 }
 
-int pop_stackw() {
-  int lo = pop_stackb();
-  int hi = pop_stackb();
+uint pop_stackw() {
+  uint lo = pop_stackb();
+  uint hi = pop_stackb();
 
   return CONCAT(hi, lo);
 }
 
-int next_byte() {
+uint next_byte() {
   return read_byte(cpu->PC++);
 }
 
-int next_word() {
-  int word  = read_word(cpu->PC);
+uint next_word() {
+  uint word  = read_word(cpu->PC);
   cpu->PC += 2;
   return word;
 }
 
-int next_instruction_opcode() {
+uint next_instruction_opcode() {
   if (pending_interrupt) {
     cpu->INTE = 0;
     return interrupt_opcode;
@@ -224,16 +227,16 @@ void nop() {
 }
 
 // MOV - Move
-void mov(int opcode) {
-  int dst = (opcode & 0x38) >> 3;
-  int src = opcode & 0x07;
+void mov(uint opcode) {
+  uint  dst = (opcode & 0x38) >> 3;
+  uint  src = opcode & 0x07;
 
   set_reg(dst, get_reg(src));
 }
 
 // MVI - Move Immediate
-void mvi(int opcode) {
-  int reg = (opcode & 0x38) >> 3;
+void mvi(uint opcode) {
+  uint reg = (opcode & 0x38) >> 3;
   set_reg(reg, next_byte());
 }
 
@@ -248,26 +251,26 @@ void lda() {
 }
 
 // LXI - Load Register Pair Immediate
-void lxi(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void lxi(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
   set_reg_pair(reg_pair, next_word());
 }
 
 // STAX - Store Accumulator
-void stax(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void stax(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
   write_byte(get_reg_pair(reg_pair), cpu->A);
 }
 
 // LDAX - Load Accumulator
-void ldax(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void ldax(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
   cpu->A = read_byte(get_reg_pair(reg_pair));
 }
 
 // INR - Increment Register or Memory
-void inr(int opcode) {
-  int reg = (opcode & 0x38) >> 3;
+void inr(uint opcode) {
+  uint reg = (opcode & 0x38) >> 3;
 
   set_flag(FLAG_A, (get_reg(reg) & 0x0F) == 0x0F);
   set_reg(reg, get_reg(reg)+1);
@@ -275,8 +278,8 @@ void inr(int opcode) {
 }
 
 // DCR - Decrement Register or Memory
-void dcr(int opcode) {
-  int reg = (opcode & 0x38) >> 3;
+void dcr(uint opcode) {
+  uint reg = (opcode & 0x38) >> 3;
 
   set_flag(FLAG_A, !(get_reg(reg) & 0x0F) == 0);
   set_reg(reg, get_reg(reg)-1);
@@ -284,14 +287,14 @@ void dcr(int opcode) {
 }
 
 // INX - Increment Register Pair
-void inx(int opcode) {
-  int reg = (opcode & 0x30) >> 4;
+void inx(uint opcode) {
+  uint reg = (opcode & 0x30) >> 4;
   set_reg_pair(reg, get_reg_pair(reg)+1);
 }
 
 // DCX - Decrement Register Pair
-void dcx(int opcode) {
-  int reg = (opcode & 0x30) >> 4;
+void dcx(uint opcode) {
+  uint reg = (opcode & 0x30) >> 4;
   set_reg_pair(reg, get_reg_pair(reg)-1);
 }
 
@@ -313,8 +316,8 @@ void daa() {
 }
 
 // ADD - Add Register or Memory to Accumulator
-void add(int opcode) {
-  int reg = opcode & 0x07;
+void add(uint opcode) {
+  uint reg = opcode & 0x07;
 
   // Detect carry out of lower 4 bits
   set_flag(FLAG_A, ((cpu->A & 0xF) + (get_reg(reg) & 0x0F)) & 0x10);
@@ -327,10 +330,10 @@ void add(int opcode) {
 }
 
 // ADC - Add Register or Memory to Accumulator With Carry
-void adc(int opcode) {
-  int reg = opcode & 0x07;
+void adc(uint opcode) {
+  uint reg = opcode & 0x07;
 
-  int carry = get_flag(FLAG_C) ? 1 : 0;
+  uint carry = get_flag(FLAG_C) ? 1 : 0;
 
   // Detect carry out of lower 4 bits
   set_flag(FLAG_A, ((cpu->A & 0xF) + (get_reg(reg) & 0x0F) + carry) & 0x10);
@@ -343,10 +346,10 @@ void adc(int opcode) {
 }
 
 // SBB - Subtract Register or Memory from Accumulator with Borrow
-void sbb(int opcode) {
-  int reg = opcode & 0x07;
-  int carry = get_flag(FLAG_C) ? 1 : 0;
-  int val = get_reg(reg);
+void sbb(uint opcode) {
+  uint reg = opcode & 0x07;
+  uint carry = get_flag(FLAG_C) ? 1 : 0;
+  uint val = get_reg(reg);
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -360,9 +363,9 @@ void sbb(int opcode) {
 }
 
 // SUB - Subtract Register or Memory from Accumulator
-void sub(int opcode) {
-  int reg = opcode & 0x07;
-  int val = get_reg(reg);
+void sub(uint opcode) {
+  uint reg = opcode & 0x07;
+  uint val = get_reg(reg);
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -376,8 +379,8 @@ void sub(int opcode) {
 }
 
 // ANA - Logical and Memory or Register with Accumulator
-void ana(int opcode) {
-  int reg = opcode & 0x07;
+void ana(uint opcode) {
+  uint reg = opcode & 0x07;
   set_flag(FLAG_A, (get_reg(reg) | cpu->A) & 0x08);
 
   cpu->A &= get_reg(reg);
@@ -387,8 +390,8 @@ void ana(int opcode) {
 }
 
 // XRA - Logical Exclusive-Or Register or Memory With Accumulator
-void xra(int opcode) {
-  int reg = opcode & 0x07;
+void xra(uint opcode) {
+  uint reg = opcode & 0x07;
   cpu->A ^= get_reg(reg);
 
   set_flag(FLAG_C, 0);
@@ -398,7 +401,7 @@ void xra(int opcode) {
 
 // ADI - Add Immediate to Accumulator
 void adi() {
-  int val = next_byte();
+  uint val = next_byte();
 
   // Detect carry out of lower 4 bits
   set_flag(FLAG_A, ((cpu->A & 0xF) + (val & 0x0F)) & 0x10);
@@ -413,7 +416,7 @@ void adi() {
 
 // SUI - Subtract Immediate From Accumulator
 void sui() {
-  int val = next_byte();
+  uint val = next_byte();
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -428,7 +431,7 @@ void sui() {
 
 // ANI - Logical and Immediate With Accumulator
 void ani() {
-  int val = next_byte();
+  uint val = next_byte();
   set_flag(FLAG_A, (val | cpu->A) & 0x08);
 
   cpu->A &= val;
@@ -439,7 +442,7 @@ void ani() {
 
 // ORI - Logical or Immediate With Accumulator
 void ori() {
-  int val = next_byte();
+  uint val = next_byte();
 
   cpu->A |= val;
 
@@ -450,9 +453,9 @@ void ori() {
 
 // ACI - Add Immediate to Accumulator With Carry
 void aci() {
-  int val = next_byte();
+  uint val = next_byte();
 
-  int carry = get_flag(FLAG_C) ? 1 : 0;
+  uint carry = get_flag(FLAG_C) ? 1 : 0;
 
   // Detect carry out of lower 4 bits
   set_flag(FLAG_A, ((cpu->A & 0xF) + (val & 0x0F) + carry) & 0x10);
@@ -466,8 +469,8 @@ void aci() {
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi() {
-  int val = next_byte();
-  int carry = get_flag(FLAG_C) ? 1 : 0;
+  uint val = next_byte();
+  uint carry = get_flag(FLAG_C) ? 1 : 0;
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -482,7 +485,7 @@ void sbi() {
 
 // XRI - Logical Exclusive-Or Immediate With Accumulator
 void xri() {
-  int val = next_byte();
+  uint val = next_byte();
   cpu->A ^= val;
 
   set_flag(FLAG_C, 0);
@@ -492,7 +495,7 @@ void xri() {
 
 // CPI - Compare Immediate With Accumulator
 void cpi() {
-  int val = next_byte();
+  uint val = next_byte();
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -503,9 +506,9 @@ void cpi() {
 }
 
 // CMP - Compare Memory or Register With Accumulator
-void cmp(int opcode) {
-  int reg = opcode & 0x07;
-  int val = get_reg(reg);
+void cmp(uint opcode) {
+  uint reg = opcode & 0x07;
+  uint val = get_reg(reg);
 
   // subtraction operations set the carry flag if the unsigned value of the
   // operand is greater than the accumulator
@@ -516,8 +519,8 @@ void cmp(int opcode) {
 }
 
 // ORA - Logical or Memory or Register with Accumulator
-void ora(int opcode) {
-  int reg = opcode & 0x07;
+void ora(uint opcode) {
+  uint reg = opcode & 0x07;
   cpu->A |= get_reg(reg);
 
   set_flag(FLAG_A, 0);
@@ -527,7 +530,7 @@ void ora(int opcode) {
 
 // RLC - Rotate Accumulator Left
 void rlc() {
-  int hi_bit = (cpu->A & 0x80) != 0;
+  uint hi_bit = (cpu->A & 0x80) ? 1 : 0;
 
   cpu->A <<= 1;
   cpu->A |= hi_bit;
@@ -539,7 +542,7 @@ void rlc() {
 
 // RRC - Rotate Accumulator Right
 void rrc() {
-  int lo_bit = cpu->A & 0x01;
+  uint lo_bit = cpu->A & 0x01;
 
   cpu->A >>= 1;
   cpu->A |= (lo_bit << 7);
@@ -550,7 +553,7 @@ void rrc() {
 
 // RAL - Rotate Accumulator Left Through Carry
 void ral() {
-  int old_carry = get_flag(FLAG_C);
+  uint old_carry = get_flag(FLAG_C) ? 1 : 0;
 
   set_flag(FLAG_C, cpu->A & 0x80);
   cpu->A <<= 1;
@@ -561,7 +564,7 @@ void ral() {
 
 // RAR - Rotate Accumulator Right Through Carry
 void rar() {
-  int old_carry = get_flag(FLAG_C);
+  uint old_carry = get_flag(FLAG_C) ? 1 : 0;
 
   set_flag(FLAG_C, cpu->A & 0x01);
   cpu->A >>= 1;
@@ -586,10 +589,10 @@ void stc() {
 }
 
 // DAD - Double Add
-void dad(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void dad(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
 
-  int new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair));
+  uint new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(reg_pair));
   set_flag(FLAG_C, new_val & 0x10000);
 
   cpu->H = (new_val >> 8) & 0xFF;
@@ -598,8 +601,8 @@ void dad(int opcode) {
 
 // XCHG - Exchange Registers
 void xchg() {
-  int h_temp = cpu->H;
-  int l_temp = cpu->L;
+  uint h_temp = cpu->H;
+  uint l_temp = cpu->L;
 
   cpu->H = cpu->D;
   cpu->L = cpu->E;
@@ -614,30 +617,30 @@ void sphl() {
 
 // SHLD - Store H and L direct
 void shld() {
-  int addr = next_word();
+  uint addr = next_word();
   write_byte(addr, cpu->L);
   write_byte(addr + 1, cpu->H);
 }
 
 // LDHD - Load H and L direct
 void ldhd() {
-  int addr = next_word();
+  uint addr = next_word();
   cpu->L = read_byte(addr);
   cpu->H = read_byte(addr + 1);
 }
 
 // PUSH - Push Data Onto Stack
-void push(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void push(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
 
   // Register pair 3 refers to the concatenation of A and flags with push/pop
-  int data = reg_pair == 3 ? CONCAT(cpu->A, cpu->flags) : get_reg_pair(reg_pair);
+  uint data = reg_pair == 3 ? CONCAT(cpu->A, cpu->flags) : get_reg_pair(reg_pair);
   push_stackw(data);
 }
 
 // POP - Pop Data From Stack
-void pop(int opcode) {
-  int reg_pair = (opcode & 0x30) >> 4;
+void pop(uint opcode) {
+  uint reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
     cpu->flags = pop_stackb();
@@ -653,8 +656,8 @@ void pop(int opcode) {
 
 // XTHL - Exchange Stack
 void xthl() {
-  int temp_h = cpu->H;
-  int temp_l = cpu->L;
+  uint temp_h = cpu->H;
+  uint temp_l = cpu->L;
 
   cpu->L = read_byte(cpu->SP);
   cpu->H = read_byte(cpu->SP+1);
@@ -671,7 +674,7 @@ void xthl() {
 // CPE  - Call if Parity Even
 // CP   - Call if Plus
 // CM   - Call if Minus
-void general_call(int opcode) {
+void general_call(uint opcode) {
   // Unconditional call has LSB set, conditional calls do not
   if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     push_stackw(cpu->PC+2);
@@ -691,7 +694,7 @@ void general_call(int opcode) {
 // RP  - Return if Parity Odd
 // RP  - Return if Plus
 // RM  - Return if Minus
-void general_return(int opcode) {
+void general_return(uint opcode) {
   // Unconditional return has LSB set, conditional returns do not
   if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     cpu->PC = pop_stackw();
@@ -708,7 +711,7 @@ void general_return(int opcode) {
 // JP  - Jump if Parity Odd
 // JP  - Jump if Plus
 // JM  - Jump if Minus
-void general_jump(int opcode) {
+void general_jump(uint opcode) {
   if ((opcode & 1) || check_condition((opcode >> 3) & 0x07)) {
     cpu->PC = next_word();
   } else {
@@ -732,7 +735,7 @@ void di() {
 }
 
 // RST - Restart
-void rst(int opcode) {
+void rst(uint opcode) {
   push_stackw(cpu->PC);
   cpu->PC = opcode & 0x38;
 }
@@ -742,7 +745,8 @@ void step_cpu() {
     return;
   }
 
-  int opcode = next_instruction_opcode();
+  uint opcode = next_instruction_opcode();
+//  printf("%x\t%x\n", cpu->PC, opcode);
 
   switch (opcode) {
     case 0x00: // NOP
