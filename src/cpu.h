@@ -16,7 +16,7 @@
 #define RST_6 0xF7
 #define RST_7 0xFF
 
-struct cpu {
+struct i8080 {
   uint A, B, C, D, E;
   uint H, L;
   uint flags;
@@ -24,25 +24,27 @@ struct cpu {
   uint PC;
   int INTE;
   int halted;
+  char *memory;
+  size_t memsize;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
 
-struct cpu *cpu;
+struct i8080 *create_cpu();
+void free_cpu(struct i8080 *);
+void reset_cpu(struct i8080 *);
 
-void create_cpu();
-void step_cpu();
+void step_cpu(struct i8080 *);
 
-void reset_cpu();
-void set_flag(enum Flag, int);
-int get_flag(enum Flag);
+void set_flag(struct i8080 *, enum Flag, int);
+int get_flag(struct i8080 *, enum Flag);
 
-void request_interrupt(uint);
+void request_interrupt(struct i8080 *, uint);
 
-void push_stackb(uint);
-void push_stackw(uint);
+void push_stackb(struct i8080 *, uint);
+void push_stackw(struct i8080 *, uint);
 
-uint pop_stackb();
-uint pop_stackw();
+uint pop_stackb(struct i8080 *);
+uint pop_stackw(struct i8080 *);
 
 #endif

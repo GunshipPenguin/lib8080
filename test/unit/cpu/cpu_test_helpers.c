@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include "cpu.h"
 #include "memory.h"
 
@@ -13,22 +14,21 @@
  * - FLAGS register initialized to 0x02
  * - All other registers (including the program counter) initialized to 0x00
  */
-void setup_cpu_test_env() {
-  if (cpu == NULL) {
-    create_cpu();
+struct i8080 *setup_cpu_test_env() {
+  struct i8080 *cpu = create_cpu();
+  reset_cpu(cpu);
+  cpu->SP = 0x10;
+
+  // Create and zero out memory
+  create_memory(cpu, 128);
+  for (size_t i=0;i<128;i++) {
+    write_byte(cpu, i, 0);
   }
 
-  // Set all registers/flags to 0
-  reset_cpu();
+  return cpu;
+}
 
-  if (memory == NULL) {
-    create_memory(128);
-  }
-
-  // Zero out memory
-  for (int i=0;i<128;i++) {
-    write_byte(i, 0);
-  }
-
-  cpu->SP = 16;
+void teardown_cpu_test_env(struct i8080 *cpu) {
+  free_memory(cpu);
+  free_cpu(cpu);
 }

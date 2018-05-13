@@ -4,162 +4,166 @@
 #include "cpu_test_helpers.h"
 
 TEST_SUITE(instruction_ret);
-BEFORE_EACH() {
-  setup_cpu_test_env();
 
-  push_stackw(0xABCD);
+struct i8080 *cpu;
+
+BEFORE_EACH() {
+  cpu = setup_cpu_test_env();
+  push_stackw(cpu, 0xABCD);
 }
-AFTER_EACH() {}
+AFTER_EACH() {
+  teardown_cpu_test_env(cpu);
+}
 
 TEST_CASE(ret) {
-  write_byte(0, 0xC9); // RET
+  write_byte(cpu, 0, 0xC9); // RET
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(ret_alternate_0xd9) {
-  write_byte(0, 0xD9); // RET (alternate)
+  write_byte(cpu, 0, 0xD9); // RET (alternate)
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rnz_z_flag_set) {
-  write_byte(0, 0xC0); // RNZ
-  set_flag(FLAG_Z, 1);
+  write_byte(cpu, 0, 0xC0); // RNZ
+  set_flag(cpu, FLAG_Z, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rnz_z_flag_unset) {
-  write_byte(0, 0xC0); // RNZ
+  write_byte(cpu, 0, 0xC0); // RNZ
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rz_z_flag_set) {
-  write_byte(0, 0xC8); // RZ
-  set_flag(FLAG_Z, 1);
+  write_byte(cpu, 0, 0xC8); // RZ
+  set_flag(cpu, FLAG_Z, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rz_z_flag_unset) {
-  write_byte(0, 0xC8); // RZ
+  write_byte(cpu, 0, 0xC8); // RZ
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rnc_c_flag_set) {
-  write_byte(0, 0xD0); // RNC
-  set_flag(FLAG_C, 1);
+  write_byte(cpu, 0, 0xD0); // RNC
+  set_flag(cpu, FLAG_C, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rnc_c_flag_unset) {
-  write_byte(0, 0xD0); // RNC
+  write_byte(cpu, 0, 0xD0); // RNC
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rc_c_flag_set) {
-  write_byte(0, 0xD8); // RC
-  set_flag(FLAG_C, 1);
+  write_byte(cpu, 0, 0xD8); // RC
+  set_flag(cpu, FLAG_C, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rc_c_flag_unset) {
-  write_byte(0, 0xC8); // RZ
+  write_byte(cpu, 0, 0xC8); // RZ
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rpo_p_flag_set) {
-  write_byte(0, 0xE0); // RPO
-  set_flag(FLAG_P, 1);
+  write_byte(cpu, 0, 0xE0); // RPO
+  set_flag(cpu, FLAG_P, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rpo_p_flag_unset) {
-  write_byte(0, 0xE0); // RPO
+  write_byte(cpu, 0, 0xE0); // RPO
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rpe_p_flag_set) {
-  write_byte(0, 0xE8); // RPE
-  set_flag(FLAG_P, 1);
+  write_byte(cpu, 0, 0xE8); // RPE
+  set_flag(cpu, FLAG_P, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 
 TEST_CASE(rpe_p_flag_unset) {
-  write_byte(0, 0xE8); // RPE
+  write_byte(cpu, 0, 0xE8); // RPE
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rp_s_flag_set) {
-  write_byte(0, 0xF0); // RP
-  set_flag(FLAG_S, 1);
+  write_byte(cpu, 0, 0xF0); // RP
+  set_flag(cpu, FLAG_S, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(rp_s_flag_unset) {
-  write_byte(0, 0xF0); // RP
+  write_byte(cpu, 0, 0xF0); // RP
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rm_s_flag_set) {
-  write_byte(0, 0xF8); // RM
-  set_flag(FLAG_S, 1);
+  write_byte(cpu, 0, 0xF8); // RM
+  set_flag(cpu, FLAG_S, 1);
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
 }
 
 TEST_CASE(rm_s_flag_unset) {
-  write_byte(0, 0xF8); // RM
+  write_byte(cpu, 0, 0xF8); // RM
 
-  step_cpu();
+  step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
 }
