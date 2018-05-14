@@ -15,8 +15,8 @@ AFTER_EACH() {
 }
 
 TEST_CASE(mvi_b_d8) {
-  write_byte(cpu, 0, 0x06);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x06); // MVI B
+  write_byte(cpu, 1, 0x01); // d8
   cpu->B = 0;
 
   step_cpu(cpu);
@@ -26,8 +26,8 @@ TEST_CASE(mvi_b_d8) {
 }
 
 TEST_CASE(mvi_c_d8) {
-  write_byte(cpu, 0, 0x0E);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x0E); // MVI C
+  write_byte(cpu, 1, 0x01); // d8
   cpu->C = 0;
 
   step_cpu(cpu);
@@ -37,8 +37,8 @@ TEST_CASE(mvi_c_d8) {
 }
 
 TEST_CASE(mvi_d_d8) {
-  write_byte(cpu, 0, 0x16);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x16); // MVI D
+  write_byte(cpu, 1, 0x01); // d8
   cpu->D = 0;
 
   step_cpu(cpu);
@@ -48,8 +48,8 @@ TEST_CASE(mvi_d_d8) {
 }
 
 TEST_CASE(mvi_e_d8) {
-  write_byte(cpu, 0, 0x1E);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x1E); // MVI E
+  write_byte(cpu, 1, 0x01); // d8
   cpu->E = 0;
 
   step_cpu(cpu);
@@ -59,8 +59,8 @@ TEST_CASE(mvi_e_d8) {
 }
 
 TEST_CASE(mvi_h_d8) {
-  write_byte(cpu, 0, 0x26);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x26); // MVI H
+  write_byte(cpu, 1, 0x01); // d8
   cpu->H = 0;
 
   step_cpu(cpu);
@@ -70,8 +70,8 @@ TEST_CASE(mvi_h_d8) {
 }
 
 TEST_CASE(mvi_l_d8) {
-  write_byte(cpu, 0, 0x2E);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x2E); // MVI L
+  write_byte(cpu, 1, 0x01); // d8
   cpu->L = 0;
 
   step_cpu(cpu);
@@ -81,8 +81,8 @@ TEST_CASE(mvi_l_d8) {
 }
 
 TEST_CASE(mvi_m_d8) {
-  write_byte(cpu, 0, 0x36);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x36); // MVI M
+  write_byte(cpu, 1, 0x01); // d8
   cpu->H = 0x00; cpu->L = 0x08;
 
   step_cpu(cpu);
@@ -92,8 +92,8 @@ TEST_CASE(mvi_m_d8) {
 }
 
 TEST_CASE(mvi_a_d8) {
-  write_byte(cpu, 0, 0x3E);
-  write_byte(cpu, 1, 0x01);
+  write_byte(cpu, 0, 0x3E); // MVI A
+  write_byte(cpu, 1, 0x01); // d8
   cpu->A = 0;
 
   step_cpu(cpu);
