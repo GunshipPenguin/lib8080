@@ -3,8 +3,6 @@
 #include "cpu.h"
 #include "memory.h"
 
-struct cpu *cpu = NULL;
-
 static int pending_interrupt = 0;
 static uint interrupt_opcode;
 
