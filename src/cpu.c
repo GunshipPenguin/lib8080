@@ -3,9 +3,6 @@
 #include "cpu.h"
 #include "memory.h"
 
-static int pending_interrupt = 0;
-static uint interrupt_opcode;
-
 // External API
 struct i8080 *create_cpu() {
   return malloc(sizeof(struct i8080));
@@ -29,14 +26,14 @@ void reset_cpu(struct i8080 *cpu) {
   cpu->SP = 0;
   cpu->halted = 0;
 
-  pending_interrupt = 0;
+  cpu->pending_interrupt = 0;
 }
 
 void request_interrupt(struct i8080 *cpu, uint opcode) {
   cpu->halted = 0;
   if (cpu->INTE) {
-    pending_interrupt = 1;
-    interrupt_opcode = opcode;
+    cpu->pending_interrupt = 1;
+    cpu->interrupt_opcode = opcode;
   }
 }
 
@@ -208,12 +205,40 @@ uint next_word(struct i8080 *cpu) {
 }
 
 uint next_instruction_opcode(struct i8080 *cpu) {
-  if (pending_interrupt) {
+  if (cpu->pending_interrupt) {
     cpu->INTE = 0;
-    return interrupt_opcode;
+    return cpu->interrupt_opcode;
   } else {
     return next_byte(cpu);
   }
+}
+
+uint perform_sub(struct i8080 *cpu, uint minu, uint subt, int borrow) {
+  subt = (subt + (borrow ? 1 : 0)) & 0xFF;
+  uint subt_ones = (~subt) & 0xFF;
+
+  // Minuend plus ones complement of subtrahend with a carry input
+  uint res16 = minu + subt_ones + 1;
+  uint res8 = res16 & 0xFF;
+
+  set_flag(cpu, FLAG_C, !(res16 & 0x100));
+  set_flag(cpu, FLAG_A, ((minu & 0xF) + (subt_ones & 0xF) + 1) & 0x10);
+  setSZP(cpu, res8);
+
+  return res8;
+}
+
+uint perform_add(struct i8080 *cpu, uint a, uint b, int carry) {
+  uint carry_val = carry ? 1 : 0;
+
+  uint res16 = a + b + carry_val;
+  uint res8 = res16 & 0xFF;
+
+  set_flag(cpu, FLAG_C, res16 & 0x100);
+  set_flag(cpu, FLAG_A, (((a & 0xF) + (b & 0xF) + carry_val) & 0x10));
+  setSZP(cpu, res8);
+
+  return res8;
 }
 
 // Instructions follow
@@ -318,65 +343,22 @@ void daa(struct i8080 *cpu) {
 
 // ADD - Add Register or Memory to Accumulator
 void add(struct i8080 *cpu, uint opcode) {
-  uint reg = opcode & 0x07;
-
-  // Detect carry out of lower 4 bits
-  set_flag(cpu, FLAG_A, ((cpu->A & 0xF) + (get_reg(cpu, reg) & 0x0F)) & 0x10);
-
-  cpu->A += get_reg(cpu, reg);
-
-  set_flag(cpu, FLAG_C, cpu->A & 0x100);
-  cpu->A &= 0xFF;
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
 }
 
 // ADC - Add Register or Memory to Accumulator With Carry
 void adc(struct i8080 *cpu, uint opcode) {
-  uint reg = opcode & 0x07;
-
-  uint carry = get_flag(cpu, FLAG_C) ? 1 : 0;
-
-  // Detect carry out of lower 4 bits
-  set_flag(cpu, FLAG_A, ((cpu->A & 0xF) + (get_reg(cpu, reg) & 0x0F) + carry) & 0x10);
-
-  cpu->A += get_reg(cpu, reg) + carry;
-
-  set_flag(cpu, FLAG_C, cpu->A & 0x100);
-  cpu->A &= 0xFF;
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, opcode & 0x7), get_flag(cpu, FLAG_C));
 }
 
 // SBB - Subtract Register or Memory from Accumulator with Borrow
 void sbb(struct i8080 *cpu, uint opcode) {
-  uint reg = opcode & 0x07;
-  uint carry = get_flag(cpu, FLAG_C) ? 1 : 0;
-  uint val = get_reg(cpu, reg);
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, (val + carry) > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val + carry) & 0x0F) & 0x10));
-
-  cpu->A -= (val + carry);
-  cpu->A &= 0xFF;
-
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), get_flag(cpu, FLAG_C));
 }
 
 // SUB - Subtract Register or Memory from Accumulator
 void sub(struct i8080 *cpu, uint opcode) {
-  uint reg = opcode & 0x07;
-  uint val = get_reg(cpu, reg);
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, val > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
-
-  cpu->A -= val;
-  cpu->A &= 0xFF;
-
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
 }
 
 // ANA - Logical and Memory or Register with Accumulator
@@ -402,32 +384,12 @@ void xra(struct i8080 *cpu, uint opcode) {
 
 // ADI - Add Immediate to Accumulator
 void adi(struct i8080 *cpu) {
-  uint val = next_byte(cpu);
-
-  // Detect carry out of lower 4 bits
-  set_flag(cpu, FLAG_A, ((cpu->A & 0xF) + (val & 0x0F)) & 0x10);
-
-  cpu->A += val;
-
-  set_flag(cpu, FLAG_C, cpu->A & 0x100);
-  cpu->A &= 0xFF;
-  setSZP(cpu, cpu->A);
-
+  cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // SUI - Subtract Immediate From Accumulator
 void sui(struct i8080 *cpu) {
-  uint val = next_byte(cpu);
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, val > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
-
-  cpu->A -= val;
-  cpu->A &= 0xFF;
-
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // ANI - Logical and Immediate With Accumulator
@@ -454,34 +416,12 @@ void ori(struct i8080 *cpu) {
 
 // ACI - Add Immediate to Accumulator With Carry
 void aci(struct i8080 *cpu) {
-  uint val = next_byte(cpu);
-
-  uint carry = get_flag(cpu, FLAG_C) ? 1 : 0;
-
-  // Detect carry out of lower 4 bits
-  set_flag(cpu, FLAG_A, ((cpu->A & 0xF) + (val & 0x0F) + carry) & 0x10);
-
-  cpu->A += val + carry;
-
-  set_flag(cpu, FLAG_C, cpu->A & 0x100);
-  cpu->A &= 0xFF;
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
 }
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi(struct i8080 *cpu) {
-  uint val = next_byte(cpu);
-  uint carry = get_flag(cpu, FLAG_C) ? 1 : 0;
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, (val + carry) > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val + carry) & 0x0F) & 0x10));
-
-  cpu->A -= (val + carry);
-  cpu->A &= 0xFF;
-
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
 }
 
 // XRI - Logical Exclusive-Or Immediate With Accumulator
@@ -496,27 +436,12 @@ void xri(struct i8080 *cpu) {
 
 // CPI - Compare Immediate With Accumulator
 void cpi(struct i8080 *cpu) {
-  uint val = next_byte(cpu);
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, val > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
-
-  setSZP(cpu, (cpu->A - val) & 0xFF);
+  perform_sub(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // CMP - Compare Memory or Register With Accumulator
 void cmp(struct i8080 *cpu, uint opcode) {
-  uint reg = opcode & 0x07;
-  uint val = get_reg(cpu, reg);
-
-  // subtraction operations set the carry flag if the unsigned value of the
-  // operand is greater than the accumulator
-  set_flag(cpu, FLAG_C, val > cpu->A);
-  set_flag(cpu, FLAG_A, ((cpu->A & 0x0F) + (TWOS_B(val) & 0x0F) & 0x10));
-
-  setSZP(cpu, (cpu->A - val) & 0xFF);
+  perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
 }
 
 // ORA - Logical or Memory or Register with Accumulator

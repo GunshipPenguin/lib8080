@@ -105,7 +105,7 @@ TEST_CASE(sbb_a) {
 }
 
 // Bit flag tests
-TEST_CASE(sbb_unsets_c_flag) {
+TEST_CASE(sbb_resets_c_flag) {
   write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0xF0; cpu->B = 0x0F;
   set_flag(cpu, FLAG_C, 1);

@@ -137,6 +137,16 @@ TEST_CASE(sub_sets_a_flag) {
   ASSERT_TRUE(get_flag(cpu, FLAG_A));
 }
 
+TEST_CASE(sub_sets_a_flag_subtrahend_0) {
+  write_byte(cpu, 0, 0x90); // SUB B
+  cpu->A = 0x1; cpu->B = 0x00;
+  set_flag(cpu, FLAG_A, 0);
+
+  step_cpu(cpu);
+
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+}
+
 TEST_CASE(sub_resets_c_flag) {
   write_byte(cpu, 0, 0x90); // SUB B
   cpu->A = 0x01; cpu->B = 0x01;

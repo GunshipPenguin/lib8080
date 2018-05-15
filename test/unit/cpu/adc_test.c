@@ -162,3 +162,13 @@ TEST_CASE(adc_sets_a_flag) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_A));
 }
+
+TEST_CASE(adc_sets_a_flag_carry_set) {
+  write_byte(cpu, 0, 0x8F); // ADC B
+  cpu->A = 0x0D, cpu->B = 0x01;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+}

@@ -26,6 +26,9 @@ struct i8080 {
   int halted;
   char *memory;
   size_t memsize;
+
+  int pending_interrupt;
+  uint interrupt_opcode;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
