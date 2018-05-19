@@ -687,3 +687,16 @@ TEST_CASE(cpi_sets_a_flag) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_A));
 }
+
+// Comparisons with 0 are tricky
+// https://retrocomputing.stackexchange.com/questions/6407/intel-8080-behaviour-of-the-carry-bit-when-comparing-a-value-with-0
+TEST_CASE(cpi_compare_with_0) {
+  write_byte(cpu, 0, 0xFE); // CPI
+  write_byte(cpu, 1, 0); // d8
+  cpu->A = 0x01;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+}

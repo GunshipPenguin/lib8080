@@ -162,3 +162,15 @@ TEST_CASE(cmp_sets_c_flag) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
 }
+
+// Comparisons with 0 are tricky
+// https://retrocomputing.stackexchange.com/questions/6407/intel-8080-behaviour-of-the-carry-bit-when-comparing-a-value-with-0
+TEST_CASE(cmp_compare_with_0) {
+  write_byte(cpu, 0, 0xB8); // CMP B
+  cpu->A = 0x01; cpu->B = 0x00;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+}
