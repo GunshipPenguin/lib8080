@@ -402,6 +402,20 @@ TEST_CASE(sbi_sets_a_flag) {
   ASSERT_TRUE(get_flag(cpu, FLAG_A));
 }
 
+TEST_CASE(sbi_subtrahend_0xFF_with_borrow) {
+  write_byte(cpu, 0, 0xDE); // SBI
+  write_byte(cpu, 1, 0xFF); // d8
+  cpu->A = 0xAB;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->A, 0xAB);
+  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+}
+
+
 TEST_CASE(ani) {
   write_byte(cpu, 0, 0xE6); // ANI
   write_byte(cpu, 1, 6); // d8

@@ -155,3 +155,21 @@ TEST_CASE(sbb_sets_s_flag) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_S));
 }
+
+/*
+ * This is a finicky corner case since a naive implementation would do this
+ * by adding 1 to 0xFF, resulting in 0 (since B is an 8 bit register)
+ * and then subtracting 0 from the contents of the A register, thus leaving A
+ * unchanged.
+ */
+TEST_CASE(sbb_subtrahend_0xFF_with_borrow) {
+  write_byte(cpu, 0, 0x98); // SBB B
+  cpu->A = 0xAB; cpu->B = 0xFF;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->A, 0xAB);
+  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+}

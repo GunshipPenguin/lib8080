@@ -214,15 +214,16 @@ uint next_instruction_opcode(struct i8080 *cpu) {
 }
 
 uint perform_sub(struct i8080 *cpu, uint minu, uint subt, int borrow) {
-  subt = (subt + (borrow ? 1 : 0)) & 0xFF;
   uint subt_ones = (~subt) & 0xFF;
 
   // Minuend plus ones complement of subtrahend with a carry input
-  uint res16 = minu + subt_ones + 1;
+  // Note that if there is a borrow, we negate the carry in (for forming the
+  // 2's complement) as the borrow will cancel it out
+  uint res16 = minu + subt_ones + (borrow ? 0 : 1);
   uint res8 = res16 & 0xFF;
 
   set_flag(cpu, FLAG_C, !(res16 & 0x100));
-  set_flag(cpu, FLAG_A, ((minu & 0xF) + (subt_ones & 0xF) + 1) & 0x10);
+  set_flag(cpu, FLAG_A, ((minu & 0xF) + (subt_ones & 0xF) + (borrow ? 0 : 1)) & 0x10);
   setSZP(cpu, res8);
 
   return res8;
