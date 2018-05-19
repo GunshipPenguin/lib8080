@@ -1069,8 +1069,8 @@ void step_cpu(struct i8080 *cpu) {
     case 0xEC: // CPE a16
     case 0xF4: // CP a16
     case 0xFC: // CM a16
-     general_call(cpu, opcode);
-     break;
+      general_call(cpu, opcode);
+      break;
 
     case 0xE3: // XTHL
       xthl(cpu);
