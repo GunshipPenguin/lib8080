@@ -136,3 +136,23 @@ TEST_CASE(ana_sets_p_flag) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_P));
 }
+
+// On the 8080, logical and instructions set the aux carry flag to the logical
+// or of bit 3 of the values involved in the operation
+TEST_CASE(ana_sets_a_flag) {
+  write_byte(cpu, 0, 0xA0); // ANA B
+  cpu->A = 0x08; cpu->B = 0xF0;
+
+  step_cpu(cpu);
+
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+}
+
+TEST_CASE(ana_resets_a_flag) {
+  write_byte(cpu, 0, 0xA0); // ANA B
+  cpu->A = 0xF0; cpu->B = 0x07;
+
+  step_cpu(cpu);
+
+  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+}

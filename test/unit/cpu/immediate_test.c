@@ -454,6 +454,28 @@ TEST_CASE(ani_sets_s_flag) {
   ASSERT_TRUE(get_flag(cpu, FLAG_S));
 }
 
+// On the 8080, logical and instructions set the aux carry flag to the logical
+// or of bit 3 of the values involved in the operation
+TEST_CASE(ani_sets_a_flag) {
+  write_byte(cpu, 0, 0xE6); // ANI
+  write_byte(cpu, 1, 0xF0); // d8
+  cpu->A = 0x08;
+
+  step_cpu(cpu);
+
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+}
+
+TEST_CASE(ani_resets_a_flag) {
+  write_byte(cpu, 0, 0xE6); // ANI
+  write_byte(cpu, 1, 0x07); // d8
+  cpu->A = 0xF0;
+
+  step_cpu(cpu);
+
+  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+}
+
 TEST_CASE(ori) {
   write_byte(cpu, 0, 0xF6); // ORI
   write_byte(cpu, 1, 6); // d8
