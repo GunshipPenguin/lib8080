@@ -29,11 +29,17 @@ To run the unit tests, first build i8080 using Cmake as above, then run:
 ./i8080test
 ```
 
-This repository also contains two CP/M test binaries that verify the
+This repository also contains four CP/M test binaries that verify the
 functionality of the 8080 pretty comprehensively. They are:
 
 - CPUTEST.COM by Supersoft Associates
 - TEST.COM by Microcosm Associates
+- 8080PRE.COM by Frank D. Cringle and Ian Bartholomew
+- 8080EXM.COM by Frank D. Cringle and Ian Bartholomew
+
+Notably, the last one (8080EXM.COM) is the "8080 CPU Exerciser", which takes 
+more than 3 hours to run on a regularly clocked 2 MHz 8080 and tests essentially
+everything that can be tested on an 8080.
 
 These binaries are located in `test/integration/test_bins`, and files containing
 their expected output are located in `test/integration/test_bins/output`.
@@ -49,7 +55,7 @@ use:
 ./binloader test/integration/test_bins/TEST.COM
 ```
 
-The `integrationtest.sh` script automatically runs both test binaries using
+The `integrationtest.sh` script automatically runs all test binaries using
 binloader.
 
 ## License
@@ -61,3 +67,6 @@ testing](https://github.com/GunshipPenguin/i8080/tree/master/test/integration/te
 are copyright their respective owners:
 - CPUTEST.COM © 1981 Supersoft Associates
 - TEST.COM © 1980 Microcosm Associates
+- 8080PRE.COM (GPLv3) © 1994 Frank D. Cringle © 2009 Ian Bartholomew
+- 8080EXM.COM (GPLv3) © 1994 Frank D. Cringle © 2009 Ian Bartholomew
+
