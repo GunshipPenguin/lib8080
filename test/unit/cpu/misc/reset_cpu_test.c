@@ -27,4 +27,6 @@ TEST_CASE(reset_cpu) {
   ASSERT_EQUAL(cpu->SP, 0);
   ASSERT_EQUAL(cpu->halted, 0);
   ASSERT_EQUAL(cpu->pending_interrupt, 0);
+
+  free_cpu(cpu);
 }
