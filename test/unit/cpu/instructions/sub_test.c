@@ -1,5 +1,5 @@
 #include "attounit.h"
-#include "cpu.h"
+#include "i8080.h"
 #include "memory.h"
 #include "cpu_test_helpers.h"
 

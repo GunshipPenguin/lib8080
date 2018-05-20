@@ -3,7 +3,6 @@ cmake-build-debug
 obj
 
 # Binaries
-i8080
 i8080test
 binloader
 

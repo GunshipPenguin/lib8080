@@ -1,32 +1,29 @@
-# i8080
-[![Travis branch](https://img.shields.io/travis/GunshipPenguin/i8080/master.svg)](https://travis-ci.org/GunshipPenguin/i8080)
+# lib8080
+[![Travis branch](https://img.shields.io/travis/GunshipPenguin/lib8080/master.svg)](https://travis-ci.org/GunshipPenguin/lib8080)
 
-A well tested, cycle accurate emulation library for the Intel 8080 written
-in C99.
+An accurate, well tested emulation library for the Intel 8080 written in C99.
 
-Currently under construction.
+## Usage
 
-## Building
-
-i8080 uses Cmake as its build system. To build it, use:
-
-```
-cmake .
-make -j2
-```
+lib8080 consists of 
+[just 2 files](https://github.com/GunshipPenguin/lib8080/tree/master/src). To use
+it in your project, just include i8080.h, compile and run.
 
 ## Tests
 
-i8080 is heavily tested using
+lib8080 is heavily tested using
 [AttoUnit](https://github.com/GunshipPenguin/attounit). Unit tests are located
 in `test/unit`. Every CPU instruction is tested at least once, with many having
 multiple tests to verify correct behaviour with regard to status flags / edge
 cases, etc.
 
-To run the unit tests, first build i8080 using Cmake as above, then run:
+lib8080 uses CMake as its build system. To run the unit tests, first build 
+the test binary and run it as follows:
 
 ```
-./i8080test
+cmake .
+make lib8080test -j2
+./lib8080test
 ```
 
 This repository also contains four CP/M test binaries that verify the
@@ -60,10 +57,10 @@ binloader.
 
 ## License
 
-[MIT](https://github.com/GunshipPenguin/i8080/blob/master/LICENSE) © Rhys Rustad-Elliott
+[MIT](https://github.com/GunshipPenguin/lib8080/blob/master/LICENSE) © Rhys Rustad-Elliott
 
 [CP/M binaries used for
-testing](https://github.com/GunshipPenguin/i8080/tree/master/test/integration/test_bins)
+testing](https://github.com/GunshipPenguin/lib8080/tree/master/test/integration/test_bins)
 are copyright their respective owners:
 - CPUTEST.COM © 1981 Supersoft Associates
 - TEST.COM © 1980 Microcosm Associates

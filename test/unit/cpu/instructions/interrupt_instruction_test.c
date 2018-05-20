@@ -1,5 +1,5 @@
 #include "attounit.h"
-#include "cpu.h"
+#include "i8080.h"
 #include "memory.h"
 #include "cpu_test_helpers.h"
 
@@ -123,7 +123,7 @@ TEST_CASE(hlt) {
 
   ASSERT_EQUAL(cpu->PC, 1);
 
-  request_interrupt(cpu, RST_7);
+  request_interrupt(cpu, I8080_RST_7);
 
   step_cpu(cpu);
 

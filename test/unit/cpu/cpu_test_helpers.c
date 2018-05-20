@@ -1,5 +1,5 @@
 #include <malloc.h>
-#include "cpu.h"
+#include "i8080.h"
 #include "memory.h"
 
 /**

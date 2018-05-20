@@ -1,5 +1,5 @@
 #include "attounit.h"
-#include "cpu.h"
+#include "i8080.h"
 #include "memory.h"
 #include "cpu_test_helpers.h"
 
@@ -17,7 +17,7 @@ AFTER_EACH() {
 TEST_CASE(interrupt_request_inte_set) {
   cpu->PC = 60;
   cpu->INTE = 1;
-  request_interrupt(cpu, RST_0);
+  request_interrupt(cpu, I8080_RST_0);
 
   step_cpu(cpu);
 
@@ -32,7 +32,7 @@ TEST_CASE(interrupt_request_inte_unset) {
   cpu->INTE = 0;
 
   write_byte(cpu, 60, 0x00); // NOP
-  request_interrupt(cpu, RST_0);
+  request_interrupt(cpu, I8080_RST_0);
 
   step_cpu(cpu);
 

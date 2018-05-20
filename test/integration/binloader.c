@@ -1,5 +1,5 @@
 #include "memory.h"
-#include "cpu.h"
+#include "i8080.h"
 #include <stdio.h>
 
 void intercept_bdos_call(struct i8080 *cpu) {

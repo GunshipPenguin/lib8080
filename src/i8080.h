@@ -1,21 +1,20 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "defs.h"
 #include <stddef.h>
 
-// Register pair convenience macros
 #define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
-#define TWOS_B(val) ((~(val) + 1) & 0xFF)
 
-#define RST_0 0xC7
-#define RST_1 0xCF
-#define RST_2 0xD7
-#define RST_3 0xDF
-#define RST_4 0xE7
-#define RST_5 0xEF
-#define RST_6 0xF7
-#define RST_7 0xFF
+typedef unsigned int uint;
+
+#define I8080_RST_0 0xC7
+#define I8080_RST_1 0xCF
+#define I8080_RST_2 0xD7
+#define I8080_RST_3 0xDF
+#define I8080_RST_4 0xE7
+#define I8080_RST_5 0xEF
+#define I8080_RST_6 0xF7
+#define I8080_RST_7 0xFF
 
 struct i8080 {
   uint A, B, C, D, E;
@@ -50,5 +49,15 @@ void push_stackw(struct i8080 *, uint);
 
 uint pop_stackb(struct i8080 *);
 uint pop_stackw(struct i8080 *);
+
+void create_memory(struct i8080 *, size_t);
+void load_memory(struct i8080 *, char *, size_t);
+void free_memory(struct i8080 *);
+
+uint read_byte(struct i8080 *, uint);
+void write_byte(struct i8080 *, uint, uint);
+
+uint read_word(struct i8080 *, uint);
+void write_word(struct i8080 *, uint, uint);
 
 #endif

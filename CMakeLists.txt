@@ -1,17 +1,13 @@
 cmake_minimum_required(VERSION 3.7.2)
-project(altair C)
+project(libi8080 C)
 
 set(CMAKE_C_STANDARD 99)
 
 include_directories(src)
 include_directories(test/include)
-include_directories()
 
-SET(SRC_FILES src/cpu.c
-              src/cpu.h
-              src/memory.c
-              src/memory.h
-              src/defs.h)
+SET(SRC_FILES src/i8080.c
+              src/i8080.h)
 
 SET(TEST_FILES
         test/include/attounit.h
@@ -46,6 +42,5 @@ SET(TEST_FILES
         test/unit/cpu/misc/flags_test.c
         test/unit/cpu/misc/reset_cpu_test.c)
 
-add_executable(i8080 src/main.c ${SRC_FILES})
 add_executable(i8080test ${SRC_FILES} ${TEST_FILES})
 add_executable(binloader test/integration/binloader.c ${SRC_FILES})
