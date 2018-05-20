@@ -15,14 +15,14 @@ AFTER_EACH() {
 }
 
 // Translate a binary number into its 2 digit BCD equivalent
-int bcd_encode(int val) {
+uint bcd_encode(int val) {
   int lo_digit = (val % 10) & 0x0F;
   int hi_digit = (val / 10) & 0x0F;
 
   return (hi_digit << 4) | (lo_digit);
 }
 
-int bcd_decode(int val) {
+uint bcd_decode(int val) {
   int lo_digit = val & 0x0F;
   int hi_digit = (val >> 4) & 0x0F;
 
@@ -102,6 +102,44 @@ TEST_CASE(daa_95_plus_20) {
   ASSERT_FALSE(get_flag(cpu, FLAG_A));
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
+}
+
+TEST_CASE(daa_0x3F) {
+  write_byte(cpu, 0, 0x27); // DAA
+  cpu->A = 0x3F;
+
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->A, 0x45);
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(daa_0xFA) {
+  write_byte(cpu, 0, 0x27); // DAA
+  cpu->A = 0xFA;
+
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->A, 0x60);
+  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_EQUAL(cpu->PC, 1);
+}
+
+TEST_CASE(daa_0x11_carry_set) {
+  write_byte(cpu, 0, 0x27); // DAA
+  cpu->A = 0x11;
+  set_flag(cpu, FLAG_C, 1);
+
+  step_cpu(cpu);
+
+  // Lower nibble shouldn't be incremented, but upper should be
+  ASSERT_EQUAL(cpu->A, 0x71);
+  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_EQUAL(cpu->PC, 1);
 }
 
 /*

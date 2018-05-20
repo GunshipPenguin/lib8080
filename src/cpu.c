@@ -327,19 +327,29 @@ void dcx(struct i8080 *cpu, uint opcode) {
 
 // DAA - Decimal Adjust Accumulator
 void daa(struct i8080 *cpu) {
-  if (((cpu->A & 0x0F) > 9) || get_flag(cpu, FLAG_A)) {
-    set_flag(cpu, FLAG_A, ((cpu->A & 0xF) + 6) & 0x10);
-    cpu->A += 6;
-    cpu->A &= 0xFF;
+  uint add = 0;
+
+  if (((cpu->A & 0xF) > 9) || get_flag(cpu, FLAG_A)) {
+    add |= 0x06;
   }
 
-  if ((((cpu->A >> 4) & 0x0F) > 9) || get_flag(cpu, FLAG_C)) {
-    cpu->A += (6 << 4);
-    set_flag(cpu, FLAG_C, cpu->A & 0x100);
-    cpu->A &= 0xFF;
+  int carry = get_flag(cpu, FLAG_C);
+  /*
+   * If the upper nibble is greater than 9
+   * or the upper nibble will be greater than 9 when adding 6 to the lower nibble
+   * or the carry flag is set
+   */
+  if (((cpu->A & 0xF0) > 0x90) ||
+      (((cpu->A & 0xF0) >= 0x90) && ((cpu->A & 0xF) > 9)) ||
+      get_flag(cpu, FLAG_C)) {
+    add |= 0x60;
+    carry = 1;
   }
 
-  setSZP(cpu, cpu->A);
+  cpu->A = perform_add(cpu, cpu->A, add, 0);
+
+  // The carry bit is unaffected if there is no carry out of the upper nibble
+  set_flag(cpu, FLAG_C, carry);
 }
 
 // ADD - Add Register or Memory to Accumulator
