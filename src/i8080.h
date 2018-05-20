@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef LIB8080_I8080_H_
+#define LIB8080_I8080_H_
 
 #include <stddef.h>
 
