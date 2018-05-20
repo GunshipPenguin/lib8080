@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include "defs.h"
+#include <stddef.h>
 
 // Register pair convenience macros
 #define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
