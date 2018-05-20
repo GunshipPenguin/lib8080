@@ -41,7 +41,10 @@ SET(TEST_FILES
         test/unit/cpu/instructions/immediate_test.c
         test/unit/cpu/instructions/sbb_test.c
         test/unit/cpu/instructions/interrupt_instruction_test.c
-        test/unit/cpu/instructions/daa_test.c)
+        test/unit/cpu/instructions/daa_test.c
+        test/unit/cpu/misc/stack_ops_test.c
+        test/unit/cpu/misc/flags_test.c
+        test/unit/cpu/misc/reset_cpu_test.c)
 
 add_executable(i8080 src/main.c ${SRC_FILES})
 add_executable(i8080test ${SRC_FILES} ${TEST_FILES})
