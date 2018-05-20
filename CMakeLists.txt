@@ -42,5 +42,5 @@ SET(TEST_FILES
         test/unit/misc/flags_test.c
         test/unit/misc/reset_cpu_test.c)
 
-add_executable(i8080test ${SRC_FILES} ${TEST_FILES})
+add_executable(lib8080test ${SRC_FILES} ${TEST_FILES})
 add_executable(binloader test/integration/binloader.c ${SRC_FILES})

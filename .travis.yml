@@ -6,6 +6,6 @@ install:
 script:
   - cmake .
   - make
-  - ./i8080test
-  - valgrind --leak-check=full --error-exitcode=1 ./i8080test
+  - ./lib8080test
+  - valgrind --leak-check=full --error-exitcode=1 ./lib8080test
   - ./integrationtest.sh

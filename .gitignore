@@ -3,7 +3,7 @@ cmake-build-debug
 obj
 
 # Binaries
-i8080test
+lib8080test
 binloader
 
 # CMake files
