@@ -1,4 +1,4 @@
-#include <malloc.h>
+#include <stdlib.h>
 #include "i8080.h"
 #include "memory.h"
 
@@ -15,12 +15,12 @@
  * - All other registers (including the program counter) initialized to 0x00
  */
 struct i8080 *setup_cpu_test_env() {
-  struct i8080 *cpu = create_cpu();
+  struct i8080 *cpu = malloc(sizeof(struct i8080));
   reset_cpu(cpu);
   cpu->SP = 0x10;
 
   // Create and zero out memory
-  create_memory(cpu, 128);
+  cpu->memory = malloc(sizeof(char) * 128);
   for (size_t i=0;i<128;i++) {
     write_byte(cpu, i, 0);
   }
@@ -29,6 +29,6 @@ struct i8080 *setup_cpu_test_env() {
 }
 
 void teardown_cpu_test_env(struct i8080 *cpu) {
-  free_memory(cpu);
-  free_cpu(cpu);
+  free(cpu->memory);
+  free(cpu);
 }

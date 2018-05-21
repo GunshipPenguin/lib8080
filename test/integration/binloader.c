@@ -1,6 +1,7 @@
 #include "memory.h"
 #include "i8080.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void intercept_bdos_call(struct i8080 *cpu) {
   if (cpu->C == 2) { // BDOS function 2 (C_WRITE) - Console output
@@ -22,8 +23,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  struct i8080 *cpu = create_cpu();
-  create_memory(cpu, 65536); // 64 KiB
+  struct i8080 *cpu = malloc(sizeof(struct i8080));
+  cpu->memsize = 65536;
+  cpu->memory = malloc(cpu->memsize);
   reset_cpu(cpu);
 
   // CP/M Binaries are loaded with a 256 byte offset

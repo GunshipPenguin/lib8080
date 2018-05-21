@@ -31,9 +31,8 @@ struct i8080 {
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
 
-struct i8080 *create_cpu();
-void free_cpu(struct i8080 *);
 void reset_cpu(struct i8080 *);
+void load_memory(struct i8080 *, char *, size_t);
 
 void step_cpu(struct i8080 *);
 
@@ -47,10 +46,6 @@ void push_stackw(struct i8080 *, uint);
 
 uint pop_stackb(struct i8080 *);
 uint pop_stackw(struct i8080 *);
-
-void create_memory(struct i8080 *, size_t);
-void load_memory(struct i8080 *, char *, size_t);
-void free_memory(struct i8080 *);
 
 uint read_byte(struct i8080 *, uint);
 void write_byte(struct i8080 *, uint, uint);

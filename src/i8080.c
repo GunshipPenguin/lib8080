@@ -1,18 +1,10 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "i8080.h"
 
 #define CONCAT(HI, LO) ((((HI) << 8) | ((LO) & 0XFF)) & 0XFFFF)
 
 // External API
-struct i8080 *create_cpu() {
-  return malloc(sizeof(struct i8080));
-}
-
-void free_cpu(struct i8080 *cpu){
-  free(cpu);
-}
-
 void reset_cpu(struct i8080 *cpu) {
   cpu->A = 0;
   cpu->B = 0;
@@ -38,19 +30,8 @@ void request_interrupt(struct i8080 *cpu, uint opcode) {
   }
 }
 
-// Internal logic
-void create_memory(struct i8080 *cpu, size_t size) {
-  cpu->memsize = size;
-  cpu->memory = malloc(size);
-}
-
-void free_memory(struct i8080 *cpu) {
-  free(cpu->memory);
-  cpu->memsize = 0;
-}
-
-void load_memory(struct i8080 *cpu, char *filename, size_t offset) {
-  FILE *file = fopen(filename, "r");
+void load_memory(struct i8080 *cpu, char *path, size_t offset) {
+  FILE *file = fopen(path, "r");
   if (file == NULL) {
     perror("fopen");
     exit(1);
@@ -65,6 +46,8 @@ void load_memory(struct i8080 *cpu, char *filename, size_t offset) {
   fclose(file);
 }
 
+
+// Internal logic
 uint read_byte(struct i8080 *cpu, uint addr) {
   return cpu->memory[addr] & 0xFF;
 }
