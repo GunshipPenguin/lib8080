@@ -8,7 +8,7 @@ void intercept_bdos_call(struct i8080 *cpu) {
       putchar((char) cpu->E);
     }
   } else if (cpu->C == 9) { // BDOS function 9 (C_WRITESTR) - Output string
-    for (int addr = CONCAT(cpu->D, cpu->E);read_byte(cpu, addr) != '$';addr++) {
+    for (int addr = ((cpu->D << 8) | cpu->E);read_byte(cpu, addr) != '$';addr++) {
       if (read_byte(cpu, addr) != 0) {
         putchar((char) read_byte(cpu, addr));
       }

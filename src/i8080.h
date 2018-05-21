@@ -3,8 +3,6 @@
 
 #include <stddef.h>
 
-#define CONCAT(HI, LO) (((HI << 8) | (LO & 0XFF)) & 0XFFFF)
-
 typedef unsigned int uint;
 
 #define I8080_RST_0 0xC7

@@ -78,7 +78,7 @@ TEST_CASE(dcr_m) {
   cpu->H = 0; cpu->L = 0x08;
 
   step_cpu(cpu);
-  ASSERT_EQUAL(read_byte(cpu, CONCAT(cpu->H, cpu->L)), 0);
+  ASSERT_EQUAL(read_byte(cpu, 0x08), 0);
   ASSERT_EQUAL(cpu->PC, 1);
 }
 

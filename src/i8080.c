@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "i8080.h"
 
+#define CONCAT(HI, LO) ((((HI) << 8) | ((LO) & 0XFF)) & 0XFFFF)
+
 // External API
 struct i8080 *create_cpu() {
   return malloc(sizeof(struct i8080));
