@@ -52,7 +52,7 @@ void load_memory(struct i8080 *cpu, char *path, size_t offset) {
 
 // Internal logic
 uint read_byte(struct i8080 *cpu, uint addr) {
-  if (addr > cpu->memsize) {
+  if (addr >= cpu->memsize) {
     return '\0';
   }
 
