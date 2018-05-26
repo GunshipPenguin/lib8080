@@ -4,8 +4,10 @@
 #include <stddef.h>
 
 typedef unsigned int uint;
-typedef uint (*i8080_in_handler)(uint);
-typedef void (*i8080_out_handler)(uint, uint);
+
+struct i8080;
+typedef uint (*i8080_in_handler)(struct i8080 *, uint);
+typedef void (*i8080_out_handler)(struct i8080 *, uint, uint);
 
 #define I8080_RST_0 0xC7
 #define I8080_RST_1 0xCF

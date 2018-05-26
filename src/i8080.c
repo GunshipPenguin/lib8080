@@ -788,7 +788,7 @@ void in(struct i8080 *cpu) {
   cpu->cyc += 10;
   uint dev = next_byte(cpu);
   if (cpu->input_handler != NULL) {
-    cpu->A = cpu->input_handler(dev);
+    cpu->A = cpu->input_handler(cpu, dev);
   }
 }
 
@@ -796,7 +796,7 @@ void out(struct i8080 *cpu) {
   cpu->cyc += 10;
   uint dev = next_byte(cpu);
   if (cpu->output_handler != NULL) {
-    cpu->output_handler(dev, cpu->A);
+    cpu->output_handler(cpu, dev, cpu->A);
   }
 }
 

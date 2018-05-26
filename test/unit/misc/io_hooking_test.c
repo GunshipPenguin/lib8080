@@ -27,14 +27,14 @@ AFTER_EACH() {
   teardown_cpu_test_env(cpu);
 }
 
-uint in_handler(uint dev) {
+uint in_handler(struct i8080 *cpu, uint dev) {
   in_handler_called = 1;
   in_handler_dev_arg = dev;
 
   return in_handler_retval;
 }
 
-void out_handler(uint dev, uint data) {
+void out_handler(struct i8080 *cpu, uint dev, uint data) {
   out_handler_called = 1;
   out_handler_dev_arg = dev;
   out_handler_data_arg = data;
