@@ -38,9 +38,11 @@ SET(TEST_FILES
         test/unit/instructions/sbb_test.c
         test/unit/instructions/interrupt_instruction_test.c
         test/unit/instructions/daa_test.c
+        test/unit/instructions/io_test.c
         test/unit/misc/stack_ops_test.c
         test/unit/misc/flags_test.c
-        test/unit/misc/reset_cpu_test.c)
+        test/unit/misc/reset_cpu_test.c
+        test/unit/misc/io_hooking_test.c)
 
 add_executable(lib8080test ${SRC_FILES} ${TEST_FILES})
 add_executable(binloader test/integration/binloader.c ${SRC_FILES})

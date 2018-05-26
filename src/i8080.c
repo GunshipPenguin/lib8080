@@ -19,6 +19,9 @@ void reset_cpu(struct i8080 *cpu) {
   cpu->SP = 0;
   cpu->halted = 0;
 
+  cpu->input_handler = NULL;
+  cpu->output_handler = NULL;
+
   cpu->pending_interrupt = 0;
 }
 
@@ -710,6 +713,21 @@ void rst(struct i8080 *cpu, uint opcode) {
   cpu->PC = opcode & 0x38;
 }
 
+// IN - Input
+void in(struct i8080 *cpu) {
+  uint dev = next_byte(cpu);
+  if (cpu->input_handler != NULL) {
+    cpu->A = cpu->input_handler(dev);
+  }
+}
+
+void out(struct i8080 *cpu) {
+  uint dev = next_byte(cpu);
+  if (cpu->output_handler != NULL) {
+    cpu->output_handler(dev, cpu->A);
+  }
+}
+
 void step_cpu(struct i8080 *cpu) {
   if (cpu->halted) {
     return;
@@ -971,6 +989,14 @@ void step_cpu(struct i8080 *cpu) {
     case 0xA6: // ANA M
     case 0xA7: // ANA A
       ana(cpu, opcode);
+      break;
+
+    case 0xDB: // IN d8
+      in(cpu);
+      break;
+
+    case 0xD3: // OUT d8
+      out(cpu);
       break;
 
     case 0xC6: // ADI d8

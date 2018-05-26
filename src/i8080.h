@@ -4,6 +4,8 @@
 #include <stddef.h>
 
 typedef unsigned int uint;
+typedef uint (*i8080_in_handler)(uint);
+typedef void (*i8080_out_handler)(uint, uint);
 
 #define I8080_RST_0 0xC7
 #define I8080_RST_1 0xCF
@@ -27,6 +29,9 @@ struct i8080 {
 
   int pending_interrupt;
   uint interrupt_opcode;
+
+  i8080_in_handler input_handler;
+  i8080_out_handler output_handler;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
