@@ -52,6 +52,10 @@ void load_memory(struct i8080 *cpu, char *path, size_t offset) {
 
 // Internal logic
 uint read_byte(struct i8080 *cpu, uint addr) {
+  if (addr > cpu->memsize) {
+    return '\0';
+  }
+
   return cpu->memory[addr] & 0xFF;
 }
 
@@ -63,7 +67,9 @@ uint read_word(struct i8080 *cpu, uint addr) {
 }
 
 void write_byte(struct i8080 *cpu, uint addr, uint data) {
-  cpu->memory[addr] = (char) data;
+  if (addr < cpu->memsize) {
+    cpu->memory[addr] = (char) data;
+  }
 }
 
 void write_word(struct i8080 *cpu, uint addr, uint data) {
