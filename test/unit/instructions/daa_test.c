@@ -29,6 +29,15 @@ uint bcd_decode(int val) {
   return hi_digit*10 + lo_digit;
 }
 
+TEST_CASE(daa_cycles) {
+  write_byte(cpu, 0, 0x27);
+  cpu->A = 0x11;
+
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->cyc, 4);
+}
+
 TEST_CASE(daa_1_plus_1) {
   write_byte(cpu, 0, 0x80); // ADD B
   write_byte(cpu, 1, 0x27); // DAA

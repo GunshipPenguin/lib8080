@@ -21,6 +21,7 @@ TEST_CASE(jmp) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jmp_alternate_0xcb) {
@@ -30,6 +31,7 @@ TEST_CASE(jmp_alternate_0xcb) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 
@@ -41,6 +43,7 @@ TEST_CASE(jnz_z_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jnz_z_flag_unset) {
@@ -50,6 +53,7 @@ TEST_CASE(jnz_z_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jz_z_flag_set) {
@@ -60,6 +64,7 @@ TEST_CASE(jz_z_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 
@@ -70,6 +75,7 @@ TEST_CASE(jz_z_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jnc_c_flag_set) {
@@ -80,6 +86,7 @@ TEST_CASE(jnc_c_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jnc_c_flag_unset) {
@@ -89,6 +96,7 @@ TEST_CASE(jnc_c_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jc_c_flag_set) {
@@ -99,6 +107,7 @@ TEST_CASE(jc_c_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 
@@ -109,6 +118,7 @@ TEST_CASE(jc_c_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jpo_p_flag_set) {
@@ -119,6 +129,7 @@ TEST_CASE(jpo_p_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jpo_p_flag_unset) {
@@ -128,6 +139,7 @@ TEST_CASE(jpo_p_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jpe_p_flag_set) {
@@ -138,6 +150,7 @@ TEST_CASE(jpe_p_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jpe_p_flag_unset) {
@@ -147,6 +160,7 @@ TEST_CASE(jpe_p_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jp_s_flag_set) {
@@ -157,6 +171,7 @@ TEST_CASE(jp_s_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jp_s_flag_unset) {
@@ -166,6 +181,7 @@ TEST_CASE(jp_s_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jm_s_flag_set) {
@@ -176,6 +192,7 @@ TEST_CASE(jm_s_flag_set) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(jm_s_flag_unset) {
@@ -185,6 +202,7 @@ TEST_CASE(jm_s_flag_unset) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(pchl) {
@@ -194,4 +212,5 @@ TEST_CASE(pchl) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 0xABCD);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }

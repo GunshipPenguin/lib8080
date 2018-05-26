@@ -23,6 +23,7 @@ TEST_CASE(cmp_b) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_c) {
@@ -33,6 +34,7 @@ TEST_CASE(cmp_c) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_d) {
@@ -43,6 +45,7 @@ TEST_CASE(cmp_d) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_e) {
@@ -53,6 +56,7 @@ TEST_CASE(cmp_e) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_h) {
@@ -63,6 +67,7 @@ TEST_CASE(cmp_h) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_l) {
@@ -73,6 +78,7 @@ TEST_CASE(cmp_l) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmp_m) {
@@ -84,6 +90,7 @@ TEST_CASE(cmp_m) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(cmp_a) {
@@ -94,6 +101,7 @@ TEST_CASE(cmp_a) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 // Bit flag tests

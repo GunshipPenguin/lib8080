@@ -14,10 +14,13 @@ void reset_cpu(struct i8080 *cpu) {
   cpu->H = 0;
   cpu->L = 0;
   cpu->PC = 0;
-  cpu->INTE = 0;
-  cpu->flags = 2;
   cpu->SP = 0;
+  cpu->flags = 2;
+
+  cpu->INTE = 0;
   cpu->halted = 0;
+
+  cpu->cyc = 0;
 
   cpu->input_handler = NULL;
   cpu->output_handler = NULL;
@@ -288,18 +291,20 @@ uint perform_add(struct i8080 *cpu, uint a, uint b, int carry) {
 // Instructions follow
 // HLT - Halt
 void hlt(struct i8080 *cpu) {
+  cpu->cyc += 7;
   cpu->halted = 1;
 }
 
 // NOP - No Operation
 void nop(struct i8080 *cpu) {
-
+  cpu->cyc += 4;
 }
 
 // MOV - Move
 void mov(struct i8080 *cpu, uint opcode) {
-  uint  dst = (opcode & 0x38) >> 3;
-  uint  src = opcode & 0x07;
+  uint dst = (opcode & 0x38) >> 3;
+  uint src = opcode & 0x07;
+  cpu->cyc += (dst == 6 || src == 6) ? 7 : 5;
 
   set_reg(cpu, dst, get_reg(cpu, src));
 }
@@ -307,33 +312,39 @@ void mov(struct i8080 *cpu, uint opcode) {
 // MVI - Move Immediate
 void mvi(struct i8080 *cpu, uint opcode) {
   uint reg = (opcode & 0x38) >> 3;
+  cpu->cyc += (reg == 6) ? 10 : 7;
   set_reg(cpu, reg, next_byte(cpu));
 }
 
 // STA - Store Accumulator Direct
 void sta(struct i8080 *cpu) {
+  cpu->cyc += 13;
   write_byte(cpu, next_word(cpu), cpu->A);
 }
 
 // LDA - Load Accumulator Direct
 void lda(struct i8080 *cpu) {
+  cpu->cyc += 13;
   cpu->A = read_byte(cpu, next_word(cpu));
 }
 
 // LXI - Load Register Pair Immediate
 void lxi(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 10;
   uint reg_pair = (opcode & 0x30) >> 4;
   set_reg_pair(cpu, reg_pair, next_word(cpu));
 }
 
 // STAX - Store Accumulator
 void stax(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 7;
   uint reg_pair = (opcode & 0x30) >> 4;
   write_byte(cpu, get_reg_pair(cpu, reg_pair), cpu->A);
 }
 
 // LDAX - Load Accumulator
 void ldax(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 7;
   uint reg_pair = (opcode & 0x30) >> 4;
   cpu->A = read_byte(cpu, get_reg_pair(cpu, reg_pair));
 }
@@ -341,6 +352,7 @@ void ldax(struct i8080 *cpu, uint opcode) {
 // INR - Increment Register or Memory
 void inr(struct i8080 *cpu, uint opcode) {
   uint reg = (opcode & 0x38) >> 3;
+  cpu->cyc += (reg == 6) ? 10 : 5;
 
   set_flag(cpu, FLAG_A, (get_reg(cpu, reg) & 0x0F) == 0x0F);
   set_reg(cpu, reg, get_reg(cpu, reg)+1);
@@ -350,6 +362,7 @@ void inr(struct i8080 *cpu, uint opcode) {
 // DCR - Decrement Register or Memory
 void dcr(struct i8080 *cpu, uint opcode) {
   uint reg = (opcode & 0x38) >> 3;
+  cpu->cyc += (reg == 6) ? 10 : 5;
 
   set_flag(cpu, FLAG_A, !(get_reg(cpu, reg) & 0x0F) == 0);
   set_reg(cpu, reg, get_reg(cpu, reg)-1);
@@ -358,18 +371,21 @@ void dcr(struct i8080 *cpu, uint opcode) {
 
 // INX - Increment Register Pair
 void inx(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 5;
   uint reg = (opcode & 0x30) >> 4;
   set_reg_pair(cpu, reg, get_reg_pair(cpu, reg)+1);
 }
 
 // DCX - Decrement Register Pair
 void dcx(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 5;
   uint reg = (opcode & 0x30) >> 4;
   set_reg_pair(cpu, reg, get_reg_pair(cpu, reg)-1);
 }
 
 // DAA - Decimal Adjust Accumulator
 void daa(struct i8080 *cpu) {
+  cpu->cyc += 4;
   uint add = 0;
 
   if (((cpu->A & 0xF) > 9) || get_flag(cpu, FLAG_A)) {
@@ -397,27 +413,36 @@ void daa(struct i8080 *cpu) {
 
 // ADD - Add Register or Memory to Accumulator
 void add(struct i8080 *cpu, uint opcode) {
-  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
+  uint reg = opcode & 0x7;
+  cpu->cyc += (reg == 6) ? 7 : 4;
+  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, reg), 0);
 }
 
 // ADC - Add Register or Memory to Accumulator With Carry
 void adc(struct i8080 *cpu, uint opcode) {
-  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, opcode & 0x7), get_flag(cpu, FLAG_C));
+  uint reg = opcode & 0x7;
+  cpu->cyc += (reg == 6) ? 7 : 4;
+  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, reg), get_flag(cpu, FLAG_C));
 }
 
 // SBB - Subtract Register or Memory from Accumulator with Borrow
 void sbb(struct i8080 *cpu, uint opcode) {
-  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), get_flag(cpu, FLAG_C));
+  uint reg = opcode & 0x7;
+  cpu->cyc += (reg == 6) ? 7 : 4;
+  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, reg), get_flag(cpu, FLAG_C));
 }
 
 // SUB - Subtract Register or Memory from Accumulator
 void sub(struct i8080 *cpu, uint opcode) {
-  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
+  uint reg = opcode & 0x7;
+  cpu->cyc += (reg == 6) ? 7 : 4;
+  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, reg), 0);
 }
 
 // ANA - Logical and Memory or Register with Accumulator
 void ana(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x07;
+  cpu->cyc += (reg == 6) ? 7 : 4;
   set_flag(cpu, FLAG_A, (get_reg(cpu, reg) | cpu->A) & 0x08);
 
   cpu->A &= get_reg(cpu, reg);
@@ -429,6 +454,7 @@ void ana(struct i8080 *cpu, uint opcode) {
 // XRA - Logical Exclusive-Or Register or Memory With Accumulator
 void xra(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x07;
+  cpu->cyc += (reg == 6) ? 7 : 4;
   cpu->A ^= get_reg(cpu, reg);
 
   set_flag(cpu, FLAG_C, 0);
@@ -438,16 +464,19 @@ void xra(struct i8080 *cpu, uint opcode) {
 
 // ADI - Add Immediate to Accumulator
 void adi(struct i8080 *cpu) {
+  cpu->cyc += 7;
   cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // SUI - Subtract Immediate From Accumulator
 void sui(struct i8080 *cpu) {
+  cpu->cyc += 7;
   cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // ANI - Logical and Immediate With Accumulator
 void ani(struct i8080 *cpu) {
+  cpu->cyc += 7;
   uint val = next_byte(cpu);
   set_flag(cpu, FLAG_A, (val | cpu->A) & 0x08);
 
@@ -459,6 +488,7 @@ void ani(struct i8080 *cpu) {
 
 // ORI - Logical or Immediate With Accumulator
 void ori(struct i8080 *cpu) {
+  cpu->cyc += 7;
   uint val = next_byte(cpu);
 
   cpu->A |= val;
@@ -470,16 +500,19 @@ void ori(struct i8080 *cpu) {
 
 // ACI - Add Immediate to Accumulator With Carry
 void aci(struct i8080 *cpu) {
+  cpu->cyc += 7;
   cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
 }
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi(struct i8080 *cpu) {
+  cpu->cyc += 7;
   cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
 }
 
 // XRI - Logical Exclusive-Or Immediate With Accumulator
 void xri(struct i8080 *cpu) {
+  cpu->cyc += 7;
   uint val = next_byte(cpu);
   cpu->A ^= val;
 
@@ -490,17 +523,21 @@ void xri(struct i8080 *cpu) {
 
 // CPI - Compare Immediate With Accumulator
 void cpi(struct i8080 *cpu) {
+  cpu->cyc += 7;
   perform_sub(cpu, cpu->A, next_byte(cpu), 0);
 }
 
 // CMP - Compare Memory or Register With Accumulator
 void cmp(struct i8080 *cpu, uint opcode) {
-  perform_sub(cpu, cpu->A, get_reg(cpu, opcode & 0x7), 0);
+  uint reg = opcode & 0x7;
+  cpu->cyc += (reg == 6) ? 7 : 4;
+  perform_sub(cpu, cpu->A, get_reg(cpu, reg), 0);
 }
 
 // ORA - Logical or Memory or Register with Accumulator
 void ora(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x07;
+  cpu->cyc += (reg == 6) ? 7 : 4;
   cpu->A |= get_reg(cpu, reg);
 
   set_flag(cpu, FLAG_A, 0);
@@ -510,6 +547,7 @@ void ora(struct i8080 *cpu, uint opcode) {
 
 // RLC - Rotate Accumulator Left
 void rlc(struct i8080 *cpu) {
+  cpu->cyc += 4;
   uint hi_bit = (cpu->A & 0x80) ? 1 : 0;
 
   cpu->A <<= 1;
@@ -522,6 +560,7 @@ void rlc(struct i8080 *cpu) {
 
 // RRC - Rotate Accumulator Right
 void rrc(struct i8080 *cpu) {
+  cpu->cyc += 4;
   uint lo_bit = cpu->A & 0x01;
 
   cpu->A >>= 1;
@@ -533,6 +572,7 @@ void rrc(struct i8080 *cpu) {
 
 // RAL - Rotate Accumulator Left Through Carry
 void ral(struct i8080 *cpu) {
+  cpu->cyc += 4;
   uint old_carry = get_flag(cpu, FLAG_C) ? 1 : 0;
 
   set_flag(cpu, FLAG_C, cpu->A & 0x80);
@@ -544,6 +584,7 @@ void ral(struct i8080 *cpu) {
 
 // RAR - Rotate Accumulator Right Through Carry
 void rar(struct i8080 *cpu) {
+  cpu->cyc += 4;
   uint old_carry = get_flag(cpu, FLAG_C) ? 1 : 0;
 
   set_flag(cpu, FLAG_C, cpu->A & 0x01);
@@ -555,21 +596,25 @@ void rar(struct i8080 *cpu) {
 
 // CMC - Complement Carry Bit
 void cmc(struct i8080 *cpu) {
+  cpu->cyc += 4;
   set_flag(cpu, FLAG_C, !get_flag(cpu, FLAG_C));
 }
 
 // CMA - Complement Accumulator
 void cma(struct i8080 *cpu) {
+  cpu->cyc += 4;
   cpu->A = (~cpu->A) & 0xFF;
 }
 
 // STC - Set Carry Bit
 void stc(struct i8080 *cpu) {
+  cpu->cyc += 4;
   set_flag(cpu, FLAG_C, 1);
 }
 
 // DAD - Double Add
 void dad(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 10;
   uint reg_pair = (opcode & 0x30) >> 4;
 
   uint new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(cpu, reg_pair));
@@ -581,6 +626,7 @@ void dad(struct i8080 *cpu, uint opcode) {
 
 // XCHG - Exchange Registers
 void xchg(struct i8080 *cpu) {
+  cpu->cyc += 5;
   uint h_temp = cpu->H;
   uint l_temp = cpu->L;
 
@@ -592,18 +638,21 @@ void xchg(struct i8080 *cpu) {
 
 // SPHL - Load SP from H and L
 void sphl(struct i8080 *cpu) {
+  cpu->cyc += 5;
   cpu->SP = CONCAT(cpu->H, cpu->L);
 }
 
 // SHLD - Store H and L direct
 void shld(struct i8080 *cpu) {
+  cpu->cyc += 16;
   uint addr = next_word(cpu);
   write_byte(cpu, addr, cpu->L);
   write_byte(cpu, addr + 1, cpu->H);
 }
 
-// LDHD - Load H and L direct
+// LHLD - Load H and L direct
 void ldhd(struct i8080 *cpu) {
+  cpu->cyc += 16;
   uint addr = next_word(cpu);
   cpu->L = read_byte(cpu, addr);
   cpu->H = read_byte(cpu, addr + 1);
@@ -611,6 +660,7 @@ void ldhd(struct i8080 *cpu) {
 
 // PUSH - Push Data Onto Stack
 void push(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 11;
   uint reg_pair = (opcode & 0x30) >> 4;
 
   // Register pair 3 refers to the concatenation of A and flags with push/pop
@@ -620,6 +670,7 @@ void push(struct i8080 *cpu, uint opcode) {
 
 // POP - Pop Data From Stack
 void pop(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 10;
   uint reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
@@ -636,6 +687,7 @@ void pop(struct i8080 *cpu, uint opcode) {
 
 // XTHL - Exchange Stack
 void xthl(struct i8080 *cpu) {
+  cpu->cyc += 18;
   uint temp_h = cpu->H;
   uint temp_l = cpu->L;
 
@@ -655,8 +707,11 @@ void xthl(struct i8080 *cpu) {
 // CP   - Call if Plus
 // CM   - Call if Minus
 void general_call(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 11;
+
   // Unconditional call has LSB set, conditional calls do not
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
+    cpu->cyc += 6;
     push_stackw(cpu, cpu->PC+2);
     cpu->PC = next_word(cpu);
   } else {
@@ -675,8 +730,11 @@ void general_call(struct i8080 *cpu, uint opcode) {
 // RP  - Return if Plus
 // RM  - Return if Minus
 void general_return(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 5;
+
   // Unconditional return has LSB set, conditional returns do not
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
+    cpu->cyc += 6;
     cpu->PC = pop_stackw(cpu);
   }
 }
@@ -692,6 +750,7 @@ void general_return(struct i8080 *cpu, uint opcode) {
 // JP  - Jump if Plus
 // JM  - Jump if Minus
 void general_jump(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 10;
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
     cpu->PC = next_word(cpu);
   } else {
@@ -701,27 +760,32 @@ void general_jump(struct i8080 *cpu, uint opcode) {
 
 // PCHL - Load Program Counter
 void pchl(struct i8080 *cpu) {
+  cpu->cyc += 5;
   cpu->PC = CONCAT(cpu->H, cpu->L);
 }
 
 // EI - Enable Interrupts
 void ei(struct i8080 *cpu) {
+  cpu->cyc += 4;
   cpu->INTE = 1;
 }
 
 // DI - Disable Interrupts
 void di(struct i8080 *cpu) {
+  cpu->cyc += 4;
   cpu->INTE = 0;
 }
 
 // RST - Restart
 void rst(struct i8080 *cpu, uint opcode) {
+  cpu->cyc += 11;
   push_stackw(cpu, cpu->PC);
   cpu->PC = opcode & 0x38;
 }
 
 // IN - Input
 void in(struct i8080 *cpu) {
+  cpu->cyc += 10;
   uint dev = next_byte(cpu);
   if (cpu->input_handler != NULL) {
     cpu->A = cpu->input_handler(dev);
@@ -729,6 +793,7 @@ void in(struct i8080 *cpu) {
 }
 
 void out(struct i8080 *cpu) {
+  cpu->cyc += 10;
   uint dev = next_byte(cpu);
   if (cpu->output_handler != NULL) {
     cpu->output_handler(dev, cpu->A);

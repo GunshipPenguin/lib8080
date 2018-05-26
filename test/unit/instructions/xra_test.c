@@ -23,6 +23,7 @@ TEST_CASE(xra_b) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_c) {
@@ -33,6 +34,7 @@ TEST_CASE(xra_c) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_d) {
@@ -43,6 +45,7 @@ TEST_CASE(xra_d) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_e) {
@@ -53,6 +56,7 @@ TEST_CASE(xra_e) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_h) {
@@ -63,6 +67,7 @@ TEST_CASE(xra_h) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_l) {
@@ -73,6 +78,7 @@ TEST_CASE(xra_l) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(xra_m) {
@@ -84,6 +90,7 @@ TEST_CASE(xra_m) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(xra_a) {
@@ -94,6 +101,7 @@ TEST_CASE(xra_a) {
 
   ASSERT_EQUAL(cpu->A, 0x00);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 // Bit flag tests

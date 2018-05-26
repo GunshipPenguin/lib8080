@@ -22,6 +22,7 @@ TEST_CASE(stc_carry_0) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(stc_carry_1) {
@@ -32,6 +33,7 @@ TEST_CASE(stc_carry_1) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmc_carry_1) {
@@ -42,6 +44,7 @@ TEST_CASE(cmc_carry_1) {
 
   ASSERT_FALSE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmc_carry_0) {
@@ -52,4 +55,5 @@ TEST_CASE(cmc_carry_0) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }

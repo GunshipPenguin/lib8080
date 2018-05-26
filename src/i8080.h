@@ -32,6 +32,8 @@ struct i8080 {
 
   i8080_in_handler input_handler;
   i8080_out_handler output_handler;
+
+  uint cyc;
 };
 
 enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};

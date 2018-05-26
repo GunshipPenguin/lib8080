@@ -19,6 +19,7 @@ TEST_CASE(nop_0x00) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x08) {
@@ -26,6 +27,7 @@ TEST_CASE(nop_0x08) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x10) {
@@ -33,6 +35,7 @@ TEST_CASE(nop_0x10) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x18) {
@@ -40,6 +43,7 @@ TEST_CASE(nop_0x18) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x20) {
@@ -47,6 +51,7 @@ TEST_CASE(nop_0x20) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x28) {
@@ -54,6 +59,7 @@ TEST_CASE(nop_0x28) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x30) {
@@ -61,6 +67,7 @@ TEST_CASE(nop_0x30) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(nop_0x38) {
@@ -68,4 +75,5 @@ TEST_CASE(nop_0x38) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }

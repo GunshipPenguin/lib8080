@@ -23,6 +23,7 @@ TEST_CASE(mvi_b_d8) {
 
   ASSERT_EQUAL(cpu->B, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_c_d8) {
@@ -34,6 +35,7 @@ TEST_CASE(mvi_c_d8) {
 
   ASSERT_EQUAL(cpu->C, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_d_d8) {
@@ -45,6 +47,7 @@ TEST_CASE(mvi_d_d8) {
 
   ASSERT_EQUAL(cpu->D, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_e_d8) {
@@ -56,6 +59,7 @@ TEST_CASE(mvi_e_d8) {
 
   ASSERT_EQUAL(cpu->E, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_h_d8) {
@@ -67,6 +71,7 @@ TEST_CASE(mvi_h_d8) {
 
   ASSERT_EQUAL(cpu->H, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_l_d8) {
@@ -78,6 +83,7 @@ TEST_CASE(mvi_l_d8) {
 
   ASSERT_EQUAL(cpu->L, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(mvi_m_d8) {
@@ -89,6 +95,7 @@ TEST_CASE(mvi_m_d8) {
 
   ASSERT_EQUAL(read_byte(cpu, 8), 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(mvi_a_d8) {
@@ -100,6 +107,7 @@ TEST_CASE(mvi_a_d8) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(lxi_b_d16) {
@@ -112,6 +120,7 @@ TEST_CASE(lxi_b_d16) {
   ASSERT_EQUAL(cpu->B, 0xAB);
   ASSERT_EQUAL(cpu->C, 0xCD);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(lxi_d_d16) {
@@ -124,6 +133,7 @@ TEST_CASE(lxi_d_d16) {
   ASSERT_EQUAL(cpu->D, 0xAB);
   ASSERT_EQUAL(cpu->E, 0xCD);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(lxi_h_d16) {
@@ -136,6 +146,7 @@ TEST_CASE(lxi_h_d16) {
   ASSERT_EQUAL(cpu->H, 0xAB);
   ASSERT_EQUAL(cpu->L, 0xCD);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(lxi_sp_d16) {
@@ -147,6 +158,7 @@ TEST_CASE(lxi_sp_d16) {
 
   ASSERT_EQUAL(cpu->SP, 0xABCD);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(adi) {
@@ -158,6 +170,7 @@ TEST_CASE(adi) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(adi_sets_c_flag) {
@@ -220,6 +233,7 @@ TEST_CASE(aci) {
   ASSERT_EQUAL(cpu->A, 0xFF);
   ASSERT_TRUE(get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(aci_unsets_c_flag) {
@@ -286,6 +300,7 @@ TEST_CASE(sui) {
 
   ASSERT_EQUAL(cpu->A, 0);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(sui_sets_c_flag) {
@@ -359,6 +374,7 @@ TEST_CASE(sbi) {
 
   ASSERT_EQUAL(cpu->A, 0xE0);
   ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(sbi_sets_z_flag) {
@@ -425,6 +441,7 @@ TEST_CASE(ani) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(ani_resets_c_flag) {
@@ -499,6 +516,7 @@ TEST_CASE(ori) {
 
   ASSERT_EQUAL(cpu->A, 14);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(ori_resets_c_flag) {
@@ -552,6 +570,7 @@ TEST_CASE(xri) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(xri_resets_flag_c) {
@@ -605,6 +624,7 @@ TEST_CASE(cpi) {
 
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(cpi_less) {

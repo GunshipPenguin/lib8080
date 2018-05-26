@@ -23,6 +23,7 @@ TEST_CASE(ana_b) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_c) {
@@ -33,6 +34,7 @@ TEST_CASE(ana_c) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_d) {
@@ -43,6 +45,7 @@ TEST_CASE(ana_d) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_e) {
@@ -53,6 +56,7 @@ TEST_CASE(ana_e) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_h) {
@@ -63,6 +67,7 @@ TEST_CASE(ana_h) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_l) {
@@ -73,6 +78,7 @@ TEST_CASE(ana_l) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(ana_m) {
@@ -84,6 +90,7 @@ TEST_CASE(ana_m) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(ana_a) {
@@ -94,6 +101,7 @@ TEST_CASE(ana_a) {
 
   ASSERT_EQUAL(cpu->A, 10);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 // Flag bit tests

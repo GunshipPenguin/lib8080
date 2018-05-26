@@ -13,6 +13,8 @@
  * - Stack pointer initialized to 0x10
  * - FLAGS register initialized to 0x02
  * - All other registers (including the program counter) initialized to 0x00
+ * - Zero cycles
+ * - No pending interrupts
  */
 struct i8080 *setup_cpu_test_env() {
   struct i8080 *cpu = malloc(sizeof(struct i8080));

@@ -20,6 +20,7 @@ TEST_CASE(ei) {
   step_cpu(cpu);
 
   ASSERT_TRUE(cpu->INTE);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(di) {
@@ -29,6 +30,7 @@ TEST_CASE(di) {
   step_cpu(cpu);
 
   ASSERT_FALSE(cpu->INTE);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(rst_0) {
@@ -39,6 +41,7 @@ TEST_CASE(rst_0) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 0);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_1) {
@@ -49,6 +52,7 @@ TEST_CASE(rst_1) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 8);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_2) {
@@ -59,6 +63,7 @@ TEST_CASE(rst_2) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 16);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_3) {
@@ -69,6 +74,7 @@ TEST_CASE(rst_3) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 24);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_4) {
@@ -79,6 +85,7 @@ TEST_CASE(rst_4) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 32);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_5) {
@@ -89,6 +96,7 @@ TEST_CASE(rst_5) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 40);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_6) {
@@ -99,6 +107,7 @@ TEST_CASE(rst_6) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 48);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(rst_7) {
@@ -109,6 +118,7 @@ TEST_CASE(rst_7) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 61);
   ASSERT_EQUAL(cpu->PC, 56);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(hlt) {
@@ -130,4 +140,11 @@ TEST_CASE(hlt) {
   ASSERT_FALSE(cpu->halted);
   ASSERT_EQUAL(cpu->PC, 56);
   ASSERT_EQUAL(pop_stackw(cpu), 1);
+}
+
+TEST_CASE(hlt_cycles) {
+  write_byte(cpu, 0, 0x76); // HLT
+  step_cpu(cpu);
+
+  ASSERT_EQUAL(cpu->cyc, 7);
 }

@@ -22,6 +22,7 @@ TEST_CASE(push_b) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(push_d) {
@@ -32,6 +33,7 @@ TEST_CASE(push_d) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(push_h) {
@@ -42,6 +44,7 @@ TEST_CASE(push_h) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 TEST_CASE(push_psw) {
@@ -57,6 +60,7 @@ TEST_CASE(push_psw) {
 
   ASSERT_EQUAL(pop_stackw(cpu), 0xABD7);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 11);
 }
 
 
@@ -70,6 +74,7 @@ TEST_CASE(pop_b) {
   ASSERT_EQUAL(cpu->B, 0xAB);
   ASSERT_EQUAL(cpu->C, 0xCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(pop_d) {
@@ -82,6 +87,7 @@ TEST_CASE(pop_d) {
   ASSERT_EQUAL(cpu->D, 0xAB);
   ASSERT_EQUAL(cpu->E, 0xCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(pop_h) {
@@ -94,6 +100,7 @@ TEST_CASE(pop_h) {
   ASSERT_EQUAL(cpu->H, 0xAB);
   ASSERT_EQUAL(cpu->L, 0xCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(pop_psw) {
@@ -110,6 +117,7 @@ TEST_CASE(pop_psw) {
   ASSERT_TRUE(get_flag(cpu, FLAG_Z));
   ASSERT_TRUE(get_flag(cpu, FLAG_S));
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(push_pop_psw) {
@@ -137,6 +145,7 @@ TEST_CASE(dad_b) {
   ASSERT_EQUAL(cpu->H, 0x00);
   ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(dad_d) {
@@ -149,6 +158,7 @@ TEST_CASE(dad_d) {
   ASSERT_EQUAL(cpu->H, 0x00);
   ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(dad_h) {
@@ -160,6 +170,7 @@ TEST_CASE(dad_h) {
   ASSERT_EQUAL(cpu->H, 0xFF);
   ASSERT_EQUAL(cpu->L, 0xFA);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(dad_sp) {
@@ -172,6 +183,7 @@ TEST_CASE(dad_sp) {
   ASSERT_EQUAL(cpu->H, 0x00);
   ASSERT_EQUAL(cpu->L, 0x02);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 // Bit flag tests
@@ -208,6 +220,7 @@ TEST_CASE(inx_b) {
   ASSERT_EQUAL(cpu->B, 0x01);
   ASSERT_EQUAL(cpu->C, 0x00);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inx_d) {
@@ -219,6 +232,7 @@ TEST_CASE(inx_d) {
   ASSERT_EQUAL(cpu->D, 0x01);
   ASSERT_EQUAL(cpu->E, 0x00);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inx_h) {
@@ -230,6 +244,7 @@ TEST_CASE(inx_h) {
   ASSERT_EQUAL(cpu->H, 0x01);
   ASSERT_EQUAL(cpu->L, 0x00);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inx_sp) {
@@ -240,6 +255,7 @@ TEST_CASE(inx_sp) {
 
   ASSERT_EQUAL(cpu->SP, 0x01);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 
@@ -252,6 +268,7 @@ TEST_CASE(dcx_b) {
   ASSERT_EQUAL(cpu->B, 0x00);
   ASSERT_EQUAL(cpu->C, 0xFF);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcx_d) {
@@ -263,6 +280,7 @@ TEST_CASE(dcx_d) {
   ASSERT_EQUAL(cpu->D, 0x00);
   ASSERT_EQUAL(cpu->E, 0xFF);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcx_h) {
@@ -274,6 +292,7 @@ TEST_CASE(dcx_h) {
   ASSERT_EQUAL(cpu->H, 0x00);
   ASSERT_EQUAL(cpu->L, 0xFF);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcx_sp) {
@@ -284,6 +303,7 @@ TEST_CASE(dcx_sp) {
 
   ASSERT_EQUAL(cpu->SP, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(xchg) {
@@ -297,6 +317,8 @@ TEST_CASE(xchg) {
   ASSERT_EQUAL(cpu->E, 2);
   ASSERT_EQUAL(cpu->H, 3);
   ASSERT_EQUAL(cpu->L, 4);
+  ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(xthl) {
@@ -313,6 +335,8 @@ TEST_CASE(xthl) {
   ASSERT_EQUAL(cpu->H, 0xCD);
   ASSERT_EQUAL(read_byte(cpu, 10), 0x02);
   ASSERT_EQUAL(read_byte(cpu, 11), 0x01);
+  ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 18);
 }
 
 TEST_CASE(sphl) {
@@ -324,4 +348,5 @@ TEST_CASE(sphl) {
 
   ASSERT_EQUAL(cpu->SP, 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }

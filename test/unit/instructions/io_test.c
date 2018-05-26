@@ -19,6 +19,7 @@ TEST_CASE(in_no_handler) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(out_no_handler) {
@@ -28,4 +29,5 @@ TEST_CASE(out_no_handler) {
   step_cpu(cpu);
 
   ASSERT_EQUAL(cpu->PC, 2);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }

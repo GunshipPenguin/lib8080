@@ -22,6 +22,7 @@ TEST_CASE(dcr_b) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->B, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 
@@ -32,6 +33,7 @@ TEST_CASE(dcr_c) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->C, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcr_d) {
@@ -41,6 +43,7 @@ TEST_CASE(dcr_d) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->D, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 
@@ -51,6 +54,7 @@ TEST_CASE(dcr_e) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->E, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcr_h) {
@@ -60,6 +64,7 @@ TEST_CASE(dcr_h) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->H, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 
@@ -70,6 +75,7 @@ TEST_CASE(dcr_l) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->L, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(dcr_m) {
@@ -78,8 +84,10 @@ TEST_CASE(dcr_m) {
   cpu->H = 0; cpu->L = 0x08;
 
   step_cpu(cpu);
+
   ASSERT_EQUAL(read_byte(cpu, 0x08), 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 
@@ -90,6 +98,7 @@ TEST_CASE(dcr_a) {
   step_cpu(cpu);
   ASSERT_EQUAL(cpu->A, 0);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 // Edge case tests

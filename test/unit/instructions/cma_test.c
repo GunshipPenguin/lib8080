@@ -22,4 +22,5 @@ TEST_CASE(cma) {
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }

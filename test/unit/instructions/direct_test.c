@@ -24,6 +24,7 @@ TEST_CASE(lda) {
 
   ASSERT_EQUAL(cpu->A, 0x01);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 13);
 }
 
 TEST_CASE(sta) {
@@ -35,6 +36,7 @@ TEST_CASE(sta) {
 
   ASSERT_EQUAL(read_byte(cpu, 5), 0x01);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 13);
 }
 
 TEST_CASE(shld) {
@@ -47,9 +49,10 @@ TEST_CASE(shld) {
   ASSERT_EQUAL(read_byte(cpu, 0x05), 0x01);
   ASSERT_EQUAL(read_byte(cpu, 0x06), 0x02);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 16);
 }
 
-TEST_CASE(ldhd) {
+TEST_CASE(lhld) {
   write_byte(cpu, 0, 0x2A); // LDHD
   write_word(cpu, 1, 0x05);
   write_word(cpu, 0x05, 0xABCD);
@@ -60,4 +63,5 @@ TEST_CASE(ldhd) {
   ASSERT_EQUAL(cpu->L, 0xCD);
   ASSERT_EQUAL(cpu->H, 0xAB);
   ASSERT_EQUAL(cpu->PC, 3);
+  ASSERT_EQUAL(cpu->cyc, 16);
 }

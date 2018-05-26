@@ -24,6 +24,7 @@ TEST_CASE(add_b) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(add_c) {
@@ -34,6 +35,7 @@ TEST_CASE(add_c) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(add_d) {
@@ -44,6 +46,7 @@ TEST_CASE(add_d) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(add_e) {
@@ -54,6 +57,7 @@ TEST_CASE(add_e) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(add_h) {
@@ -74,6 +78,7 @@ TEST_CASE(add_l) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(add_m) {
@@ -85,6 +90,7 @@ TEST_CASE(add_m) {
 
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(add_a) {
@@ -95,6 +101,7 @@ TEST_CASE(add_a) {
 
   ASSERT_EQUAL(cpu->A, 2);
   ASSERT_EQUAL(cpu->PC, 1);
+  ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 // Flag bit tests
