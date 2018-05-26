@@ -23,11 +23,13 @@ void reset_cpu(struct i8080 *cpu) {
   cpu->output_handler = NULL;
 
   cpu->pending_interrupt = 0;
+  cpu->interrupt_opcode = 0;
 }
 
 void request_interrupt(struct i8080 *cpu, uint opcode) {
   cpu->halted = 0;
   if (cpu->INTE) {
+    cpu->INTE = 0;
     cpu->pending_interrupt = 1;
     cpu->interrupt_opcode = opcode;
   }
@@ -242,7 +244,6 @@ uint next_word(struct i8080 *cpu) {
 
 uint next_instruction_opcode(struct i8080 *cpu) {
   if (cpu->pending_interrupt) {
-    cpu->INTE = 0;
     return cpu->interrupt_opcode;
   } else {
     return next_byte(cpu);
