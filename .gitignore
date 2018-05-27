@@ -4,7 +4,7 @@ obj
 
 # Binaries
 lib8080test
-binloader
+cpmloader
 
 # CMake files
 CMakeFiles
