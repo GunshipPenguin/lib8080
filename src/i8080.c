@@ -109,15 +109,15 @@ void i8080_push_stackw(struct i8080 *cpu, uint val) {
   i8080_push_stackb(cpu, val & 0xFF);
 }
 
-uint i8080_pop_stackw(struct i8080 *cpu) {
+uint i8080_pop_stackb(struct i8080 *cpu) {
   uint byte = i8080_read_byte(cpu, cpu->SP);
   cpu->SP = (cpu->SP + 1) & 0xFFFF;
   return byte;
 }
 
-uint i8080_pop_stackb(struct i8080 *cpu) {
-  uint lo = i8080_pop_stackw(cpu);
-  uint hi = i8080_pop_stackw(cpu);
+uint i8080_pop_stackw(struct i8080 *cpu) {
+  uint lo = i8080_pop_stackb(cpu);
+  uint hi = i8080_pop_stackb(cpu);
 
   return CONCAT(hi, lo);
 }
@@ -673,14 +673,14 @@ void pop(struct i8080 *cpu, uint opcode) {
   uint reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
-    cpu->flags = i8080_pop_stackw(cpu);
+    cpu->flags = i8080_pop_stackb(cpu);
 
     cpu->flags |= 2; // Bit 1 of flags always set
     cpu->flags &= 0xD7; // Bits 3 and 5 of flags always reset
 
-    cpu->A = i8080_pop_stackw(cpu);
+    cpu->A = i8080_pop_stackb(cpu);
   } else {
-    set_reg_pair(cpu, reg_pair, i8080_pop_stackb(cpu));
+    set_reg_pair(cpu, reg_pair, i8080_pop_stackw(cpu));
   }
 }
 
@@ -734,7 +734,7 @@ void general_return(struct i8080 *cpu, uint opcode) {
   // Unconditional return has LSB set, conditional returns do not
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
     cpu->cyc += 6;
-    cpu->PC = i8080_pop_stackb(cpu);
+    cpu->PC = i8080_pop_stackw(cpu);
   }
 }
 

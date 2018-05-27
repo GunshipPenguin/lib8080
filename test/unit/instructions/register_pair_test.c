@@ -20,7 +20,7 @@ TEST_CASE(push_b) {
 
   i8080_step(cpu);
 
-  ASSERT_EQUAL(i8080_pop_stackb(cpu), 0xABCD);
+  ASSERT_EQUAL(i8080_pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 11);
 }
@@ -31,7 +31,7 @@ TEST_CASE(push_d) {
 
   i8080_step(cpu);
 
-  ASSERT_EQUAL(i8080_pop_stackb(cpu), 0xABCD);
+  ASSERT_EQUAL(i8080_pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 11);
 }
@@ -42,7 +42,7 @@ TEST_CASE(push_h) {
 
   i8080_step(cpu);
 
-  ASSERT_EQUAL(i8080_pop_stackb(cpu), 0xABCD);
+  ASSERT_EQUAL(i8080_pop_stackw(cpu), 0xABCD);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 11);
 }
@@ -58,7 +58,7 @@ TEST_CASE(push_psw) {
 
   i8080_step(cpu);
 
-  ASSERT_EQUAL(i8080_pop_stackb(cpu), 0xABD7);
+  ASSERT_EQUAL(i8080_pop_stackw(cpu), 0xABD7);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 11);
 }
