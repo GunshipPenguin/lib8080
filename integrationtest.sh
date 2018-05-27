@@ -5,7 +5,7 @@ TEST_DIR="test/integration"
 run_test () {
     echo -n "Running test binary $1... "
 
-    ACTUAL=$(./binloader $TEST_DIR/test_bins/$1)
+    ACTUAL=$(./cpmloader $TEST_DIR/test_bins/$1)
     EXPECTED=$(cat ${TEST_DIR}/test_bins/output/${1}.out)
 
     if [ "$ACTUAL" != "$EXPECTED" ]

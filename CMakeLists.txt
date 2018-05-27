@@ -46,4 +46,4 @@ SET(TEST_FILES
         test/unit/misc/memory_test.c)
 
 add_executable(lib8080test ${SRC_FILES} ${TEST_FILES})
-add_executable(binloader test/integration/binloader.c ${SRC_FILES})
+add_executable(cpmloader test/integration/cpmloader.c ${SRC_FILES})

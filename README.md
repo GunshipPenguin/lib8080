@@ -41,19 +41,19 @@ everything that can be tested on an 8080.
 These binaries are located in `test/integration/test_bins`, and files containing
 their expected output are located in `test/integration/test_bins/output`.
 
-They can be easily run using the binloader program (built with make target of
-the same name). Binloader emulates a very minimal CP/M system only supporting
+They can be easily run using the cpmloader program (built with make target of
+the same name). cpmloader emulates a very minimal CP/M system only supporting
 BDOS functions 2 and 9 (output character and output string).
 
-As an example, to use binloader to run TEST.COM from the top level directory,
+As an example, to use cpmloader to run TEST.COM from the top level directory,
 use:
 
 ```
-./binloader test/integration/test_bins/TEST.COM
+./cpmloader test/integration/test_bins/TEST.COM
 ```
 
 The `integrationtest.sh` script automatically runs all test binaries using
-binloader.
+cpmloader.
 
 ## License
 
