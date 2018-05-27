@@ -15,45 +15,45 @@ AFTER_EACH() {
 }
 
 TEST_CASE(stc_carry_0) {
-  write_byte(cpu, 0, 0x37); // STC
-  set_flag(cpu, FLAG_C, 0);
+  i8080_write_byte(cpu, 0, 0x37); // STC
+  i8080_set_flag(cpu, FLAG_C, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(stc_carry_1) {
-  write_byte(cpu, 0, 0x37); // STC
-  set_flag(cpu, FLAG_C, 1);
+  i8080_write_byte(cpu, 0, 0x37); // STC
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmc_carry_1) {
-  write_byte(cpu, 0, 0x3F); // CMC
-  set_flag(cpu, FLAG_C, 1);
+  i8080_write_byte(cpu, 0, 0x3F); // CMC
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(cmc_carry_0) {
-  write_byte(cpu, 0, 0x3F); // CMC
-  set_flag(cpu, FLAG_C, 0);
+  i8080_write_byte(cpu, 0, 0x3F); // CMC
+  i8080_set_flag(cpu, FLAG_C, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 4);
 }

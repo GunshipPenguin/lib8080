@@ -15,10 +15,10 @@ AFTER_EACH() {
 }
 
 TEST_CASE(cma) {
-  write_byte(cpu, 0, 0x2F); // CMA
+  i8080_write_byte(cpu, 0, 0x2F); // CMA
   cpu->A = 0xF0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0x0F);
   ASSERT_EQUAL(cpu->PC, 1);

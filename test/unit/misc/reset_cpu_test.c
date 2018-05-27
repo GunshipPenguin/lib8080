@@ -3,16 +3,16 @@
 #include "attounit.h"
 #include "cpu_test_helpers.h"
 
-TEST_SUITE(reset_cpu)
+TEST_SUITE(i8080_reset)
 
 struct i8080 *cpu;
 
 BEFORE_EACH() {}
 AFTER_EACH() {}
 
-TEST_CASE(reset_cpu) {
+TEST_CASE(i8080_reset) {
   cpu = malloc(sizeof(struct i8080));
-  reset_cpu(cpu);
+  i8080_reset(cpu);
 
   // Verify that everything is zeroed
   ASSERT_EQUAL(cpu->A, 0);

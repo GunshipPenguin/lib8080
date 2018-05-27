@@ -30,124 +30,124 @@ uint bcd_decode(int val) {
 }
 
 TEST_CASE(daa_cycles) {
-  write_byte(cpu, 0, 0x27);
+  i8080_write_byte(cpu, 0, 0x27);
   cpu->A = 0x11;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(daa_1_plus_1) {
-  write_byte(cpu, 0, 0x80); // ADD B
-  write_byte(cpu, 1, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x80); // ADD B
+  i8080_write_byte(cpu, 1, 0x27); // DAA
   cpu->A = bcd_encode(1);
   cpu->B = bcd_encode(1);
 
-  step_cpu(cpu);
-  step_cpu(cpu);
+  i8080_step(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 2);
-  ASSERT_FALSE(get_flag(cpu, FLAG_A));
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
 TEST_CASE(daa_9_plus_1) {
-  write_byte(cpu, 0, 0x80); // ADD B
-  write_byte(cpu, 1, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x80); // ADD B
+  i8080_write_byte(cpu, 1, 0x27); // DAA
   cpu->A = bcd_encode(9);
   cpu->B = bcd_encode(1);
 
-  step_cpu(cpu);
-  step_cpu(cpu);
+  i8080_step(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 10);
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
 TEST_CASE(daa_9_plus_10) {
-  write_byte(cpu, 0, 0x80); // ADD B
-  write_byte(cpu, 1, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x80); // ADD B
+  i8080_write_byte(cpu, 1, 0x27); // DAA
   cpu->A = bcd_encode(9);
   cpu->B = bcd_encode(10);
 
-  step_cpu(cpu);
-  step_cpu(cpu);
+  i8080_step(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 19);
-  ASSERT_FALSE(get_flag(cpu, FLAG_A));
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
 TEST_CASE(daa_22_plus_39) {
-  write_byte(cpu, 0, 0x80); // ADD B
-  write_byte(cpu, 1, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x80); // ADD B
+  i8080_write_byte(cpu, 1, 0x27); // DAA
   cpu->A = bcd_encode(22);
   cpu->B = bcd_encode(39);
 
-  step_cpu(cpu);
-  step_cpu(cpu);
+  i8080_step(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 61);
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
 TEST_CASE(daa_95_plus_20) {
-  write_byte(cpu, 0, 0x80); // ADD B
-  write_byte(cpu, 1, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x80); // ADD B
+  i8080_write_byte(cpu, 1, 0x27); // DAA
   cpu->A = bcd_encode(95);
   cpu->B = bcd_encode(20);
 
-  step_cpu(cpu);
-  step_cpu(cpu);
+  i8080_step(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 15);
-  ASSERT_FALSE(get_flag(cpu, FLAG_A));
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 2);
 }
 
 TEST_CASE(daa_0x3F) {
-  write_byte(cpu, 0, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x27); // DAA
   cpu->A = 0x3F;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0x45);
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(daa_0xFA) {
-  write_byte(cpu, 0, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x27); // DAA
   cpu->A = 0xFA;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0x60);
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
 TEST_CASE(daa_0x11_carry_set) {
-  write_byte(cpu, 0, 0x27); // DAA
+  i8080_write_byte(cpu, 0, 0x27); // DAA
   cpu->A = 0x11;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   // Lower nibble shouldn't be incremented, but upper should be
   ASSERT_EQUAL(cpu->A, 0x71);
-  ASSERT_FALSE(get_flag(cpu, FLAG_A));
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->PC, 1);
 }
 
@@ -167,36 +167,36 @@ TEST_CASE(daa_0x11_carry_set) {
  */
 TEST_CASE(daa_20_minus_3) {
   // 1
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
   // 2
   cpu->A = 0x99;
   cpu->B = 0;
 
   // 3
-  write_byte(cpu, 0, 0x88); // ADC B
-  step_cpu(cpu);
+  i8080_write_byte(cpu, 0, 0x88); // ADC B
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0x9A);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
 
   // 4
   cpu->B = 3;
-  write_byte(cpu, 1, 0x90); // SUB B
+  i8080_write_byte(cpu, 1, 0x90); // SUB B
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 97);
 
   // 5
   cpu->B = bcd_encode(20);
-  write_byte(cpu, 2, 0x80); // ADD B
-  step_cpu(cpu);
+  i8080_write_byte(cpu, 2, 0x80); // ADD B
+  i8080_step(cpu);
 
   // 6
-  write_byte(cpu, 3, 0x27); // DAA
-  step_cpu(cpu);
+  i8080_write_byte(cpu, 3, 0x27); // DAA
+  i8080_step(cpu);
 
   ASSERT_EQUAL(bcd_decode(cpu->A), 17);
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
 }

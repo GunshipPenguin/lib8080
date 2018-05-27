@@ -5,7 +5,7 @@
 #define CONCAT(HI, LO) ((((HI) << 8) | ((LO) & 0XFF)) & 0XFFFF)
 
 // External API
-void reset_cpu(struct i8080 *cpu) {
+void i8080_reset(struct i8080 *cpu) {
   cpu->A = 0;
   cpu->B = 0;
   cpu->C = 0;
@@ -29,7 +29,7 @@ void reset_cpu(struct i8080 *cpu) {
   cpu->interrupt_opcode = 0;
 }
 
-void request_interrupt(struct i8080 *cpu, uint opcode) {
+void i8080_request_interrupt(struct i8080 *cpu, uint opcode) {
   cpu->halted = 0;
   if (cpu->INTE) {
     cpu->INTE = 0;
@@ -38,7 +38,7 @@ void request_interrupt(struct i8080 *cpu, uint opcode) {
   }
 }
 
-void load_memory(struct i8080 *cpu, char *path, size_t offset) {
+void i8080_load_memory(struct i8080 *cpu, char *path, size_t offset) {
   FILE *file = fopen(path, "r");
   if (file == NULL) {
     perror("fopen");
@@ -54,9 +54,7 @@ void load_memory(struct i8080 *cpu, char *path, size_t offset) {
   fclose(file);
 }
 
-
-// Internal logic
-uint read_byte(struct i8080 *cpu, uint addr) {
+uint i8080_read_byte(struct i8080 *cpu, uint addr) {
   if (addr >= cpu->memsize) {
     return '\0';
   }
@@ -64,20 +62,20 @@ uint read_byte(struct i8080 *cpu, uint addr) {
   return cpu->memory[addr] & 0xFF;
 }
 
-uint read_word(struct i8080 *cpu, uint addr) {
+uint i8080_read_word(struct i8080 *cpu, uint addr) {
   int hi = cpu->memory[addr+1] & 0xFF;
   int lo = cpu->memory[addr] & 0xFF;
 
   return (hi << 8) | lo;
 }
 
-void write_byte(struct i8080 *cpu, uint addr, uint data) {
+void i8080_write_byte(struct i8080 *cpu, uint addr, uint data) {
   if (addr < cpu->memsize) {
     cpu->memory[addr] = (char) data;
   }
 }
 
-void write_word(struct i8080 *cpu, uint addr, uint data) {
+void i8080_write_word(struct i8080 *cpu, uint addr, uint data) {
   char hi = (data >> 8) & 0xFF;
   char lo = data & 0xFF;
 
@@ -85,7 +83,47 @@ void write_word(struct i8080 *cpu, uint addr, uint data) {
   cpu->memory[addr+1] = hi;
 }
 
-uint get_flag_mask(enum Flag flag) {
+uint get_flag_mask(enum i8080_flag flag);
+void i8080_set_flag(struct i8080 *cpu, enum i8080_flag flag, int val) {
+  uint mask = get_flag_mask(flag);
+
+  if (val) {
+    cpu->flags = (cpu->flags | mask) & 0xFF;
+  } else {
+    cpu->flags = (cpu->flags & ~mask) & 0xFF;
+  }
+}
+
+int i8080_get_flag(struct i8080 *cpu, enum i8080_flag flag) {
+  uint mask = get_flag_mask(flag);
+  return (cpu->flags & mask) != 0;
+}
+
+void i8080_push_stackb(struct i8080 *cpu, uint val) {
+  cpu->SP = (cpu->SP-1) & 0XFFFF;
+  i8080_write_byte(cpu, cpu->SP, val & 0xFF);
+}
+
+void i8080_push_stackw(struct i8080 *cpu, uint val) {
+  i8080_push_stackb(cpu, (val & 0xFF00) >> 8);
+  i8080_push_stackb(cpu, val & 0xFF);
+}
+
+uint i8080_pop_stackw(struct i8080 *cpu) {
+  uint byte = i8080_read_byte(cpu, cpu->SP);
+  cpu->SP = (cpu->SP + 1) & 0xFFFF;
+  return byte;
+}
+
+uint i8080_pop_stackb(struct i8080 *cpu) {
+  uint lo = i8080_pop_stackw(cpu);
+  uint hi = i8080_pop_stackw(cpu);
+
+  return CONCAT(hi, lo);
+}
+
+// Internal logic
+uint get_flag_mask(enum i8080_flag flag) {
   switch (flag) {
     case FLAG_S: return 0x80;
     case FLAG_Z: return 0x40;
@@ -98,31 +136,16 @@ uint get_flag_mask(enum Flag flag) {
   }
 }
 
-void set_flag(struct i8080 *cpu, enum Flag flag, int val) {
-  uint mask = get_flag_mask(flag);
-
-  if (val) {
-    cpu->flags = (cpu->flags | mask) & 0xFF;
-  } else {
-    cpu->flags = (cpu->flags & ~mask) & 0xFF;
-  }
-}
-
-int get_flag(struct i8080 *cpu, enum Flag flag) {
-  uint mask = get_flag_mask(flag);
-  return (cpu->flags & mask) != 0;
-}
-
 int check_condition(struct i8080 *cpu, uint condition) {
   switch (condition) {
-    case 0: return !get_flag(cpu, FLAG_Z); // No zero
-    case 1: return get_flag(cpu, FLAG_Z); // Zero
-    case 2: return !get_flag(cpu, FLAG_C); // No carry
-    case 3: return get_flag(cpu, FLAG_C); // Carry
-    case 4: return !get_flag(cpu, FLAG_P); // Parity odd
-    case 5: return get_flag(cpu, FLAG_P); // Parity even
-    case 6: return !get_flag(cpu, FLAG_S); // Positive
-    case 7: return get_flag(cpu, FLAG_S); // Negative
+    case 0: return !i8080_get_flag(cpu, FLAG_Z); // No zero
+    case 1: return i8080_get_flag(cpu, FLAG_Z); // Zero
+    case 2: return !i8080_get_flag(cpu, FLAG_C); // No carry
+    case 3: return i8080_get_flag(cpu, FLAG_C); // Carry
+    case 4: return !i8080_get_flag(cpu, FLAG_P); // Parity odd
+    case 5: return i8080_get_flag(cpu, FLAG_P); // Parity even
+    case 6: return !i8080_get_flag(cpu, FLAG_S); // Positive
+    case 7: return i8080_get_flag(cpu, FLAG_S); // Negative
     default:
       fprintf(stderr, "Invalid condition code %d", condition);
       exit(1);
@@ -147,7 +170,7 @@ void set_reg(struct i8080 *cpu, uint reg, uint val) {
       break;
     case 5: cpu->L = val;
       break;
-    case 6: write_byte(cpu, CONCAT(cpu->H, cpu->L), val);
+    case 6: i8080_write_byte(cpu, CONCAT(cpu->H, cpu->L), val);
       break;
     default:
       fprintf(stderr, "Invalid register %d\n", reg);
@@ -164,7 +187,7 @@ uint get_reg(struct i8080 *cpu, uint reg) {
     case 3: return cpu->E;
     case 4: return cpu->H;
     case 5: return cpu->L;
-    case 6: return read_byte(cpu, CONCAT(cpu->H, cpu->L));
+    case 6: return i8080_read_byte(cpu, CONCAT(cpu->H, cpu->L));
     default:
       fprintf(stderr, "Invalid register %d\n", reg);
       exit(1);
@@ -209,44 +232,20 @@ void set_reg_pair(struct i8080 *cpu, uint reg_pair, uint val) {
   }
 }
 
-// Sets the sign, zero and parity bits based on the given value
 void setSZP(struct i8080 *cpu, uint val) {
   val &= 0xFF;
 
-  set_flag(cpu, FLAG_S, val & 0x80);
-  set_flag(cpu, FLAG_Z, val == 0);
-  set_flag(cpu, FLAG_P, !__builtin_parity(val));
-}
-
-void push_stackb(struct i8080 *cpu, uint val) {
-  cpu->SP = (cpu->SP-1) & 0XFFFF;
-  write_byte(cpu, cpu->SP, val & 0xFF);
-}
-
-void push_stackw(struct i8080 *cpu, uint val) {
-  push_stackb(cpu, (val & 0xFF00) >> 8);
-  push_stackb(cpu, val & 0xFF);
-}
-
-uint pop_stackb(struct i8080 *cpu) {
-  uint byte = read_byte(cpu, cpu->SP);
-  cpu->SP = (cpu->SP + 1) & 0xFFFF;
-  return byte;
-}
-
-uint pop_stackw(struct i8080 *cpu) {
-  uint lo = pop_stackb(cpu);
-  uint hi = pop_stackb(cpu);
-
-  return CONCAT(hi, lo);
+  i8080_set_flag(cpu, FLAG_S, val & 0x80);
+  i8080_set_flag(cpu, FLAG_Z, val == 0);
+  i8080_set_flag(cpu, FLAG_P, !__builtin_parity(val));
 }
 
 uint next_byte(struct i8080 *cpu) {
-  return read_byte(cpu, cpu->PC++);
+  return i8080_read_byte(cpu, cpu->PC++);
 }
 
 uint next_word(struct i8080 *cpu) {
-  uint word  = read_word(cpu, cpu->PC);
+  uint word  = i8080_read_word(cpu, cpu->PC);
   cpu->PC += 2;
   return word;
 }
@@ -268,8 +267,8 @@ uint perform_sub(struct i8080 *cpu, uint minu, uint subt, int borrow) {
   uint res16 = minu + subt_ones + (borrow ? 0 : 1);
   uint res8 = res16 & 0xFF;
 
-  set_flag(cpu, FLAG_C, !(res16 & 0x100));
-  set_flag(cpu, FLAG_A, ((minu & 0xF) + (subt_ones & 0xF) + (borrow ? 0 : 1)) & 0x10);
+  i8080_set_flag(cpu, FLAG_C, !(res16 & 0x100));
+  i8080_set_flag(cpu, FLAG_A, ((minu & 0xF) + (subt_ones & 0xF) + (borrow ? 0 : 1)) & 0x10);
   setSZP(cpu, res8);
 
   return res8;
@@ -281,8 +280,8 @@ uint perform_add(struct i8080 *cpu, uint a, uint b, int carry) {
   uint res16 = a + b + carry_val;
   uint res8 = res16 & 0xFF;
 
-  set_flag(cpu, FLAG_C, res16 & 0x100);
-  set_flag(cpu, FLAG_A, (((a & 0xF) + (b & 0xF) + carry_val) & 0x10));
+  i8080_set_flag(cpu, FLAG_C, res16 & 0x100);
+  i8080_set_flag(cpu, FLAG_A, (((a & 0xF) + (b & 0xF) + carry_val) & 0x10));
   setSZP(cpu, res8);
 
   return res8;
@@ -319,13 +318,13 @@ void mvi(struct i8080 *cpu, uint opcode) {
 // STA - Store Accumulator Direct
 void sta(struct i8080 *cpu) {
   cpu->cyc += 13;
-  write_byte(cpu, next_word(cpu), cpu->A);
+  i8080_write_byte(cpu, next_word(cpu), cpu->A);
 }
 
 // LDA - Load Accumulator Direct
 void lda(struct i8080 *cpu) {
   cpu->cyc += 13;
-  cpu->A = read_byte(cpu, next_word(cpu));
+  cpu->A = i8080_read_byte(cpu, next_word(cpu));
 }
 
 // LXI - Load Register Pair Immediate
@@ -339,14 +338,14 @@ void lxi(struct i8080 *cpu, uint opcode) {
 void stax(struct i8080 *cpu, uint opcode) {
   cpu->cyc += 7;
   uint reg_pair = (opcode & 0x30) >> 4;
-  write_byte(cpu, get_reg_pair(cpu, reg_pair), cpu->A);
+  i8080_write_byte(cpu, get_reg_pair(cpu, reg_pair), cpu->A);
 }
 
 // LDAX - Load Accumulator
 void ldax(struct i8080 *cpu, uint opcode) {
   cpu->cyc += 7;
   uint reg_pair = (opcode & 0x30) >> 4;
-  cpu->A = read_byte(cpu, get_reg_pair(cpu, reg_pair));
+  cpu->A = i8080_read_byte(cpu, get_reg_pair(cpu, reg_pair));
 }
 
 // INR - Increment Register or Memory
@@ -354,7 +353,7 @@ void inr(struct i8080 *cpu, uint opcode) {
   uint reg = (opcode & 0x38) >> 3;
   cpu->cyc += (reg == 6) ? 10 : 5;
 
-  set_flag(cpu, FLAG_A, (get_reg(cpu, reg) & 0x0F) == 0x0F);
+  i8080_set_flag(cpu, FLAG_A, (get_reg(cpu, reg) & 0x0F) == 0x0F);
   set_reg(cpu, reg, get_reg(cpu, reg)+1);
   setSZP(cpu, get_reg(cpu, reg));
 }
@@ -364,7 +363,7 @@ void dcr(struct i8080 *cpu, uint opcode) {
   uint reg = (opcode & 0x38) >> 3;
   cpu->cyc += (reg == 6) ? 10 : 5;
 
-  set_flag(cpu, FLAG_A, !(get_reg(cpu, reg) & 0x0F) == 0);
+  i8080_set_flag(cpu, FLAG_A, !(get_reg(cpu, reg) & 0x0F) == 0);
   set_reg(cpu, reg, get_reg(cpu, reg)-1);
   setSZP(cpu, get_reg(cpu, reg));
 }
@@ -388,11 +387,11 @@ void daa(struct i8080 *cpu) {
   cpu->cyc += 4;
   uint add = 0;
 
-  if (((cpu->A & 0xF) > 9) || get_flag(cpu, FLAG_A)) {
+  if (((cpu->A & 0xF) > 9) || i8080_get_flag(cpu, FLAG_A)) {
     add |= 0x06;
   }
 
-  int carry = get_flag(cpu, FLAG_C);
+  int carry = i8080_get_flag(cpu, FLAG_C);
   /*
    * If the upper nibble is greater than 9
    * or the upper nibble will be greater than 9 when adding 6 to the lower nibble
@@ -400,7 +399,7 @@ void daa(struct i8080 *cpu) {
    */
   if (((cpu->A & 0xF0) > 0x90) ||
       (((cpu->A & 0xF0) >= 0x90) && ((cpu->A & 0xF) > 9)) ||
-      get_flag(cpu, FLAG_C)) {
+      i8080_get_flag(cpu, FLAG_C)) {
     add |= 0x60;
     carry = 1;
   }
@@ -408,7 +407,7 @@ void daa(struct i8080 *cpu) {
   cpu->A = perform_add(cpu, cpu->A, add, 0);
 
   // The carry bit is unaffected if there is no carry out of the upper nibble
-  set_flag(cpu, FLAG_C, carry);
+  i8080_set_flag(cpu, FLAG_C, carry);
 }
 
 // ADD - Add Register or Memory to Accumulator
@@ -422,14 +421,14 @@ void add(struct i8080 *cpu, uint opcode) {
 void adc(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x7;
   cpu->cyc += (reg == 6) ? 7 : 4;
-  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, reg), get_flag(cpu, FLAG_C));
+  cpu->A = perform_add(cpu, cpu->A, get_reg(cpu, reg), i8080_get_flag(cpu, FLAG_C));
 }
 
 // SBB - Subtract Register or Memory from Accumulator with Borrow
 void sbb(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x7;
   cpu->cyc += (reg == 6) ? 7 : 4;
-  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, reg), get_flag(cpu, FLAG_C));
+  cpu->A = perform_sub(cpu, cpu->A, get_reg(cpu, reg), i8080_get_flag(cpu, FLAG_C));
 }
 
 // SUB - Subtract Register or Memory from Accumulator
@@ -443,11 +442,11 @@ void sub(struct i8080 *cpu, uint opcode) {
 void ana(struct i8080 *cpu, uint opcode) {
   uint reg = opcode & 0x07;
   cpu->cyc += (reg == 6) ? 7 : 4;
-  set_flag(cpu, FLAG_A, (get_reg(cpu, reg) | cpu->A) & 0x08);
+  i8080_set_flag(cpu, FLAG_A, (get_reg(cpu, reg) | cpu->A) & 0x08);
 
   cpu->A &= get_reg(cpu, reg);
 
-  set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
   setSZP(cpu, cpu->A);
 }
 
@@ -457,8 +456,8 @@ void xra(struct i8080 *cpu, uint opcode) {
   cpu->cyc += (reg == 6) ? 7 : 4;
   cpu->A ^= get_reg(cpu, reg);
 
-  set_flag(cpu, FLAG_C, 0);
-  set_flag(cpu, FLAG_A, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_A, 0);
   setSZP(cpu, cpu->A);
 }
 
@@ -478,11 +477,11 @@ void sui(struct i8080 *cpu) {
 void ani(struct i8080 *cpu) {
   cpu->cyc += 7;
   uint val = next_byte(cpu);
-  set_flag(cpu, FLAG_A, (val | cpu->A) & 0x08);
+  i8080_set_flag(cpu, FLAG_A, (val | cpu->A) & 0x08);
 
   cpu->A &= val;
 
-  set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
   setSZP(cpu, cpu->A);
 }
 
@@ -493,21 +492,21 @@ void ori(struct i8080 *cpu) {
 
   cpu->A |= val;
 
-  set_flag(cpu, FLAG_A, 0);
-  set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_A, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
   setSZP(cpu, cpu->A);
 }
 
 // ACI - Add Immediate to Accumulator With Carry
 void aci(struct i8080 *cpu) {
   cpu->cyc += 7;
-  cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
+  cpu->A = perform_add(cpu, cpu->A, next_byte(cpu), i8080_get_flag(cpu, FLAG_C));
 }
 
 // SBI - Subtract Immediate from Accumulator With Borrow
 void sbi(struct i8080 *cpu) {
   cpu->cyc += 7;
-  cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), get_flag(cpu, FLAG_C));
+  cpu->A = perform_sub(cpu, cpu->A, next_byte(cpu), i8080_get_flag(cpu, FLAG_C));
 }
 
 // XRI - Logical Exclusive-Or Immediate With Accumulator
@@ -516,8 +515,8 @@ void xri(struct i8080 *cpu) {
   uint val = next_byte(cpu);
   cpu->A ^= val;
 
-  set_flag(cpu, FLAG_C, 0);
-  set_flag(cpu, FLAG_A, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_A, 0);
   setSZP(cpu, cpu->A);
 }
 
@@ -540,8 +539,8 @@ void ora(struct i8080 *cpu, uint opcode) {
   cpu->cyc += (reg == 6) ? 7 : 4;
   cpu->A |= get_reg(cpu, reg);
 
-  set_flag(cpu, FLAG_A, 0);
-  set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_A, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
   setSZP(cpu, cpu->A);
 }
 
@@ -555,7 +554,7 @@ void rlc(struct i8080 *cpu) {
 
   cpu->A &= 0xFF;
 
-  set_flag(cpu, FLAG_C, hi_bit);
+  i8080_set_flag(cpu, FLAG_C, hi_bit);
 }
 
 // RRC - Rotate Accumulator Right
@@ -567,15 +566,15 @@ void rrc(struct i8080 *cpu) {
   cpu->A |= (lo_bit << 7);
   cpu->A &= 0xFF;
 
-  set_flag(cpu, FLAG_C, lo_bit);
+  i8080_set_flag(cpu, FLAG_C, lo_bit);
 }
 
 // RAL - Rotate Accumulator Left Through Carry
 void ral(struct i8080 *cpu) {
   cpu->cyc += 4;
-  uint old_carry = get_flag(cpu, FLAG_C) ? 1 : 0;
+  uint old_carry = i8080_get_flag(cpu, FLAG_C) ? 1 : 0;
 
-  set_flag(cpu, FLAG_C, cpu->A & 0x80);
+  i8080_set_flag(cpu, FLAG_C, cpu->A & 0x80);
   cpu->A <<= 1;
   cpu->A &= 0xFF;
 
@@ -585,9 +584,9 @@ void ral(struct i8080 *cpu) {
 // RAR - Rotate Accumulator Right Through Carry
 void rar(struct i8080 *cpu) {
   cpu->cyc += 4;
-  uint old_carry = get_flag(cpu, FLAG_C) ? 1 : 0;
+  uint old_carry = i8080_get_flag(cpu, FLAG_C) ? 1 : 0;
 
-  set_flag(cpu, FLAG_C, cpu->A & 0x01);
+  i8080_set_flag(cpu, FLAG_C, cpu->A & 0x01);
   cpu->A >>= 1;
   cpu->A &= 0xFF;
 
@@ -597,7 +596,7 @@ void rar(struct i8080 *cpu) {
 // CMC - Complement Carry Bit
 void cmc(struct i8080 *cpu) {
   cpu->cyc += 4;
-  set_flag(cpu, FLAG_C, !get_flag(cpu, FLAG_C));
+  i8080_set_flag(cpu, FLAG_C, !i8080_get_flag(cpu, FLAG_C));
 }
 
 // CMA - Complement Accumulator
@@ -609,7 +608,7 @@ void cma(struct i8080 *cpu) {
 // STC - Set Carry Bit
 void stc(struct i8080 *cpu) {
   cpu->cyc += 4;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 }
 
 // DAD - Double Add
@@ -618,7 +617,7 @@ void dad(struct i8080 *cpu, uint opcode) {
   uint reg_pair = (opcode & 0x30) >> 4;
 
   uint new_val = (CONCAT(cpu->H, cpu->L) + get_reg_pair(cpu, reg_pair));
-  set_flag(cpu, FLAG_C, new_val & 0x10000);
+  i8080_set_flag(cpu, FLAG_C, new_val & 0x10000);
 
   cpu->H = (new_val >> 8) & 0xFF;
   cpu->L = new_val & 0xFF;
@@ -646,16 +645,16 @@ void sphl(struct i8080 *cpu) {
 void shld(struct i8080 *cpu) {
   cpu->cyc += 16;
   uint addr = next_word(cpu);
-  write_byte(cpu, addr, cpu->L);
-  write_byte(cpu, addr + 1, cpu->H);
+  i8080_write_byte(cpu, addr, cpu->L);
+  i8080_write_byte(cpu, addr + 1, cpu->H);
 }
 
 // LHLD - Load H and L direct
 void ldhd(struct i8080 *cpu) {
   cpu->cyc += 16;
   uint addr = next_word(cpu);
-  cpu->L = read_byte(cpu, addr);
-  cpu->H = read_byte(cpu, addr + 1);
+  cpu->L = i8080_read_byte(cpu, addr);
+  cpu->H = i8080_read_byte(cpu, addr + 1);
 }
 
 // PUSH - Push Data Onto Stack
@@ -665,7 +664,7 @@ void push(struct i8080 *cpu, uint opcode) {
 
   // Register pair 3 refers to the concatenation of A and flags with push/pop
   uint data = reg_pair == 3 ? CONCAT(cpu->A, cpu->flags) : get_reg_pair(cpu, reg_pair);
-  push_stackw(cpu, data);
+  i8080_push_stackw(cpu, data);
 }
 
 // POP - Pop Data From Stack
@@ -674,14 +673,14 @@ void pop(struct i8080 *cpu, uint opcode) {
   uint reg_pair = (opcode & 0x30) >> 4;
 
   if (reg_pair == 3) { // PSW special case for push/pop
-    cpu->flags = pop_stackb(cpu);
+    cpu->flags = i8080_pop_stackw(cpu);
 
     cpu->flags |= 2; // Bit 1 of flags always set
     cpu->flags &= 0xD7; // Bits 3 and 5 of flags always reset
 
-    cpu->A = pop_stackb(cpu);
+    cpu->A = i8080_pop_stackw(cpu);
   } else {
-    set_reg_pair(cpu, reg_pair, pop_stackw(cpu));
+    set_reg_pair(cpu, reg_pair, i8080_pop_stackb(cpu));
   }
 }
 
@@ -691,11 +690,11 @@ void xthl(struct i8080 *cpu) {
   uint temp_h = cpu->H;
   uint temp_l = cpu->L;
 
-  cpu->L = read_byte(cpu, cpu->SP);
-  cpu->H = read_byte(cpu, cpu->SP+1);
+  cpu->L = i8080_read_byte(cpu, cpu->SP);
+  cpu->H = i8080_read_byte(cpu, cpu->SP + 1);
 
-  write_byte(cpu, cpu->SP, temp_l);
-  write_byte(cpu, cpu->SP+1, temp_h);
+  i8080_write_byte(cpu, cpu->SP, temp_l);
+  i8080_write_byte(cpu, cpu->SP + 1, temp_h);
 }
 
 // CALL - Call
@@ -712,7 +711,7 @@ void general_call(struct i8080 *cpu, uint opcode) {
   // Unconditional call has LSB set, conditional calls do not
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
     cpu->cyc += 6;
-    push_stackw(cpu, cpu->PC+2);
+    i8080_push_stackw(cpu, cpu->PC + 2);
     cpu->PC = next_word(cpu);
   } else {
     cpu->PC += 2;
@@ -735,7 +734,7 @@ void general_return(struct i8080 *cpu, uint opcode) {
   // Unconditional return has LSB set, conditional returns do not
   if ((opcode & 1) || check_condition(cpu, (opcode >> 3) & 0x07)) {
     cpu->cyc += 6;
-    cpu->PC = pop_stackw(cpu);
+    cpu->PC = i8080_pop_stackb(cpu);
   }
 }
 
@@ -779,7 +778,7 @@ void di(struct i8080 *cpu) {
 // RST - Restart
 void rst(struct i8080 *cpu, uint opcode) {
   cpu->cyc += 11;
-  push_stackw(cpu, cpu->PC);
+  i8080_push_stackw(cpu, cpu->PC);
   cpu->PC = opcode & 0x38;
 }
 
@@ -800,7 +799,7 @@ void out(struct i8080 *cpu) {
   }
 }
 
-void step_cpu(struct i8080 *cpu) {
+void i8080_step(struct i8080 *cpu) {
   if (cpu->halted) {
     return;
   }

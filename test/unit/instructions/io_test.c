@@ -13,20 +13,20 @@ AFTER_EACH() {
 }
 
 TEST_CASE(in_no_handler) {
-  write_byte(cpu, 0, 0xDB); // IN
-  write_byte(cpu, 1, 0); // d8
+  i8080_write_byte(cpu, 0, 0xDB); // IN
+  i8080_write_byte(cpu, 1, 0); // d8
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->PC, 2);
   ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 TEST_CASE(out_no_handler) {
-  write_byte(cpu, 0, 0xD3); // OUT
-  write_byte(cpu, 1, 0); // d8
+  i8080_write_byte(cpu, 0, 0xD3); // OUT
+  i8080_write_byte(cpu, 1, 0); // d8
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->PC, 2);
   ASSERT_EQUAL(cpu->cyc, 10);

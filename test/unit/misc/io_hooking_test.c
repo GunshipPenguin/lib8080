@@ -41,12 +41,12 @@ void out_handler(struct i8080 *cpu, uint dev, uint data) {
 }
 
 TEST_CASE(hook_input) {
-  write_byte(cpu, 0, 0xDB); // IN
-  write_byte(cpu, 1, 0xAB); // d8
+  i8080_write_byte(cpu, 0, 0xDB); // IN
+  i8080_write_byte(cpu, 1, 0xAB); // d8
   in_handler_retval = 0xCD;
   cpu->input_handler = in_handler;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_TRUE(in_handler_called);
   ASSERT_EQUAL(in_handler_dev_arg, 0xAB);
@@ -54,12 +54,12 @@ TEST_CASE(hook_input) {
 }
 
 TEST_CASE(hook_output) {
-  write_byte(cpu, 0, 0xD3); // OUT
-  write_byte(cpu, 1, 0xAB); // d8
+  i8080_write_byte(cpu, 0, 0xD3); // OUT
+  i8080_write_byte(cpu, 1, 0xAB); // d8
   cpu->A = 0xCD;
   cpu->output_handler = out_handler;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_TRUE(out_handler_called);
   ASSERT_EQUAL(out_handler_dev_arg, 0xAB);

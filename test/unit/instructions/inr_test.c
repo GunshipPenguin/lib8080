@@ -16,10 +16,10 @@ AFTER_EACH() {
 
 // Individual opcode tests
 TEST_CASE(inr_b) {
-  write_byte(cpu, 0, 0x04);
+  i8080_write_byte(cpu, 0, 0x04);
   cpu->B = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->B, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
@@ -27,20 +27,20 @@ TEST_CASE(inr_b) {
 
 
 TEST_CASE(inr_c) {
-  write_byte(cpu, 0, 0x0C);
+  i8080_write_byte(cpu, 0, 0x0C);
   cpu->C = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->C, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inr_d) {
-  write_byte(cpu, 0, 0x14);
+  i8080_write_byte(cpu, 0, 0x14);
   cpu->B = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->D, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
@@ -48,20 +48,20 @@ TEST_CASE(inr_d) {
 
 
 TEST_CASE(inr_e) {
-  write_byte(cpu, 0, 0x1C);
+  i8080_write_byte(cpu, 0, 0x1C);
   cpu->C = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->E, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inr_h) {
-  write_byte(cpu, 0, 0x24);
+  i8080_write_byte(cpu, 0, 0x24);
   cpu->H = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->H, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
@@ -69,73 +69,73 @@ TEST_CASE(inr_h) {
 
 
 TEST_CASE(inr_l) {
-  write_byte(cpu, 0, 0x2C);
+  i8080_write_byte(cpu, 0, 0x2C);
   cpu->L = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->L, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
 }
 
 TEST_CASE(inr_m) {
-  write_byte(cpu, 0, 0x34);
-  write_byte(cpu, 0x08, 0);
+  i8080_write_byte(cpu, 0, 0x34);
+  i8080_write_byte(cpu, 0x08, 0);
   cpu->H = 0; cpu->L = 0x08;
 
-  step_cpu(cpu);
-  ASSERT_EQUAL(read_byte(cpu, 0x08), 1);
+  i8080_step(cpu);
+  ASSERT_EQUAL(i8080_read_byte(cpu, 0x08), 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 10);
 }
 
 
 TEST_CASE(inr_a) {
-  write_byte(cpu, 0, 0x3C);
+  i8080_write_byte(cpu, 0, 0x3C);
   cpu->A = 0;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
   ASSERT_EQUAL(cpu->A, 1);
   ASSERT_EQUAL(cpu->PC, 1);
   ASSERT_EQUAL(cpu->cyc, 5);
 }
 
-// Flag bit tests
+// i8080_flag bit tests
 TEST_CASE(inr_sets_z_flag) {
-  write_byte(cpu, 0, 0x3C); // INR A
+  i8080_write_byte(cpu, 0, 0x3C); // INR A
   cpu->A = 0xFF;
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_Z));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_Z));
 }
 
 TEST_CASE(inr_sets_p_flag) {
-  write_byte(cpu, 0, 0x3C); // INR A
+  i8080_write_byte(cpu, 0, 0x3C); // INR A
   cpu->A = 0x02;
-  set_flag(cpu, FLAG_P, 0);
+  i8080_set_flag(cpu, FLAG_P, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_P));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_P));
 }
 
 TEST_CASE(inr_sets_s_flag) {
-  write_byte(cpu, 0, 0x3C); // INR A
+  i8080_write_byte(cpu, 0, 0x3C); // INR A
   cpu->A = 0x7F;
-  set_flag(cpu, FLAG_S, 0);
+  i8080_set_flag(cpu, FLAG_S, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_S));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_S));
 }
 
 TEST_CASE(inr_sets_a_flag) {
-  write_byte(cpu, 0, 0x3C); // INR A
+  i8080_write_byte(cpu, 0, 0x3C); // INR A
   cpu->A = 0x0F;
-  set_flag(cpu, FLAG_A, 0);
+  i8080_set_flag(cpu, FLAG_A, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
 }

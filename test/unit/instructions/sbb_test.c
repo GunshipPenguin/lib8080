@@ -16,152 +16,152 @@ AFTER_EACH() {
 
 // Individual opcode tests
 TEST_CASE(sbb_b) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0xF0; cpu->B = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_c) {
-  write_byte(cpu, 0, 0x99); // SBB C
+  i8080_write_byte(cpu, 0, 0x99); // SBB C
   cpu->A = 0xF0; cpu->C = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_d) {
-  write_byte(cpu, 0, 0x9A); // SBB D
+  i8080_write_byte(cpu, 0, 0x9A); // SBB D
   cpu->A = 0xF0; cpu->D = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_e) {
-  write_byte(cpu, 0, 0x9B); // SBB E
+  i8080_write_byte(cpu, 0, 0x9B); // SBB E
   cpu->A = 0xF0; cpu->E = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_h) {
-  write_byte(cpu, 0, 0x9C); // SBB H
+  i8080_write_byte(cpu, 0, 0x9C); // SBB H
   cpu->A = 0xF0; cpu->H = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_l) {
-  write_byte(cpu, 0, 0x9D); // SBB L
+  i8080_write_byte(cpu, 0, 0x9D); // SBB L
   cpu->A = 0xF0; cpu->L = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 TEST_CASE(sbb_m) {
-  write_byte(cpu, 0, 0x9E); // SBB M
-  write_byte(cpu, 10, 0x0F);
+  i8080_write_byte(cpu, 0, 0x9E); // SBB M
+  i8080_write_byte(cpu, 10, 0x0F);
   cpu->A = 0xF0; cpu->H = 0x00; cpu->L = 0xA;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 7);
 }
 
 TEST_CASE(sbb_a) {
-  write_byte(cpu, 0, 0x9F); // SBB A
+  i8080_write_byte(cpu, 0, 0x9F); // SBB A
   cpu->A = 0xF0;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xFF);
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
   ASSERT_EQUAL(cpu->cyc, 4);
 }
 
 // Bit flag tests
 TEST_CASE(sbb_resets_c_flag) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0xF0; cpu->B = 0x0F;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xE0);
-  ASSERT_FALSE(get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_C));
 }
 
 TEST_CASE(sbb_sets_a_flag) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0x01; cpu->B = 0;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_A));
 }
 
 TEST_CASE(sbb_sets_z_flag) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 1; cpu->B = 0;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_Z));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_Z));
 }
 
 TEST_CASE(sbb_sets_p_flag) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 4; cpu->B = 1;
-  set_flag(cpu, FLAG_C, 0);
+  i8080_set_flag(cpu, FLAG_C, 0);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_P));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_P));
 }
 
 TEST_CASE(sbb_sets_s_flag) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0xFF; cpu->B = 1;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
-  ASSERT_TRUE(get_flag(cpu, FLAG_S));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_S));
 }
 
 /*
@@ -171,13 +171,13 @@ TEST_CASE(sbb_sets_s_flag) {
  * unchanged.
  */
 TEST_CASE(sbb_subtrahend_0xFF_with_borrow) {
-  write_byte(cpu, 0, 0x98); // SBB B
+  i8080_write_byte(cpu, 0, 0x98); // SBB B
   cpu->A = 0xAB; cpu->B = 0xFF;
-  set_flag(cpu, FLAG_C, 1);
+  i8080_set_flag(cpu, FLAG_C, 1);
 
-  step_cpu(cpu);
+  i8080_step(cpu);
 
   ASSERT_EQUAL(cpu->A, 0xAB);
-  ASSERT_TRUE(get_flag(cpu, FLAG_C));
-  ASSERT_FALSE(get_flag(cpu, FLAG_A));
+  ASSERT_TRUE(i8080_get_flag(cpu, FLAG_C));
+  ASSERT_FALSE(i8080_get_flag(cpu, FLAG_A));
 }

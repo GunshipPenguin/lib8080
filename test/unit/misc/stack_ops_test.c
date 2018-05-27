@@ -15,11 +15,11 @@ AFTER_EACH() {
 
 
 TEST_CASE(stack_push_pop_byte) {
-  push_stackb(cpu, 0xAB);
-  ASSERT_EQUAL(pop_stackb(cpu), 0xAB);
+  i8080_push_stackb(cpu, 0xAB);
+  ASSERT_EQUAL(i8080_pop_stackb(cpu), 0xAB);
 }
 
 TEST_CASE(stack_push_pop_word) {
-  push_stackw(cpu, 0xABCD);
-  ASSERT_EQUAL(pop_stackw(cpu), 0xABCD);
+  i8080_push_stackw(cpu, 0xABCD);
+  ASSERT_EQUAL(i8080_pop_stackw(cpu), 0xABCD);
 }

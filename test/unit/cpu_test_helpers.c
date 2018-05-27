@@ -18,14 +18,14 @@
  */
 struct i8080 *setup_cpu_test_env() {
   struct i8080 *cpu = malloc(sizeof(struct i8080));
-  reset_cpu(cpu);
+  i8080_reset(cpu);
   cpu->SP = 0x10;
 
   // Create and zero out memory
   cpu->memsize = 128;
   cpu->memory = malloc(sizeof(char) * cpu->memsize);
   for (size_t i=0;i<128;i++) {
-    write_byte(cpu, i, 0);
+    i8080_write_byte(cpu, i, 0);
   }
 
   return cpu;

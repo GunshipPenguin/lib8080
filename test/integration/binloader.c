@@ -9,9 +9,9 @@ void intercept_bdos_call(struct i8080 *cpu) {
       putchar((char) cpu->E);
     }
   } else if (cpu->C == 9) { // BDOS function 9 (C_WRITESTR) - Output string
-    for (int addr = ((cpu->D << 8) | cpu->E);read_byte(cpu, addr) != '$';addr++) {
-      if (read_byte(cpu, addr) != 0) {
-        putchar((char) read_byte(cpu, addr));
+    for (int addr = ((cpu->D << 8) | cpu->E); i8080_read_byte(cpu, addr) != '$';addr++) {
+      if (i8080_read_byte(cpu, addr) != 0) {
+        putchar((char) i8080_read_byte(cpu, addr));
       }
     }
   }
@@ -26,19 +26,19 @@ int main(int argc, char *argv[]) {
   struct i8080 *cpu = malloc(sizeof(struct i8080));
   cpu->memsize = 65536;
   cpu->memory = malloc(cpu->memsize);
-  reset_cpu(cpu);
+  i8080_reset(cpu);
 
   // CP/M Binaries are loaded with a 256 byte offset
   cpu->PC = 0x100;
 
   // Load the binary as a CP/M program (loaded at offset 0x100)
-  load_memory(cpu, argv[1], 0x100);
+  i8080_load_memory(cpu, argv[1], 0x100);
 
   // Inject RET at 0x05 to allow for mocking of CP/M BDOS system calls
-  write_byte(cpu, 5, 0xC9);
+  i8080_write_byte(cpu, 5, 0xC9);
 
   while (1) {
-    step_cpu(cpu);
+    i8080_step(cpu);
 
     // CP/M warm boot (test finished and restarted itself)
     if (cpu->PC == 0) {

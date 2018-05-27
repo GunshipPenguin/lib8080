@@ -20,7 +20,7 @@ AFTER_EACH() {
 }
 
 TEST_CASE(read_beyond_end_return_0) {
-  write_byte(cpu, 128, 0xFF);
+  i8080_write_byte(cpu, 128, 0xFF);
 
-  ASSERT_EQUAL(read_byte(cpu, 128), 0);
+  ASSERT_EQUAL(i8080_read_byte(cpu, 128), 0);
 }

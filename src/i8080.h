@@ -38,28 +38,28 @@ struct i8080 {
   uint cyc;
 };
 
-enum Flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
+enum i8080_flag {FLAG_S, FLAG_Z, FLAG_A, FLAG_P, FLAG_C};
 
-void reset_cpu(struct i8080 *);
-void load_memory(struct i8080 *, char *, size_t);
+void i8080_reset(struct i8080 *);
+void i8080_load_memory(struct i8080 *, char *, size_t);
 
-void step_cpu(struct i8080 *);
+void i8080_step(struct i8080 *);
 
-void set_flag(struct i8080 *, enum Flag, int);
-int get_flag(struct i8080 *, enum Flag);
+void i8080_set_flag(struct i8080 *, enum i8080_flag, int);
+int i8080_get_flag(struct i8080 *, enum i8080_flag);
 
-void request_interrupt(struct i8080 *, uint);
+void i8080_request_interrupt(struct i8080 *, uint);
 
-void push_stackb(struct i8080 *, uint);
-void push_stackw(struct i8080 *, uint);
+void i8080_push_stackb(struct i8080 *, uint);
+void i8080_push_stackw(struct i8080 *, uint);
 
-uint pop_stackb(struct i8080 *);
-uint pop_stackw(struct i8080 *);
+uint i8080_pop_stackw(struct i8080 *);
+uint i8080_pop_stackb(struct i8080 *);
 
-uint read_byte(struct i8080 *, uint);
-void write_byte(struct i8080 *, uint, uint);
+uint i8080_read_byte(struct i8080 *, uint);
+void i8080_write_byte(struct i8080 *, uint, uint);
 
-uint read_word(struct i8080 *, uint);
-void write_word(struct i8080 *, uint, uint);
+uint i8080_read_word(struct i8080 *, uint);
+void i8080_write_word(struct i8080 *, uint, uint);
 
 #endif
