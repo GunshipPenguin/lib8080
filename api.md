@@ -27,7 +27,7 @@ struct i8080 {
   /* General purpose registers (8 bits) */
   uint A, B, C, D, E;
 
-  /* High / low address registers (8 bits) */
+  /* High and low address registers (8 bits) */
   uint H, L;
 
   /* 8080 status flags (8 bits) */
@@ -39,7 +39,7 @@ struct i8080 {
   /* Program counter (16 bits) */
   uint PC;
 
-  /* Is the CPU currently halted? (HLT) (boolean) */
+  /* Is the CPU currently halted? (see HLT instruction) (boolean) */
   int halted;
 
   /* Pointer to memory */
@@ -73,7 +73,7 @@ used to represent boolean values.
 
 ## Initializing the CPU
 
-The `i8080_reset` function resets the i8080 struct to a just powered on state.
+The `i8080_reset` function resets the i8080 struct to a powered on state.
 
 ```C
 reset_cpu(cpu);
@@ -108,8 +108,8 @@ Individual bytes of memory can be read/read using the `i8080_read_byte` and
 /* Write 0xFF to memory at address 0x100 */
 i8080_write_byte(cpu, 0x100, 0xFF);
 
-/* byte now contains 0xFF */
 char byte = i8080_read_byte(cpu, 0x100);
+/* byte now contains 0xFF */
 ```
 
 Since the 8080 uses a little endian architechure, you can use the
@@ -132,9 +132,9 @@ Use the `i8080_step` function to execute a single instruction.
 i8080_step(cpu);
 ```
 
-Note that if there is a pending interrupt and interrupts are enabled (`INTE` is
-true), the opcode provided by the interrupting device will be executed instead
-of the opcode pointed to by the program counter.
+Note that if there is a pending interrupt, the opcode provided by the
+interrupting device will be executed instead of the opcode pointed to by the
+program counter.
 
 Also note that if the CPU is halted, `i8080_step` will do nothing.
 
@@ -196,7 +196,7 @@ Since the 8080 uses a little endian architechure, `i8080_push_stackw` and
 ```C
 i8080_push_stackw(cpu, 0x1234);
 
-uint *data = i8080_pop_stackw();
+uint *data = i8080_pop_stackw(cpu);
 /* data now contains 0x1234 */
 ```
 
@@ -213,28 +213,32 @@ Provided the `INTE` flag was true in the cpu struct, the next time
 instead of whatever `cpu->PC` points to.
 
 Note that the second argument is the opcode to place on the 8080's data bus.
-While this can be any value in the range 0x00-0xFF, in practise, it's almost
-always going to be one of the `RST` (restart) instructions. Because of this,
-lib8080 provides the macros `I8080_RST_[0-7]`, which expand to the opcodes for
-each `RST` instruction.
+While this can be any value in the range `0x00` - `0xFF`, in practise, it's
+almost always going to be one of the `RST` (restart) instructions. Because of
+this, lib8080 provides the macros `I8080_RST_[0-7]`, which expand to the opcodes
+for each `RST` instruction.
 
 ## Hooking IN and OUT instructions
 
-The 8080 provides two instruction for interfacing with external devices, `IN`
+The 8080 provides two instructions for interfacing with external devices, `IN`
 (input) and `OUT` (output). When an `IN` instruction is executed, the device
-number to read from is placed on the 8080's address bus, and one byte is read
-from the 8080's data bus into the accumulator. Likewise, when when an `OUT`
-instruction is executed, the contents of the accumulator are placed on the
-8080's data bus and the device number to write to is placed on the address bus.
+number to read from is placed on the 8080's address bus, the cpu's DBIN (data
+bus in) line is pulled high, and one byte is read from the 8080's data bus into
+the accumulator.
+
+Likewise, when when an `OUT` instruction is executed, the contents of the
+accumulator are placed on the 8080's data bus, the cpu's WR (write) line is
+pulled low (WR is active low) and the device number to write to is placed on the
+address bus.
 
 lib8080 emulates this functionality using function pointers. If the
-`cpu->input_handler` and `cpu->output_handler` properties of a `cpu` struct are
+`cpu->input_handler` and `cpu->output_handler` properties of an i8080 struct are
 not `NULL` when an `IN` or `OUT` instruction is executed, these callback
 functions will be invoked to read or write data respectively.
 
-As an example, here's how you could emulate a device that always provides the
-byte 0x12 on port 0 and reads the latest byte written on port 0 (using an `OUT`
-instruction) to a global variable.
+As a simple example, here's how you could emulate a device that always writes
+the byte 0x12 on port 0 and reads the latest byte written on port 0 into to a
+global variable.
 
 ```C
 uint last_byte_written;
