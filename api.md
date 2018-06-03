@@ -1,6 +1,6 @@
 # lib8080 API
 
-This file contains a complete reference of lib8080's external API.
+This file contains a complete guide to lib8080's external API.
 
 ## Getting Started
 

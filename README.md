@@ -1,13 +1,21 @@
-# lib8080
-[![Travis branch](https://img.shields.io/travis/GunshipPenguin/lib8080/master.svg)](https://travis-ci.org/GunshipPenguin/lib8080)
+<p align="center">
+  <img src="images/8kbas.png"/>
+</p>
+<h1 align="center">lib8080</h1>
+<p align="center">
+  <img src="https://img.shields.io/travis/GunshipPenguin/lib8080/master.svg" />
+</p>
 
 An accurate, well tested emulation library for the Intel 8080 written in C99.
 
 ## Usage
 
-lib8080 consists of 
+lib8080 consists of
 [just 2 files](https://github.com/GunshipPenguin/lib8080/tree/master/src). To use
 it in your project, just include i8080.h, compile and run.
+
+See [api.md](https://github.com/GunshipPenguin/lib8080/blob/master/api.md) for
+an overview of the API.
 
 ## Tests
 
@@ -17,7 +25,7 @@ in `test/unit`. Every CPU instruction is tested at least once, with many having
 multiple tests to verify correct behaviour with regard to status flags / edge
 cases, etc.
 
-lib8080 uses CMake as its build system. To run the unit tests, first build 
+lib8080 uses CMake as its build system. To run the unit tests, first build
 the test binary and run it as follows:
 
 ```
@@ -34,7 +42,7 @@ functionality of the 8080 pretty comprehensively. They are:
 - 8080PRE.COM by Frank D. Cringle and Ian Bartholomew
 - 8080EXM.COM by Frank D. Cringle and Ian Bartholomew
 
-Notably, the last one (8080EXM.COM) is the "8080 CPU Exerciser", which takes 
+Notably, the last one (8080EXM.COM) is the "8080 CPU Exerciser", which takes
 more than 3 hours to run on a regularly clocked 2 MHz 8080 and tests essentially
 everything that can be tested on an 8080.
 
@@ -66,4 +74,3 @@ are copyright their respective owners:
 - TEST.COM © 1980 Microcosm Associates
 - 8080PRE.COM (GPLv3) © 1994 Frank D. Cringle © 2009 Ian Bartholomew
 - 8080EXM.COM (GPLv3) © 1994 Frank D. Cringle © 2009 Ian Bartholomew
-
