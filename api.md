@@ -4,8 +4,8 @@ This file contains a complete reference of lib8080's external API.
 
 ## Getting Started
 
-Include `i8080.h` in your project and compile `i8080.c` as part of your
-project to use lib8080.
+Include `i8080.h` in your project and compile `i8080.c` with the rest of your
+source files.
 
 ```C
 #include "i8080.h"
@@ -13,8 +13,8 @@ project to use lib8080.
 
 ## Creating an emulated 8080
 
-You'll mainly be working with an i8080 struct when using lib8080, which
-has all the information in it needed to represent an Intel 8080.
+You'll mainly be working with an `i8080` struct when using lib8080, which
+has all the information in it needed to represent an Intel 8080 CPU.
 
 ```C
 struct i8080 *cpu = malloc(sizeof(struct i8080));
@@ -81,13 +81,13 @@ reset_cpu(cpu);
 
 ## Loading Memory
 
-lib8080 handles memory as character arrays. Memory must be allocated separate to
+lib8080 handles memory a character array. Memory is allocated separately to
 the i8080 struct. Additionally, the `memsize` property of the i8080 struct must
-be set to the size of the character array for internal use.
+be set to the size of the character array for internal use by lib8080.
 
 ```C
 /* Load 32 KiB of memory */
-cpu->memory = malloc(sizeof(char) * 2**32)
+cpu->memory = malloc(sizeof(char) * 32768)
 cpu->memsize = 2**32;
 ```
 
@@ -113,8 +113,8 @@ char byte = i8080_read_byte(cpu, 0x100);
 ```
 
 Since the 8080 uses a little endian architechure, you can use the
-`i8080_read_word` and `i8080_write_word` convenience functions to write words
-low byte first.
+`i8080_read_word` and `i8080_write_word` convenience functions to write 2 byte
+words low byte first.
 
 ```C
 /* Write 0x34 to address 0x100 and 0x12 to address 0x101 */
@@ -140,16 +140,9 @@ Also note that if the CPU is halted, `i8080_step` will do nothing.
 
 ## Setting and Getting CPU Flags
 
-The 8080 has five status flags:
-- Sign
-- Zero
-- Auxiliary Carry
-- Parity
-- Carry
-
-These flags are stored in the `flags` property of the `i8080` struct in the
-same order they are pushed to the stack by the `PUSH PSW` instruction,
-specifically:
+The 8080 has five status flags: sign, zero, auxiliary carry, parity and carry.
+These flags are stored in the `flags` property of the `i8080` struct in the same
+order they are pushed to the stack by the `PUSH PSW` instruction, specifically:
 
 ```
 bit 7                   bit 0
@@ -184,14 +177,15 @@ instruction execution, you can use the `i8080_push_stackb` and
 `i8080_pop_stackb` functions to push or pop a single byte to or from the stack.
 
 ```C
+/* Set cpu->SP to a sane value */
 i8080_push_stackb(cpu, 0xFF);
 char *data = i8080_pop_stackb(cpu);
 /* data now contains 0xFF */
 ```
 
-Since the 8080 uses a little endian architechure, `i8080_push_stackw` and
+Since the 8080 uses a little endian architecture, `i8080_push_stackw` and
 `i8080_pop_stackw` convenience functions are provided to do the same thing with
-2 byte words.
+2 byte words using the proper byte ordering.
 
 ```C
 i8080_push_stackw(cpu, 0x1234);
@@ -226,7 +220,7 @@ number to read from is placed on the 8080's address bus, the cpu's DBIN (data
 bus in) line is pulled high, and one byte is read from the 8080's data bus into
 the accumulator.
 
-Likewise, when when an `OUT` instruction is executed, the contents of the
+Similarity, when when an `OUT` instruction is executed, the contents of the
 accumulator are placed on the 8080's data bus, the cpu's WR (write) line is
 pulled low (WR is active low) and the device number to write to is placed on the
 address bus.
@@ -234,11 +228,11 @@ address bus.
 lib8080 emulates this functionality using function pointers. If the
 `cpu->input_handler` and `cpu->output_handler` properties of an i8080 struct are
 not `NULL` when an `IN` or `OUT` instruction is executed, these callback
-functions will be invoked to read or write data respectively.
+functions will be invoked to handle input or output of data respectively.
 
 As a simple example, here's how you could emulate a device that always writes
-the byte 0x12 on port 0 and reads the latest byte written on port 0 into to a
-global variable.
+the byte 0x12 on IO port 0 and reads the latest byte written on IO port 0 into
+to a global variable.
 
 ```C
 uint last_byte_written;
@@ -260,6 +254,7 @@ void handle_output(struct i8080 *cpu, uint dev, uint val) {
 }
 
 /* Initialize i8080 cpu struct and memory */
+
 cpu->input_handler = handle_input;
 cpu->output_handler = handle_output;
 ```
@@ -267,10 +262,12 @@ cpu->output_handler = handle_output;
 In the above example:
 
 - Whenever an `IN` instruction is executed, the `handle_input` function will be
-  invoked with the device number (dev) and contents of the 8080's accumulator
-  (val). You can call emulation code for your external device here. The 8080's
-  accumulator will be set to the value returned.
+  invoked with the i8080 struct that executed the instruction, the device number
+  and the contents of the 8080's accumulator. You can call emulation
+  code for your external device here. The 8080's accumulator will be set to the
+  value returned.
 
 - Whenever an `OUT` instruction is executed, the `handle_output` function will
-  be invoked with the device number (dev) and contents of the 8080's
-  accumulator. You can call emulation code for the external device here.
+  be invoked with the i8080 struct that executed the instruction, the device
+  number and contents of the 8080's accumulator. You can call emulation code for
+  your external device here.
