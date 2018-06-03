@@ -3,7 +3,9 @@
 </p>
 <h1 align="center">lib8080</h1>
 <p align="center">
-  <img src="https://img.shields.io/travis/GunshipPenguin/lib8080/master.svg" />
+  <a href="https://travis-ci.org/GunshipPenguin/lib8080">
+    <img src="https://img.shields.io/travis/GunshipPenguin/lib8080/master.svg"/>
+  </a>
 </p>
 
 An accurate, well tested emulation library for the Intel 8080 written in C99.
