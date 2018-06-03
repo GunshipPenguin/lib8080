@@ -87,8 +87,9 @@ be set to the size of the character array for internal use by lib8080.
 
 ```C
 /* Load 32 KiB of memory */
-cpu->memory = malloc(sizeof(char) * 32768)
-cpu->memsize = 2**32;
+#define MEMSIZE 32768
+cpu->memory = malloc(sizeof(char) * MEMSIZE)
+cpu->memsize = MEMSIZE;
 ```
 
 Memory can then be initialized from a file using the `i8080_load_memory`
