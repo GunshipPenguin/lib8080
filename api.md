@@ -11,7 +11,7 @@ source files.
 #include "i8080.h"
 ```
 
-## Creating an emulated 8080
+## Creating an Emulated 8080
 
 You'll mainly be working with an `i8080` struct when using lib8080, which
 has all the information in it needed to represent an Intel 8080 CPU.
@@ -195,7 +195,7 @@ uint *data = i8080_pop_stackw(cpu);
 /* data now contains 0x1234 */
 ```
 
-## Requesting interrupts
+## Requesting Interrupts
 
 An interrupt can be requested using the `i8080_request_interrupt` function.
 
@@ -213,7 +213,7 @@ almost always going to be one of the `RST` (restart) instructions. Because of
 this, lib8080 provides the macros `I8080_RST_[0-7]`, which expand to the opcodes
 for each `RST` instruction.
 
-## Hooking IN and OUT instructions
+## Hooking IN and OUT Instructions
 
 The 8080 provides two instructions for interfacing with external devices, `IN`
 (input) and `OUT` (output). When an `IN` instruction is executed, the device
